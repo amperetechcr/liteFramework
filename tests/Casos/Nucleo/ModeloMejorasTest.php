@@ -2,30 +2,49 @@
 
 use PHPUnit\Framework\TestCase;
 use LiteFramework\Nucleo\Modelo;
+use LiteFramework\Nucleo\DialectoBaseDatos;
 use LiteFramework\Config\ConexionBaseDatos;
 
 class ModeloMejorasTest extends TestCase
 {
     private static PDO $pdo;
+    private static bool $esMySQL;
 
     public static function setUpBeforeClass(): void
     {
         ConexionBaseDatos::resetearInstancia();
         $db = ConexionBaseDatos::obtenerInstancia();
         self::$pdo = $db->obtenerConector();
+        self::$esMySQL = DialectoBaseDatos::esMySQL(self::$pdo);
+    }
+
+    private function ddlTablaMejoras(): string
+    {
+        if (self::$esMySQL) {
+            return "CREATE TABLE IF NOT EXISTS test_mejoras (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nombre VARCHAR(255) NOT NULL,
+                email VARCHAR(255) DEFAULT NULL,
+                edad INT DEFAULT 0,
+                salario DECIMAL(10,2) DEFAULT 0.00,
+                activo TINYINT DEFAULT 1,
+                categoria VARCHAR(100) DEFAULT 'general'
+            ) ENGINE=InnoDB";
+        }
+        return "CREATE TABLE IF NOT EXISTS test_mejoras (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            email TEXT DEFAULT NULL,
+            edad INTEGER DEFAULT 0,
+            salario REAL DEFAULT 0.0,
+            activo INTEGER DEFAULT 1,
+            categoria TEXT DEFAULT 'general'
+        )";
     }
 
     protected function setUp(): void
     {
-        self::$pdo->exec("CREATE TABLE IF NOT EXISTS test_mejoras (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            nombre VARCHAR(255) NOT NULL,
-            email VARCHAR(255) DEFAULT NULL,
-            edad INT DEFAULT 0,
-            salario DECIMAL(10,2) DEFAULT 0.00,
-            activo TINYINT DEFAULT 1,
-            categoria VARCHAR(100) DEFAULT 'general'
-        ) ENGINE=InnoDB");
+        self::$pdo->exec($this->ddlTablaMejoras());
         self::$pdo->exec("TRUNCATE TABLE test_mejoras");
         self::$pdo->exec("INSERT INTO test_mejoras (nombre, email, edad, salario, activo, categoria) VALUES
             ('Ana Lopez', 'ana@test.com', 30, 50000, 1, 'premium'),
@@ -113,7 +132,10 @@ class ModeloMejorasTest extends TestCase
 
     public function testSumar(): void
     {
-        self::$pdo->exec("CREATE TABLE IF NOT EXISTS test_suma (id INT AUTO_INCREMENT PRIMARY KEY, valor INT) ENGINE=InnoDB");
+        $ddl = self::$esMySQL
+            ? "CREATE TABLE IF NOT EXISTS test_suma (id INT AUTO_INCREMENT PRIMARY KEY, valor INT) ENGINE=InnoDB"
+            : "CREATE TABLE IF NOT EXISTS test_suma (id INTEGER PRIMARY KEY AUTOINCREMENT, valor INTEGER)";
+        self::$pdo->exec($ddl);
         self::$pdo->exec("TRUNCATE TABLE test_suma");
         self::$pdo->exec("INSERT INTO test_suma (valor) VALUES (10), (20), (30), (40), (50)");
         $suma = TestSuma::sumar('valor');
@@ -123,7 +145,10 @@ class ModeloMejorasTest extends TestCase
 
     public function testPromediar(): void
     {
-        self::$pdo->exec("CREATE TABLE IF NOT EXISTS test_prom (id INT AUTO_INCREMENT PRIMARY KEY, valor DECIMAL(10,2)) ENGINE=InnoDB");
+        $ddl = self::$esMySQL
+            ? "CREATE TABLE IF NOT EXISTS test_prom (id INT AUTO_INCREMENT PRIMARY KEY, valor DECIMAL(10,2)) ENGINE=InnoDB"
+            : "CREATE TABLE IF NOT EXISTS test_prom (id INTEGER PRIMARY KEY AUTOINCREMENT, valor REAL)";
+        self::$pdo->exec($ddl);
         self::$pdo->exec("TRUNCATE TABLE test_prom");
         self::$pdo->exec("INSERT INTO test_prom (valor) VALUES (10.5), (20.5), (30.0)");
         $prom = TestProm::promediar('valor');
@@ -234,7 +259,10 @@ class ModeloMejorasTest extends TestCase
 
     public function testEventoUpdating(): void
     {
-        self::$pdo->exec("CREATE TABLE IF NOT EXISTS test_eventos_upd (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(255)) ENGINE=InnoDB");
+        $ddl = self::$esMySQL
+            ? "CREATE TABLE IF NOT EXISTS test_eventos_upd (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(255)) ENGINE=InnoDB"
+            : "CREATE TABLE IF NOT EXISTS test_eventos_upd (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT)";
+        self::$pdo->exec($ddl);
         self::$pdo->exec("INSERT INTO test_eventos_upd (nombre) VALUES ('Original')");
         $modelo = TestEventosUpd::buscar(1);
         $modelo->nombre = 'Modificado';
