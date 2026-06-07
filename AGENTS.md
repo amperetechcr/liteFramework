@@ -71,12 +71,26 @@ openclaw agent --agent main --message "Prueba el modulo de operadores"
 openclaw agent --agent main --message "Ejecuta los tests y reporta resultados"
 ```
 
+## MCP Servers disponibles (compartidos OpenCode + OpenClaw)
+
+| MCP | Que hace |
+|-----|----------|
+| `context7` | Documentación de librerías y frameworks |
+| `gh_grep` | Búsqueda de código en GitHub |
+| `git` | Operaciones Git (status, diff, log, commit) |
+| `time` | Conversión y consulta de zonas horarias |
+| `fetch` | Fetch de URLs y contenido web |
+| `sentry` | Gestión de proyectos Sentry (issues, DSNs) |
+
+Configuración en `~/.config/opencode/opencode.json` (OpenCode) y `~/.openclaw/openclaw.json` (OpenClaw).
+
 ## Skills disponibles
 
 ### OpenCode (`.opencode/skills/`)
 | Skill | Proposito |
 |-------|-----------|
 | `lite-framework` | Patrones practicos: modulos, rutas, ORM, validacion, seguridad |
+| `lite-framework-config` | Configuracion del proyecto |
 
 ### OpenClaw (`.agents/skills/`)
 | Skill | Proposito |
@@ -100,6 +114,8 @@ openclaw agent --agent main --message "Ejecuta los tests y reporta resultados"
 - CSS nativo con 13 paletas, 8 estilos, 16 fondos
 - RBAC, CSRF, WAF, rate limiting, auditoria dual
 - SSE en tiempo real con daemon auto-start
+- Sentry nativo (ReporteroSentry, sin dependencias)
 - Apache multi-thread (XAMPP) con compresión gzip
-- PHPUnit 11 (404 tests, 970 aserciones)
+- PHPUnit 11 (458 tests, 1084 aserciones)
 - PHPStan level 7, PHPCS 0 errores
+- 6 MCP servers (git, time, fetch, sentry, context7, gh_grep)

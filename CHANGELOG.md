@@ -2,6 +2,16 @@
 
 Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.4.0] - 2026-06-07
+
+**Agregado:** `ReporteroSentry` — integración nativa con Sentry vía API Store (sin dependencias externas, sin Composer) · `SENTRY_DSN` en `.env` para configuración · `APP_RELEASE` para tracking de versiones · reportero automático de errores PHP, excepciones y fatales vía `ManejadorErrores::loggear()` · contexto enriquecido: stack trace, URL, método HTTP, IP, sesión, entorno, release
+
+**Agregado (DevOps):** `opencode.json` global con MCPs correctos via WSL (`git`, `time`, `fetch`, `sentry`) · `openclaw.json` con 6 MCP servidores registrados (`context7`, `gh_grep`, `git`, `time`, `fetch`, `sentry`) · limpieza de MCPs duplicados en proyecto · skills OpenCode + OpenClaw en `.opencode/skills/` y `.agents/skills/` · comando `validate` que corre PHPStan + PHPCS + PHPUnit
+
+**Corregido:** `ReporteroSentry::construirEvento()` — PHPStan level 7 (nullCoalesce.offset, constant.notFound) · `phpstan.php` con `SENTRY_DSN` para análisis estático
+
+**Testing:** 458 tests, 1084 aserciones · 11 HTTP externos pasan con `TESTS_EXTERNAS_HTTP=true` · PHPStan level 7 — 0 errores · PHPCS — 0 errores (warnings ignoradas: líneas largas en 4 archivos preexistentes)
+
 ## [1.3.0] - 2026-06-07
 
 **Agregado:** SSE optimizado con daemon auto-start (`SseGestor::iniciarDaemon()`, `exec()`) · soporte `Last-Event-Id` (`HTTP_LAST_EVENT_ID`) · caché de posición en archivo (`$posArchivo`) para leer solo datos nuevos con `fseek` · landing page profesional (`inicio_sesion.php`) con hero, features grid, stats cards, OAuth SVGs, login/register integrado · ruta POST `/configuracion` para fallback sin JS · compresión gzip via `mod_deflate` + `mod_filter` (CSS: 8.7KB→2.5KB, ~71%) · `ngrok-skip-browser-warning` header en wrapper fetch · header `ngrok-skip-browser-warning` en `utilidades.js:37` · compressible types en `httpd.conf`

@@ -62,6 +62,10 @@ function h(string $texto): string
 require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
 \LiteFramework\Config\GestorEntorno::cargar();
 
+\LiteFramework\Servicios\ReporteroSentry::iniciar(
+    \LiteFramework\Config\GestorEntorno::obtener('SENTRY_DSN', '')
+);
+
 \LiteFramework\Nucleo\ManejadorErrores::registrar();
 
 $configUI = require DIRECTORIO_RAIZ . '/servidor/config/ui.php';

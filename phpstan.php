@@ -6,6 +6,7 @@ define('DB_ANFITRION', 'localhost');
 define('DB_NOMBRE', 'test');
 define('DB_USUARIO', 'root');
 define('DB_CLAVE', '');
+define('SENTRY_DSN', '');
 
 function h(string $texto): string
 {

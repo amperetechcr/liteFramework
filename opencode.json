@@ -24,6 +24,18 @@
       "description": "Ejecutar tests por filtro (ej: test-filter --filter=ModeloTest)",
       "args": ["filtro"]
     },
+    "test-http": {
+      "template": "$env:TESTS_EXTERNAS_HTTP='true'; php tests/phpunit.phar -c tests/phpunit.xml --filter AyudanteHttp",
+      "description": "Ejecutar tests HTTP externos de HttpCliente"
+    },
+    "test-cache": {
+      "template": "php tests/phpunit.phar -c tests/phpunit.xml --filter AyudanteCache",
+      "description": "Ejecutar tests de Cache"
+    },
+    "benchmark": {
+      "template": "php benchmark.php",
+      "description": "Ejecutar benchmarks de rendimiento"
+    },
     "migrar": {
       "template": "php servidor/migrar.php",
       "description": "Ejecutar migraciones pendientes"
@@ -60,18 +72,4 @@
     ".github/CONTRIBUTING.md",
     "SECURITY.md"
   ],
-  "mcpServers": {
-    "git": {
-      "command": "uvx",
-      "args": ["mcp-server-git"]
-    },
-    "time": {
-      "command": "uvx",
-      "args": ["mcp-server-time"]
-    },
-    "fetch": {
-      "command": "uvx",
-      "args": ["mcp-server-fetch"]
-    }
-  }
 }

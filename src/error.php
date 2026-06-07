@@ -149,7 +149,7 @@ $urlBase = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
     </div>
 
     <footer>
-        liteFramework v1.1.0
+        liteFramework v1.4.0
     </footer>
 
     <script src="<?= $urlBase ?>/src/js/error.js"></script>

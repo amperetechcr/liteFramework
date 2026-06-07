@@ -1,13 +1,14 @@
 # liteFramework
 
 [![CI](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml/badge.svg)](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-404%20passing-brightgreen)](tests/)
+[![CI](https://img.shields.io/github/actions/workflow/status/amperetechcr/liteFramework/ci.yml?branch=master&label=tests)](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml)
 [![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4?logo=php)](https://php.net)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen)](https://phpstan.org)
 [![PSR-12](https://img.shields.io/badge/PSR--12-%E2%9C%85-blueviolet)](phpcs.xml.dist)
+[![Sentry](https://img.shields.io/badge/Sentry-monitoring-%23362D59)](https://sentry.io)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
-**Framework PHP MVC** con autenticación RBAC, API unificada, ORM Active Record, migraciones versionadas, personalización de UI, generación de proyectos y **SSE en tiempo real**.  
+**Framework PHP MVC** con autenticación RBAC, API unificada, ORM Active Record, migraciones versionadas, personalización de UI, generación de proyectos, **SSE en tiempo real** y **Sentry nativo**.  
 Cero dependencias externas — sin Composer, sin npm, sin Node.
 
 ---
@@ -27,6 +28,8 @@ Cero dependencias externas — sin Composer, sin npm, sin Node.
 | **SSE en Tiempo Real** | Daemon auto-start, `Last-Event-Id`, caché de posición en archivo (`fseek`), polling optimizado (500ms DB / 1s archivo), sesión con `session_write_close()` |
 | **Rendimiento** | Apache multi-thread (XAMPP), compresión gzip (~71% reducción CSS), sin dependencias externas, mod_deflate |
 | **Auditoría** | 50+ eventos auditados con contexto enriquecido: IP, User-Agent, sesión, datos de dispositivo, rendimiento |
+| **Sentry** | Reportero nativo vía API Store (sin dependencias). Captura errores PHP, excepciones y fatales automáticamente. Stack trace completo, URL, método HTTP, sesión, release |
+| **DevOps** | Integración OpenCode + OpenClaw con 6 MCP servidores (git, time, fetch, sentry, context7, gh_grep). Skills de arquitectura, testing, SEO, UI, API, rendimiento |
 
 ---
 
@@ -36,7 +39,8 @@ Cero dependencias externas — sin Composer, sin npm, sin Node.
 index.php
   ├── autoload.php (PSR-4 + class_alias)
   ├── GestorEntorno (.env → constantes)
-  ├── ManejadorErrores (error/exception/fatal handler)
+  ├── ReporteroSentry (inicialización Sentry nativa)
+  ├── ManejadorErrores (error/exception/fatal handler → ReporteroSentry::capturar)
   ├── rutas/web.php
   │     └── Enrutador::despachar(GET|POST|PUT|PATCH|DELETE, /ruta)
   │           ├── Interceptor (autenticación, permisos)
@@ -151,6 +155,8 @@ $producto->guardar();
 | `DB_CLAVE` | (vacío) | Contraseña MySQL |
 | `SESSION_INACTIVIDAD_MAXIMA` | 1800 | Timeout de inactividad (segundos) |
 | `SESSION_TIEMPO_MAXIMO` | 28800 | Duración máxima de sesión |
+| `SENTRY_DSN` | (vacío) | DSN de Sentry para reporte de errores (ej: `https://key@host/project`) |
+| `APP_RELEASE` | (vacío) | Versión del release para tracking en Sentry (ej: `1.4.0`) |
 
 ---
 
@@ -185,6 +191,80 @@ $producto->guardar();
 # El daemon arranca automáticamente. Para verificar:
 php servidor/consola/sse_daemon.php status
 ```
+
+---
+
+## Sentry — Reporte de errores nativo
+
+El framework incluye un reportero de errores para Sentry **sin dependencias externas**. Usa la API Store de Sentry vía `file_get_contents` + `stream_context_create`.
+
+### Cómo funciona
+
+1. `ReporteroSentry::iniciar(SENTRY_DSN)` se ejecuta en `index.php` tras cargar entorno
+2. `ManejadorErrores::loggear()` llama a `ReporteroSentry::capturar()` automáticamente
+3. Cubre: errores PHP (`E_USER_WARNING`), excepciones no capturadas y fatales (`E_ERROR`)
+4. Cada evento incluye: stack trace completo, URL, método HTTP, cabeceras, entorno, sesión, release
+
+### Configuración
+
+```bash
+# .env
+SENTRY_DSN=https://clave_publica@oXXXXX.ingest.us.sentry.io/XXXXX
+APP_RELEASE=1.4.0
+```
+
+### Clase: `servidor/servicios/ReporteroSentry.php`
+
+| Método | Descripción |
+|--------|-------------|
+| `iniciar(string $dsn)` | Inicializa con DSN de Sentry |
+| `capturar(\Throwable $e, array $contexto)` | Envía error a Sentry (llamado automáticamente por ManejadorErrores) |
+| `estaActivo(): bool` | Verifica si Sentry está configurado |
+
+> Sin librerías externas, sin Composer, sin npm. La comunicación es HTTP directa a la API de Sentry.
+
+---
+
+## Desarrollo con OpenCode + OpenClaw
+
+El proyecto está configurado para desarrollo asistido con **OpenCode** (codificación) y **OpenClaw** (testing/automatización), compartiendo los mismos MCP servers.
+
+### MCP Servers disponibles
+
+| MCP | Transporte | OpenCode | OpenClaw |
+|-----|-----------|----------|----------|
+| `context7` | remote (streamable-http) | global ✅ | registrado ✅ |
+| `gh_grep` | remote (streamable-http) | global ✅ | registrado ✅ |
+| `git` | local (WSL + uvx) | global ✅ | registrado ✅ |
+| `time` | local (WSL + uvx) | global ✅ | registrado ✅ |
+| `fetch` | local (WSL + uvx) | global ✅ | registrado ✅ |
+| `sentry` | local (WSL + sentry-mcp) | global ✅ | registrado ✅ |
+
+### Comandos rápidos (OpenCode)
+
+```bash
+opencode run test          # Ejecutar todos los tests
+opencode run lint          # Validar PSR-12
+opencode run stan          # PHPStan level 7
+opencode run validate      # PHPStan + PHPCS + Tests completo
+opencode run migrar        # Ejecutar migraciones
+opencode run benchmark     # Benchmarks de rendimiento
+```
+
+### Skills OpenClaw
+
+| Skill | Propósito |
+|-------|-----------|
+| `arquitectura` | Estructura completa del framework |
+| `convenciones` | Naming, tipos, PHP, JS, CSS, DB |
+| `ui-testing` | Pruebas de UI con browser tool |
+| `api-testing` | Pruebas de API REST |
+| `performance-testing` | Benchmark y perfil de memoria |
+| `accessibility` | Auditoria WCAG 2.2 |
+| `frontend-design` | Guía de diseño frontend |
+| `seo` | Optimización SEO |
+
+Ver `AGENTS.md` para el flujo de trabajo completo.
 
 ---
 
@@ -238,11 +318,16 @@ php tests/phpunit.phar -c tests/phpunit.xml
 # O via el CLI del framework
 php servidor/consola/ejecutar_pruebas.php
 
-# Resultado: 404 tests, 970 aserciones, SQLite in-memory
+# Tests HTTP externos (httpbin.org)
+$env:TESTS_EXTERNAS_HTTP='true'; php tests/phpunit.phar -c tests/phpunit.xml --filter AyudanteHttp
+
+# Resultado: 458 tests, 1084 aserciones, SQLite in-memory
 ```
 
 El test suite usa SQLite in-memory (vía `TESTS_RUNNING`), sin necesidad de MySQL.
 Reutiliza el autoloader, los helpers, y `ConexionBaseDatos::resetearInstancia()` del propio framework.
+
+> 11 tests HTTP externos se saltan por defecto. Actívalos con `TESTS_EXTERNAS_HTTP=true`.
 
 ---
 
@@ -268,6 +353,9 @@ php phpstan.phar analyse
 
 # PHPCS
 php phpcs.phar --standard=phpcs.xml.dist
+
+# Validación completa
+php phpstan.phar analyse && php phpcs.phar --standard=phpcs.xml.dist && php tests/phpunit.phar -c tests/phpunit.xml
 ```
 
 ---

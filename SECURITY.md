@@ -2,7 +2,7 @@
 
 ## Version actual
 
-La version actual del framework es **1.3.0**.
+La version actual del framework es **1.4.0**.
 
 Para una descripcion arquitectonica completa de las medidas de
 seguridad del framework, ver `src/docs/AGENTS.md` seccion "Seguridad".
@@ -103,6 +103,15 @@ Definidas en `.htaccess` y aplicadas a todas las respuestas:
 - Conflictos (p. ej. `post_max_size < upload_max_filesize`) se
   reportan y loggean.
 
+### Sentry — Monitoreo de errores en producción
+
+- `ReporteroSentry` captura automáticamente errores PHP, excepciones y fatales
+- Configuración via `SENTRY_DSN` en `.env` (DSN del proyecto en sentry.io)
+- Opcional: `APP_RELEASE` para identificar la versión del release en los eventos
+- Los errores sensibles (stack traces, rutas de archivos) solo se envían si hay DSN configurado
+- Sin dependencias externas: usa `file_get_contents` + `stream_context_create`
+- Timeout de 3 segundos para no afectar la respuesta del servidor
+
 ## Requisitos de seguridad para produccion
 
 Antes de desplegar en produccion:
@@ -133,6 +142,7 @@ Antes de desplegar en produccion:
 
 | Version | Fecha | Cambios relevantes |
 |---|---|---|
+| 1.4.0 | 2026-06-07 | ReporteroSentry — reporte nativo de errores a Sentry sin dependencias externas. SENTRY_DSN en .env. Integración OpenCode + OpenClaw con 6 MCP servers |
 | 1.3.0 | 2026-06-07 | SSE optimizado con daemon auto-start, SameSite=Strict→Lax (túneles), WAF sin `scan`, compresión gzip Apache, migración a XAMPP Apache multi-thread, landing page rediseñada |
 | 1.2.0 | 2026-06-06 | `declare(strict_types=1)` en 60 archivos, namespaces PSR-4, excepciones personalizadas, DialectoBaseDatos, GeneradorProyecto, PHPStan level 7, PHPCS 0 errores |
 | 1.1.0 | 2026-06-02 | Refactor a partials, `ListaFiltrable`, split CSS, regenerador de `.user.ini` con confirmacion textual, navegacion por carpetas en archivos |

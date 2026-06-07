@@ -79,7 +79,7 @@ class MiInterceptor {
     public function manejar($params, $siguiente) { /* pre-procesar */ return $siguiente($params); }
 }
 ```
-**Existentes:** `AutenticacionInterceptor` (session + huella, redirect si no), `ApiAuthInterceptor` (JSON 401 si no).
+**Existentes:** `AutenticacionInterceptor` (session + huella, redirect si no), `ApiAuthInterceptor` (JSON 401 si no), `RendimientoInterceptor` (headers X-Lite-*, log de lentitud).
 
 ## ORM (Active Record)
 
@@ -148,6 +148,10 @@ Ver `PAGINACION_PDO.md` para el patrón obligatorio.
 | `AyudanteCadena` | `Cadena` | `limitar()`, `slug()`, `aleatorio()`, `enmascarar()`, `normalizar()`, `esEmail()`, `capitalizar()` |
 | `AyudanteArreglo` | `Arreglo` | `pluck()`, `agrupar()`, `ordenar()`, `aplanar()`, `primero()`, `ultimo()`, `sumar()`, `promedio()` |
 | `AyudanteGeneral` | `General` | `generarToken()`, `moneda()`, `bytesLegibles()`, `dd()`, `aBooleano()`, `desdeJson()`, `unaVez()` |
+| `AyudanteHttp` | `HttpCliente` | `obtener()`, `post()`, `postJson()`, `enviar()`, `paralelo()`, `codigoComoTexto()`, `verificarDisponible()` |
+| `AyudanteCache` | `Cache` | `recordar()`, `recordarJson()`, `obtener()`, `guardar()`, `olvidar()`, `limpiar()`, `tiene()`, `olvidarPorPrefijo()`, `recordarResultadosPaginados()`, `info()` |
+| `AyudanteRendimiento` | `Rendimiento` | `iniciar()`, `detener()`, `medir()`, `comparar()`, `reporte()`, `formatearTexto()`, `loggear()`, `limpiar()`, `cabeceras()` |
+| `AyudanteMonitor` | — | `obtenerEstadisticas()`, `obtenerUltimos()`, `logPath()` |
 
 ## API — POST /api (unificado)
 
@@ -191,6 +195,14 @@ Ver `DISENO_FRONTEND.md` para arquitectura completa.
 - **`GeneradorModulo`** — genera 7 archivos: modelo, migración, API controller, vista, JS, rutas, autoload. CLI: `php servidor/consola/generar_modulo.php Producto --campos="nombre:string:required,..."`
 - **`GeneradorPdf`** — PDF builder con HTML+CSS. Métodos: `establecerTitulo()`, `agregarParrafo()`, `agregarTabla()`, `agregarLista()`, `agregarHtml()`, `renderizar()`
 - **`GeneradorEstadisticas`** — tipos: tarjetas, barras, pastel, kpi. `establecerConsulta($sql)->comoKpi()->ejecutar()->renderizar()`
+- **`ReporteroSentry`** — reporte nativo de errores a Sentry. `iniciar(DSN)`, `capturar($e, $ctx)`. Sin dependencias externas. Integrado en `ManejadorErrores::loggear()`
+
+## Variables de entorno adicionales
+
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `SENTRY_DSN` | (vacío) | DSN de Sentry para reportero de errores |
+| `APP_RELEASE` | (vacío) | Versión del release para Sentry |
 
 ## Configuración Dinámica
 
@@ -227,3 +239,4 @@ Archivos en `servidor/migraciones/00X_*.sql` con `GestorMigraciones.php`.
 11. `session_regenerate_id(true)` post-login
 12. Paginación: **NUNCA** ORM chain con `limite()/saltar()` → PDO directo
 13. CSRF en toda petición POST (header `X-CSRF-Token` o body `token_peticion`)
+14. `SENTRY_DSN` en `.env` habilita reportero automático de errores vía `ReporteroSentry`

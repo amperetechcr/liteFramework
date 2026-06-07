@@ -107,6 +107,9 @@ class GestorEntorno
         if (!defined('MAIL_TLS')) {
             define('MAIL_TLS', false);
         }
+        if (!defined('SENTRY_DSN')) {
+            define('SENTRY_DSN', '');
+        }
     }
 
     public static function obtener(string $clave, mixed $defecto = null): mixed

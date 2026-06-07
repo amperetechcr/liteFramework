@@ -13,6 +13,7 @@ use LiteFramework\Nucleo\Excepciones\ErrorSeguridad;
 use LiteFramework\Nucleo\Excepciones\ErrorAutenticacion;
 use LiteFramework\Servicios\ContextoError;
 use LiteFramework\Servicios\DiagnosticoError;
+use LiteFramework\Servicios\ReporteroSentry;
 use ErrorException;
 
 class ManejadorErrores
@@ -132,6 +133,8 @@ class ManejadorErrores
         } else {
             error_log($logMsg);
         }
+
+        ReporteroSentry::capturar($excepcion, $contexto);
 
         if (class_exists('RegistroAuditoria')) {
             try {
