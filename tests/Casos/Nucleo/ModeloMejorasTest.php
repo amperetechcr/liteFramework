@@ -32,7 +32,7 @@ class ModeloMejorasTest extends TestCase
             ) ENGINE=InnoDB";
         }
         return "CREATE TABLE IF NOT EXISTS test_mejoras (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             nombre TEXT NOT NULL,
             email TEXT DEFAULT NULL,
             edad INTEGER DEFAULT 0,
@@ -47,12 +47,12 @@ class ModeloMejorasTest extends TestCase
         self::$pdo->exec($this->ddlTablaMejoras());
         $truncar = self::$esMySQL ? "TRUNCATE TABLE test_mejoras" : "DELETE FROM test_mejoras";
         self::$pdo->exec($truncar);
-        self::$pdo->exec("INSERT INTO test_mejoras (nombre, email, edad, salario, activo, categoria) VALUES
-            ('Ana Lopez', 'ana@test.com', 30, 50000, 1, 'premium'),
-            ('Luis Perez', 'luis@test.com', 25, 35000, 1, 'standard'),
-            ('Carlos Ruiz', 'carlos@test.com', 35, 65000, 1, 'premium'),
-            ('Mia Gomez', 'mia@test.com', 28, 42000, 0, 'standard'),
-            ('Sofia Diaz', 'sofia@test.com', 32, 55000, 1, 'vip')
+        self::$pdo->exec("INSERT INTO test_mejoras (id, nombre, email, edad, salario, activo, categoria) VALUES
+            (1, 'Ana Lopez', 'ana@test.com', 30, 50000, 1, 'premium'),
+            (2, 'Luis Perez', 'luis@test.com', 25, 35000, 1, 'standard'),
+            (3, 'Carlos Ruiz', 'carlos@test.com', 35, 65000, 1, 'premium'),
+            (4, 'Mia Gomez', 'mia@test.com', 28, 42000, 0, 'standard'),
+            (5, 'Sofia Diaz', 'sofia@test.com', 32, 55000, 1, 'vip')
         ");
     }
 
