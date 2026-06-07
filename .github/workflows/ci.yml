@@ -48,8 +48,7 @@ jobs:
         run: curl -LO https://github.com/phpstan/phpstan/releases/download/2.1.10/phpstan.phar
 
       - name: PHPStan static analysis
-        run: php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress || true
-        continue-on-error: true
+        run: php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress
 
       - name: Download PHPUnit
         run: curl -LO https://phar.phpunit.de/phpunit-10.phar
