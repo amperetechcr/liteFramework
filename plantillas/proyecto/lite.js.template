@@ -1,0 +1,518 @@
+var PALETAS_DISPONIBLES = ['indigo', 'azul', 'esmeralda', 'rosa', 'ambar', 'violeta', 'pizarra', 'cereza', 'cielo', 'teal', 'lima', 'naranja', 'fucsia'];
+var ESTILOS_DISPONIBLES = ['moderno', 'minimalista', 'elegante', 'redondeado', 'contraste', 'jugueton', 'corporativo', '3d-moderno'];
+var FUENTES_DISPONIBLES = ['sistema', 'serif', 'sans', 'mono', 'escritura', 'humanista', 'decorativa'];
+var ESPACIADOS_DISPONIBLES = ['muy-estrecho', 'estrecho', 'normal', 'amplio', 'muy-amplio'];
+var TAMANOS_DISPONIBLES = ['muy-pequeno', 'pequeno', 'normal', 'grande', 'muy-grande'];
+var RADIOS_DISPONIBLES = ['ninguno', 'sutil', 'normal', 'redondeado', 'circular'];
+var ANIMACIONES_DISPONIBLES = ['instantaneo', 'rapido', 'normal', 'lento'];
+var GROSORES_DISPONIBLES = ['delgado', 'ligero', 'normal', 'seminegrita', 'negrita'];
+var SOMBRAS_DISPONIBLES = ['ninguna', 'sutil', 'normal', 'marcada', 'pronunciada'];
+var FONDOS_DISPONIBLES = ['blanco', 'lavanda', 'rosa', 'melon', 'cielo', 'menta', 'arena', 'lila', 'selva', 'medianoche', 'carmesi', 'bosque', 'marino', 'carbon', 'vino', 'azabache'];
+var TEXTURAS_DISPONIBLES = ['ninguna', 'punto', 'linea', 'cuadricula', 'grain'];
+
+var SOL = '\u2600';
+var LUNA = '\u263E';
+
+var APP_STORAGE_PREFIX = '{{STORAGE_PREFIX}}';
+
+const MAPA_ERRORES_URL = {
+    'acceso_denegado': 'Credenciales incorrectas. Verifique su correo y contrase\u00F1a.',
+    'cuenta_suspendida': 'Esta cuenta ha sido deshabilitada. Contacte al administrador.',
+    'datos_invalidos': 'Los datos enviados no son v\u00E1lidos. Verifique los campos requeridos.',
+    'token_invalido': 'Su sesi\u00F3n ha expirado por seguridad. Recargue la p\u00E1gina.',
+    'error_interno': 'Error interno del servidor. Intente nuevamente m\u00E1s tarde.',
+    'sesion_invalida_o_secuestrada': 'Sesi\u00F3n invalidada por medidas de seguridad activadas.',
+    'privilegios_insuficientes': 'No tiene permisos suficientes para acceder a este recurso.',
+    'sesion_expirada': 'Su sesi\u00F3n ha expirado. Inicie sesi\u00F3n nuevamente.',
+    'sesion_invalida': 'Sesi\u00F3n inv\u00E1lida. Debe iniciar sesi\u00F3n nuevamente.'
+};
+
+const MAPA_MENSAJES_URL = {
+    'registro_exitoso': 'Registro completado exitosamente. Ya puede iniciar sesi\u00F3n con su nueva cuenta.',
+    'sesion_finalizada': 'Ha cerrado sesi\u00F3n correctamente. Vuelva pronto.',
+    'respaldo_eliminado': 'Respaldo eliminado correctamente.',
+    'respaldo_restaurado': 'Base de datos restaurada exitosamente desde el respaldo.'
+};
+
+function prefijoClave(clave) {
+    return clave + '-' + APP_STORAGE_PREFIX;
+}
+
+function inicializarTema() {
+    const raiz = document.documentElement;
+
+    function aplicarTema(oscuro) {
+        raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
+        raiz.classList.add(oscuro ? 'forzar-iluminacion-oscura' : 'forzar-iluminacion-clara');
+        var alternador = document.getElementById('alternador-tema');
+        if (alternador) {
+            alternador.textContent = oscuro ? LUNA : SOL;
+        }
+    }
+
+    const temaGuardado = localStorage.getItem(prefijoClave('tema'));
+
+    if (temaGuardado === 'oscuro') {
+        aplicarTema(true);
+    } else if (temaGuardado === 'claro') {
+        aplicarTema(false);
+    } else {
+        const oscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        aplicarTema(oscuro);
+    }
+
+    var alternador = document.getElementById('alternador-tema');
+    if (alternador) {
+        alternador.addEventListener('click', function() {
+            const esOscuro = raiz.classList.contains('forzar-iluminacion-oscura');
+            aplicarTema(!esOscuro);
+            localStorage.setItem(prefijoClave('tema'), esOscuro ? 'claro' : 'oscuro');
+            if (typeof window.actualizarColoresSwatch === 'function') {
+                window.actualizarColoresSwatch();
+            }
+        });
+    }
+}
+
+function mostrarErroresPorURL() {
+    const cuerpoPagina = document.body;
+    if (!cuerpoPagina) return;
+
+    const codigoError = cuerpoPagina.getAttribute('data-error') || '';
+    const codigoMensaje = cuerpoPagina.getAttribute('data-mensaje') || '';
+
+    if (codigoError && MAPA_ERRORES_URL[codigoError]) {
+        if (window.NotificadorHubble) {
+            window.NotificadorHubble.mostrar(MAPA_ERRORES_URL[codigoError], 'peligro', 8000);
+        }
+    }
+
+    if (codigoMensaje && MAPA_MENSAJES_URL[codigoMensaje]) {
+        if (window.NotificadorHubble) {
+            window.NotificadorHubble.mostrar(MAPA_MENSAJES_URL[codigoMensaje], 'exito', 5000);
+        }
+    }
+}
+
+function alternarEstadoCarga(formulario, activo, elemento) {
+    elemento = elemento || formulario.querySelector('button[type="submit"]');
+    if (!elemento) return;
+
+    if (activo) {
+        elemento.disabled = true;
+        var textoOriginal = elemento.textContent || elemento.innerText;
+        elemento.setAttribute('data-texto-original', textoOriginal);
+        elemento.classList.add('cargando');
+    } else {
+        elemento.disabled = false;
+        elemento.classList.remove('cargando');
+        var textoGuardado = elemento.getAttribute('data-texto-original');
+        if (textoGuardado) {
+            elemento.textContent = textoGuardado;
+        }
+    }
+}
+
+function aplicarFondo(nombre) {
+    var raiz = document.documentElement;
+    FONDOS_DISPONIBLES.forEach(function(f) {
+        raiz.classList.remove('fondo-' + f);
+    });
+    if (FONDOS_DISPONIBLES.indexOf(nombre) !== -1) {
+        raiz.classList.add('fondo-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('fondo'), nombre || 'blanco'); } catch (e) {}
+}
+
+function inicializarFondo() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('fondo')); } catch (e) {}
+    if (guardado && FONDOS_DISPONIBLES.indexOf(guardado) !== -1) {
+        aplicarFondo(guardado);
+    }
+}
+
+function aplicarTextura(nombre) {
+    var raiz = document.documentElement;
+    TEXTURAS_DISPONIBLES.forEach(function(t) {
+        raiz.classList.remove('textura-' + t);
+    });
+    if (TEXTURAS_DISPONIBLES.indexOf(nombre) !== -1) {
+        raiz.classList.add('textura-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('textura'), nombre || 'ninguna'); } catch (e) {}
+}
+
+function inicializarTextura() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('textura')); } catch (e) {}
+    if (guardado && TEXTURAS_DISPONIBLES.indexOf(guardado) !== -1) {
+        aplicarTextura(guardado);
+    }
+}
+
+function aplicarFuente(nombre) {
+    var raiz = document.documentElement;
+    FUENTES_DISPONIBLES.forEach(function(f) {
+        raiz.classList.remove('fuente-' + f);
+    });
+    if (FUENTES_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'sistema') {
+        raiz.classList.add('fuente-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('fuente'), nombre); } catch (e) {}
+}
+
+function inicializarFuente() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('fuente')); } catch (e) {}
+    if (guardado && FUENTES_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'sistema') {
+        aplicarFuente(guardado);
+    }
+}
+
+function aplicarEspaciado(nombre) {
+    var raiz = document.documentElement;
+    ESPACIADOS_DISPONIBLES.forEach(function(e) {
+        raiz.classList.remove('espaciado-' + e);
+    });
+    if (ESPACIADOS_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'normal') {
+        raiz.classList.add('espaciado-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('espaciado'), nombre); } catch (e) {}
+}
+
+function inicializarEspaciado() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('espaciado')); } catch (e) {}
+    if (guardado && ESPACIADOS_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'normal') {
+        aplicarEspaciado(guardado);
+    }
+}
+
+function aplicarTamano(nombre) {
+    var raiz = document.documentElement;
+    TAMANOS_DISPONIBLES.forEach(function(t) {
+        raiz.classList.remove('tamano-' + t);
+    });
+    if (TAMANOS_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'normal') {
+        raiz.classList.add('tamano-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('tamano'), nombre); } catch (e) {}
+}
+
+function inicializarTamano() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('tamano')); } catch (e) {}
+    if (guardado && TAMANOS_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'normal') {
+        aplicarTamano(guardado);
+    }
+}
+
+function aplicarRadio(nombre) {
+    var raiz = document.documentElement;
+    RADIOS_DISPONIBLES.forEach(function(r) {
+        raiz.classList.remove('radio-' + r);
+    });
+    if (RADIOS_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'normal') {
+        raiz.classList.add('radio-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('radio'), nombre); } catch (e) {}
+}
+
+function inicializarRadio() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('radio')); } catch (e) {}
+    if (guardado && RADIOS_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'normal') {
+        aplicarRadio(guardado);
+    }
+}
+
+function aplicarAnimacion(nombre) {
+    var raiz = document.documentElement;
+    ANIMACIONES_DISPONIBLES.forEach(function(a) {
+        raiz.classList.remove('animacion-' + a);
+    });
+    if (ANIMACIONES_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'normal') {
+        raiz.classList.add('animacion-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('animacion'), nombre); } catch (e) {}
+}
+
+function inicializarAnimacion() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('animacion')); } catch (e) {}
+    if (guardado && ANIMACIONES_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'normal') {
+        aplicarAnimacion(guardado);
+    }
+}
+
+function aplicarGrosor(nombre) {
+    var raiz = document.documentElement;
+    GROSORES_DISPONIBLES.forEach(function(g) {
+        raiz.classList.remove('grosor-' + g);
+    });
+    if (GROSORES_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'normal') {
+        raiz.classList.add('grosor-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('grosor'), nombre); } catch (e) {}
+}
+
+function inicializarGrosor() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('grosor')); } catch (e) {}
+    if (guardado && GROSORES_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'normal') {
+        aplicarGrosor(guardado);
+    }
+}
+
+function aplicarSombra(nombre) {
+    var raiz = document.documentElement;
+    SOMBRAS_DISPONIBLES.forEach(function(s) {
+        raiz.classList.remove('sombra-' + s);
+    });
+    if (SOMBRAS_DISPONIBLES.indexOf(nombre) !== -1 && nombre !== 'normal') {
+        raiz.classList.add('sombra-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('sombra'), nombre); } catch (e) {}
+}
+
+function inicializarSombra() {
+    var guardado = null;
+    try { guardado = localStorage.getItem(prefijoClave('sombra')); } catch (e) {}
+    if (guardado && SOMBRAS_DISPONIBLES.indexOf(guardado) !== -1 && guardado !== 'normal') {
+        aplicarSombra(guardado);
+    }
+}
+
+function aplicarPaleta(nombre) {
+    var raiz = document.documentElement;
+    PALETAS_DISPONIBLES.forEach(function(p) {
+        raiz.classList.remove('paleta-' + p);
+    });
+    if (PALETAS_DISPONIBLES.indexOf(nombre) !== -1) {
+        raiz.classList.add('paleta-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('paleta'), nombre); } catch (e) {}
+}
+
+function aplicarEstilo(nombre) {
+    var raiz = document.documentElement;
+    ESTILOS_DISPONIBLES.forEach(function(e) {
+        raiz.classList.remove('estilo-' + e);
+    });
+    if (ESTILOS_DISPONIBLES.indexOf(nombre) !== -1) {
+        raiz.classList.add('estilo-' + nombre);
+    }
+    try { localStorage.setItem(prefijoClave('estilo'), nombre); } catch (e) {}
+}
+
+function inicializarPaleta() {
+    var paletaGuardada = null;
+    try { paletaGuardada = localStorage.getItem(prefijoClave('paleta')); } catch (e) {}
+    if (paletaGuardada && PALETAS_DISPONIBLES.indexOf(paletaGuardada) !== -1) {
+        aplicarPaleta(paletaGuardada);
+    }
+}
+
+function inicializarEstilo() {
+    var estiloGuardado = null;
+    try { estiloGuardado = localStorage.getItem(prefijoClave('estilo')); } catch (e) {}
+    if (estiloGuardado && ESTILOS_DISPONIBLES.indexOf(estiloGuardado) !== -1) {
+        aplicarEstilo(estiloGuardado);
+    }
+}
+
+function restablecerPersonalizacion() {
+    aplicarPaleta('indigo');
+    aplicarEstilo('moderno');
+    aplicarFondo('blanco');
+    aplicarFuente('sistema');
+    aplicarEspaciado('normal');
+    aplicarTamano('normal');
+    aplicarRadio('normal');
+    aplicarAnimacion('normal');
+    aplicarGrosor('normal');
+    aplicarSombra('normal');
+    [prefijoClave('tema'), prefijoClave('paleta'), prefijoClave('estilo'),
+     prefijoClave('fondo'), prefijoClave('fuente'),
+     prefijoClave('espaciado'), prefijoClave('tamano'),
+     prefijoClave('radio'), prefijoClave('animacion'),
+     prefijoClave('grosor'), prefijoClave('sombra')].forEach(function(k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+    });
+    var raiz = document.documentElement;
+    raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
+    var alternador = document.getElementById('alternador-tema');
+    if (alternador) {
+        var oscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
+        raiz.classList.add(oscuro ? 'forzar-iluminacion-oscura' : 'forzar-iluminacion-clara');
+        alternador.textContent = oscuro ? LUNA : SOL;
+    }
+}
+
+function obtenerConfiguracionUI() {
+    try {
+        return {
+            paleta: localStorage.getItem(prefijoClave('paleta')) || 'indigo',
+            estilo: localStorage.getItem(prefijoClave('estilo')) || 'moderno',
+            fondo: localStorage.getItem(prefijoClave('fondo')) || 'blanco',
+            textura: localStorage.getItem(prefijoClave('textura')) || 'ninguna',
+            fuente: localStorage.getItem(prefijoClave('fuente')) || 'sistema',
+            espaciado: localStorage.getItem(prefijoClave('espaciado')) || 'normal',
+            tamano: localStorage.getItem(prefijoClave('tamano')) || 'normal',
+            radio: localStorage.getItem(prefijoClave('radio')) || 'normal',
+            animacion: localStorage.getItem(prefijoClave('animacion')) || 'normal',
+            grosor: localStorage.getItem(prefijoClave('grosor')) || 'normal',
+            sombra: localStorage.getItem(prefijoClave('sombra')) || 'normal',
+            tema: localStorage.getItem(prefijoClave('tema')) || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')
+        };
+    } catch (e) {
+        return { paleta: 'indigo', estilo: 'moderno', fondo: 'blanco', textura: 'ninguna', fuente: 'sistema', espaciado: 'normal', tamano: 'normal', radio: 'normal', animacion: 'normal', grosor: 'normal', sombra: 'normal', tema: 'claro' };
+    }
+}
+
+function csrfToken() {
+    if (typeof window.obtenerTokenCSRF === 'function') {
+        return window.obtenerTokenCSRF();
+    }
+    var meta = document.querySelector('meta[name="csrf-token"]') ||
+        document.querySelector('input[name="token_peticion"]');
+    return meta ? meta.value : '';
+}
+
+function actualizarTokenCSRF(nuevoToken) {
+    if (!nuevoToken) return;
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta) { meta.setAttribute('content', nuevoToken); }
+    var input = document.querySelector('input[name="token_peticion"]');
+    if (input) { input.value = nuevoToken; }
+}
+
+function guardarPersonalizacionServidor() {
+    var config = obtenerConfiguracionUI();
+    var rutaApi = window.rutaApi || '/api';
+    return fetch(rutaApi, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': csrfToken(),
+        },
+        body: JSON.stringify({
+            accion_crud: 'guardar_personalizacion_ui',
+            token_peticion: csrfToken(),
+            paleta: config.paleta,
+            estilo: config.estilo,
+            personalizacion: config.personalizacion,
+            fuente: config.fuente,
+            espaciado: config.espaciado,
+            tamano: config.tamano,
+            radio: config.radio,
+            animacion: config.animacion,
+            tema: config.tema
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+        actualizarTokenCSRF(resp.nuevo_token);
+        if (resp.estado_operacion && window.NotificadorHubble) {
+            window.NotificadorHubble.mostrar('Preferencias guardadas en el servidor.', 'exito', 4000);
+        } else if (!resp.estado_operacion && window.NotificadorHubble) {
+            window.NotificadorHubble.mostrar(resp.mensaje_error || 'Error al guardar preferencias.', 'peligro', 5000);
+        }
+        return resp;
+    })
+    .catch(function(err) {
+        if (window.NotificadorHubble) {
+            window.NotificadorHubble.mostrar('Error de red al guardar preferencias.', 'peligro', 5000);
+        }
+    });
+}
+
+function cargarPersonalizacionServidor() {
+    var rutaApi = window.rutaApi || '/api';
+    return fetch(rutaApi, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': csrfToken(),
+        },
+        body: JSON.stringify({
+            accion_crud: 'obtener_personalizacion_ui',
+            token_peticion: csrfToken()
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+        if (resp.nuevo_token) {
+            actualizarTokenCSRF(resp.nuevo_token);
+        }
+        if (resp.estado_operacion && resp.datos && Object.keys(resp.datos).length > 0) {
+            var d = resp.datos;
+            localStorage.setItem(prefijoClave('paleta'), d.paleta || 'indigo');
+            localStorage.setItem(prefijoClave('estilo'), d.estilo || 'moderno');
+            localStorage.setItem(prefijoClave('fondo'), d.fondo || 'blanco');
+            localStorage.setItem(prefijoClave('textura'), d.textura || 'ninguna');
+            localStorage.setItem(prefijoClave('fuente'), d.fuente || 'sistema');
+            localStorage.setItem(prefijoClave('espaciado'), d.espaciado || 'normal');
+            localStorage.setItem(prefijoClave('tamano'), d.tamano || 'normal');
+            localStorage.setItem(prefijoClave('radio'), d.radio || 'normal');
+            localStorage.setItem(prefijoClave('animacion'), d.animacion || 'normal');
+            localStorage.setItem(prefijoClave('tema'), d.tema || 'claro');
+            if (d.fondo) {
+                aplicarFondo(d.fondo);
+            }
+            if (d.textura && d.textura !== 'ninguna') {
+                aplicarTextura(d.textura);
+            }
+            if (d.paleta) aplicarPaleta(d.paleta);
+            if (d.estilo) aplicarEstilo(d.estilo);
+            if (d.fuente) aplicarFuente(d.fuente);
+            if (d.espaciado) aplicarEspaciado(d.espaciado);
+            if (d.tamano) aplicarTamano(d.tamano);
+            if (d.radio) aplicarRadio(d.radio);
+            if (d.animacion) aplicarAnimacion(d.animacion);
+            if (d.tema) {
+                var raiz = document.documentElement;
+                raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
+                raiz.classList.add(d.tema === 'oscuro' ? 'forzar-iluminacion-oscura' : 'forzar-iluminacion-clara');
+                var alternador = document.getElementById('alternador-tema');
+                if (alternador) alternador.textContent = d.tema === 'oscuro' ? LUNA : SOL;
+            }
+        }
+        return resp;
+    })
+    .catch(function() {});
+}
+
+function alternarTransicionSuave(activo) {
+    var raiz = document.documentElement;
+    if (activo) {
+        raiz.classList.add('transicion-personalizacion');
+    } else {
+        raiz.classList.remove('transicion-personalizacion');
+    }
+}
+
+window.aplicarPaleta = aplicarPaleta;
+window.aplicarEstilo = aplicarEstilo;
+window.aplicarFondo = aplicarFondo;
+window.aplicarFuente = aplicarFuente;
+window.aplicarEspaciado = aplicarEspaciado;
+window.aplicarTamano = aplicarTamano;
+window.aplicarRadio = aplicarRadio;
+window.aplicarAnimacion = aplicarAnimacion;
+window.aplicarGrosor = aplicarGrosor;
+window.aplicarSombra = aplicarSombra;
+window.aplicarTextura = aplicarTextura;
+window.restablecerPersonalizacion = restablecerPersonalizacion;
+window.obtenerConfiguracionUI = obtenerConfiguracionUI;
+window.alternarTransicionSuave = alternarTransicionSuave;
+window.alternarEstadoCarga = alternarEstadoCarga;
+window.guardarPersonalizacionServidor = guardarPersonalizacionServidor;
+window.cargarPersonalizacionServidor = cargarPersonalizacionServidor;
+window.FONDOS_DISPONIBLES = FONDOS_DISPONIBLES;
+
+export { alternarEstadoCarga, inicializarTema, inicializarPaleta, inicializarEstilo, inicializarFondo, inicializarTextura, inicializarFuente, inicializarEspaciado, inicializarTamano, inicializarRadio, inicializarAnimacion, inicializarGrosor, inicializarSombra, aplicarPaleta, aplicarEstilo, aplicarFondo, aplicarTextura, aplicarFuente, aplicarEspaciado, aplicarTamano, aplicarRadio, aplicarAnimacion, aplicarGrosor, aplicarSombra, restablecerPersonalizacion, obtenerConfiguracionUI, alternarTransicionSuave, guardarPersonalizacionServidor, cargarPersonalizacionServidor, mostrarErroresPorURL, MAPA_ERRORES_URL, MAPA_MENSAJES_URL, PALETAS_DISPONIBLES, ESTILOS_DISPONIBLES, FONDOS_DISPONIBLES, TEXTURAS_DISPONIBLES, FUENTES_DISPONIBLES, ESPACIADOS_DISPONIBLES, TAMANOS_DISPONIBLES, RADIOS_DISPONIBLES, ANIMACIONES_DISPONIBLES, GROSORES_DISPONIBLES, SOMBRAS_DISPONIBLES };

@@ -1,0 +1,26 @@
+# Normalizar a LF en repositorio, mantener comportamiento nativo en checkout
+* text=auto
+
+# Archivos PHP
+*.php text
+
+# Archivos SQL
+*.sql text
+
+# Archivos JS, CSS, HTML
+*.js text
+*.css text
+*.html text
+
+# Archivos de configuracion
+*.json text
+*.md text
+*.yml text
+
+# Archivos binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

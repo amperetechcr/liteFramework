@@ -1,0 +1,77 @@
+/* =========================================
+   UTILIDADES: Clases atÃ³micas de uso general
+   UbicaciÃ³n: src/css/utilidades.css
+   ========================================= */
+
+/* --- COLORES DE TEXTO --- */
+.color-marca { color: var(--color-marca); }
+.color-exito { color: var(--color-exito); }
+.color-peligro { color: var(--color-peligro); }
+
+/* --- MÃRGENES --- */
+.margen-0 { margin: 0; }
+.margen-normal { margin: var(--espacio-normal); }
+.margen-superior-0 { margin-top: 0; }
+.margen-superior-pequeno { margin-top: var(--espacio-pequeno); }
+.margen-superior-normal { margin-top: var(--espacio-normal); }
+.margen-superior-mediano { margin-top: var(--espacio-mediano); }
+.margen-inferior-0 { margin-bottom: 0; }
+.margen-inferior-pequeno { margin-bottom: var(--espacio-pequeno); }
+.margen-inferior-normal { margin-bottom: var(--espacio-normal); }
+.margen-inferior-mediano { margin-bottom: var(--espacio-mediano); }
+.margen-inferior-grande { margin-bottom: var(--espacio-grande); }
+.margen-izquierdo-normal { margin-left: var(--espacio-normal); }
+.margen-derecho-normal { margin-right: var(--espacio-normal); }
+.margen-horizontal-auto { margin-left: auto; margin-right: auto; }
+
+/* --- RELLENO --- */
+.relleno-0 { padding: 0; }
+.relleno-normal { padding: var(--espacio-normal); }
+.relleno-superior-grande { padding-top: var(--espacio-grande); }
+
+/* --- FLEX --- */
+.flex { display: flex; }
+.flex-columna { display: flex; flex-direction: column; }
+.flex-envolver { display: flex; flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.flex-entre { display: flex; align-items: center; justify-content: space-between; }
+.flex-expandir { flex-grow: 1; }
+.brecha-pequena { gap: var(--espacio-pequeno); }
+.brecha-normal { gap: var(--espacio-normal); }
+.brecha-mediana { gap: var(--espacio-mediano); }
+
+/* --- TEXTO --- */
+.texto-centro { text-align: center; }
+.texto-xs { font-size: var(--tamano-xs); }
+.texto-sm { font-size: var(--tamano-sm); }
+.texto-base { font-size: var(--tamano-base); }
+.texto-lg { font-size: var(--tamano-lg); }
+.texto-xl { font-size: var(--tamano-xl); }
+.texto-2xl { font-size: var(--tamano-2xl); }
+.texto-seminegrita { font-weight: 600; }
+.texto-negrita { font-weight: 700; }
+
+/* --- ANCHO Y ALTO --- */
+.ancho-auto { width: auto; }
+.ancho-completo { width: 100%; }
+
+/* --- VISIBILIDAD --- */
+.oculto { display: none !important; }
+
+/* --- BORDES --- */
+.borde-0 { border: none; }
+.borde-inferior { border-bottom: 1px solid var(--trazo-suave); }
+.borde-superior { border-top: 1px solid var(--trazo-suave); }
+
+/* --- RESPONSIVE (solo lo que se usa) --- */
+@media (max-width: 600px) {
+    .oculto-movil { display: none !important; }
+    .flex-columna-sm { flex-direction: column; }
+    .texto-centro-sm { text-align: center; }
+    .ancho-completo-sm { width: 100%; }
+}
+
+@media print {
+    .oculto-impresion { display: none !important; }
+    .visible-impresion { display: block; }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": [
+      ".opencode/skills",
+      ".agents/skills"
+    ]
+  },
+  "command": {
+    "migrar": {
+      "template": "Ejecuta las migraciones pendientes con: php servidor/migrar.php",
+      "description": "Ejecutar migraciones pendientes"
+    }
+  },
+  "agent": {
+    "default": {
+      "model": "default",
+      "temperature": 0.2
+    }
+  },
+  "default_agent": "default",
+  "instructions": ["src/docs/AGENTS.md", "SECURITY.md"]
+}

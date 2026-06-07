@@ -1,0 +1,76 @@
+<?php
+if (!defined('DIRECTORIO_RAIZ')) {
+    require_once __DIR__ . '/../../servidor/autoload.php';
+    GestorEntorno::cargar();
+}
+if (!defined('URL_BASE')) {
+    define('URL_BASE', rtrim(dirname($_SERVER['SCRIPT_NAME'], 2), '/\\'));
+}
+
+$nombreOperador = $_SESSION['operador_nombre'] ?? 'Invitado';
+$tokenCSRF = $_SESSION['token_csrf'] ?? '';
+
+$paletaClase = 'paleta-' . (configUI('paleta') ?? 'indigo');
+$estiloClase = 'estilo-' . (configUI('estilo') ?? 'moderno');
+$fondoClase = claseFondoHTML();
+$fuenteClase = claseFuenteHTML();
+$espaciadoClase = claseEspaciadoHTML();
+$tamanoClase = claseTamanoHTML();
+$clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' . $fuenteClase . ' ' . $espaciadoClase . ' ' . $tamanoClase);
+?><!DOCTYPE html>
+<html lang="es" class="<?= $clasesHtml ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <meta name="csrf-token" content="<?= $tokenCSRF ?>">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/tema.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/paletas.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/componentes.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/estilos.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/utilidades.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/personalizacion.css">
+    <script type="module" src="<?= URL_BASE ?>/src/js/principal.js"></script>
+</head>
+<body>
+
+<header class="cabecera-inicio">
+    <div class="cabecera-inicio-contenedor envoltura-contenido">
+        <h1 class="cabecera-inicio-titulo">{{APP_NOMBRE}}</h1>
+        <nav aria-label="Navegación">
+            <a href="<?= URL_BASE ?>/panelControl" class="cabecera-inicio-enlace">Panel</a>
+            <span><?= h($nombreOperador) ?></span>
+        </nav>
+    </div>
+</header>
+
+<main class="envoltura-contenido relleno-superior-grande">
+
+    <section aria-label="Bienvenida" class="seccion-bienvenida">
+        <h2>
+            Bienvenido, <?= h($nombreOperador) ?>
+        </h2>
+        <p>
+            Este es el inicio de tu aplicacion. Personaliza esta pagina
+            para construir la experiencia que necesitas.
+        </p>
+        <div class="margen-superior-normal">
+            <a href="<?= URL_BASE ?>/documentacion" class="accion-boton variante-solida tamano-grande">
+                Ver documentacion &rarr;
+            </a>
+            <p class="texto-pequeno texto-suave margen-superior-pequeno">
+                Casos de uso, ejemplos y snippets para cada modulo del framework.
+            </p>
+        </div>
+    </section>
+
+</main>
+
+<footer class="pie-inicio">
+    <div class="pie-inicio-contenedor envoltura-contenido">
+        &copy; <?= date('Y') ?> — Construido con {{APP_NOMBRE}}
+    </div>
+</footer>
+
+</body>
+</html>

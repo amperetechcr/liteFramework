@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+namespace LiteFramework\Modelos;
+
+use PDO;
+use LiteFramework\Config\ConexionBaseDatos;
+use LiteFramework\Nucleo\Modelo;
+
+class Estadistica extends Modelo
+{
+    protected static string $tabla = 'estadistica';
+    protected static string $idColumna = 'id_estadistica';
+    protected static array $rellenable = ['titulo', 'descripcion', 'consulta_sql', 'tipo_visualizacion', 'columnas_mostrar', 'configuracion_visual', 'id_operador'];
+
+    public function operador(): ?Operador
+    {
+        return Operador::buscar($this->id_operador);
+    }
+
+    public function fechaFormateada(): string
+    {
+        return date('d/m/Y H:i', strtotime($this->fecha_creacion));
+    }
+
+    public function aArreglo(): array
+    {
+        $arr = parent::aArreglo();
+        $arr['fecha_formateada'] = $this->fechaFormateada();
+        $conf = $this->configuracion_visual;
+        $arr['configuracion_visual'] = is_string($conf) ? json_decode($conf, true) : $conf;
+        return $arr;
+    }
+
+    public static function listarConFiltros(
+        string $busqueda = '',
+        int $pagina = 1,
+        int $porPagina = 10
+    ): array {
+        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+
+        $condiciones = [];
+        $parametros = [];
+
+        if ($busqueda !== '') {
+            $condiciones[] = "e.titulo LIKE :buscar";
+            $parametros[':buscar'] = '%' . $busqueda . '%';
+        }
+
+        $clausulaWhere = !empty($condiciones) ? 'WHERE ' . implode(' AND ', $condiciones) : '';
+
+        $stmtTotal = $bd->prepare("SELECT COUNT(*) FROM estadistica e {$clausulaWhere}");
+        $stmtTotal->execute($parametros);
+        $total = (int)$stmtTotal->fetchColumn();
+
+        $totalPaginas = max(1, (int)ceil($total / $porPagina));
+        if ($pagina > $totalPaginas) {
+            $pagina = $totalPaginas;
+        }
+        $inicio = ($pagina - 1) * $porPagina;
+
+        $sql = "
+            SELECT e.id_estadistica, e.titulo, e.descripcion, e.consulta_sql,
+                   e.tipo_visualizacion, e.columnas_mostrar, e.configuracion_visual,
+                   e.id_operador, e.fecha_creacion, e.fecha_actualizacion,
+                   o.nombre_completo
+            FROM estadistica e
+            LEFT JOIN operador o ON e.id_operador = o.id_operador
+            {$clausulaWhere}
+            ORDER BY e.fecha_creacion DESC
+            LIMIT :limite OFFSET :inicio
+        ";
+        $consulta = $bd->prepare($sql);
+        foreach ($parametros as $clave => $valor) {
+            $consulta->bindValue($clave, $valor);
+        }
+        $consulta->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+        $consulta->bindValue(':inicio', $inicio, PDO::PARAM_INT);
+        $consulta->execute();
+
+        return [
+            'estadisticas' => $consulta->fetchAll(PDO::FETCH_ASSOC),
+            'total' => $total,
+            'pagina' => $pagina,
+            'total_paginas' => $totalPaginas,
+        ];
+    }
+}

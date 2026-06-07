@@ -1,0 +1,707 @@
+/* =========================================
+   COLORES DE FONDO (10 presets dinamicos)
+   Definen solo --fondo-*, no tocan texto ni trazo.
+   Las texturas se aplican por modo en la seccion siguiente.
+   Ubicacion: src/css/personalizacion.css
+   ========================================= */
+
+/* BLANCO — Limpio, puro, minimalista */
+:root.fondo-blanco, .fondo-blanco {
+    --fondo-pantalla: #fafafa;
+    --fondo-elemento: #ffffff;
+    --fondo-alterno: #f2f2f2;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-blanco.forzar-iluminacion-oscura,
+.fondo-blanco.forzar-iluminacion-oscura {
+    --fondo-pantalla: #0f0f10;
+    --fondo-elemento: #18181b;
+    --fondo-alterno: #1f1f23;
+    --fondo-flotante: #1a1a1d;
+}
+
+:root.fondo-blanco.forzar-iluminacion-clara,
+.fondo-blanco.forzar-iluminacion-clara {
+    --fondo-pantalla: #fafafa;
+    --fondo-elemento: #ffffff;
+    --fondo-alterno: #f2f2f2;
+    --fondo-flotante: #ffffff;
+}
+
+/* LAVANDA — Purpura suave, elegante, relajante */
+:root.fondo-lavanda, .fondo-lavanda {
+    --fondo-pantalla: #ede0f5;
+    --fondo-elemento: #f7f0fa;
+    --fondo-alterno: #e0cef0;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-lavanda.forzar-iluminacion-oscura,
+.fondo-lavanda.forzar-iluminacion-oscura {
+    --fondo-pantalla: #1e1b2e;
+    --fondo-elemento: #252036;
+    --fondo-alterno: #2e2844;
+    --fondo-flotante: #272240;
+}
+
+/* ROSA — Rosa pastel, calido, acogedor */
+:root.fondo-rosa, .fondo-rosa {
+    --fondo-pantalla: #f5d6dd;
+    --fondo-elemento: #faeef0;
+    --fondo-alterno: #eec0c9;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-rosa.forzar-iluminacion-oscura,
+.fondo-rosa.forzar-iluminacion-oscura {
+    --fondo-pantalla: #260d11;
+    --fondo-elemento: #3a141a;
+    --fondo-alterno: #4a1a22;
+    --fondo-flotante: #2c0d12;
+}
+
+/* MELON — Melon suave, calido, tropical */
+:root.fondo-melon, .fondo-melon {
+    --fondo-pantalla: #f5dcc4;
+    --fondo-elemento: #faf2ea;
+    --fondo-alterno: #edcab0;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-melon.forzar-iluminacion-oscura,
+.fondo-melon.forzar-iluminacion-oscura {
+    --fondo-pantalla: #1f1508;
+    --fondo-elemento: #2a1d0c;
+    --fondo-alterno: #352710;
+    --fondo-flotante: #2c1c0a;
+}
+
+/* CIELO — Azul cielo, fresco, sereno */
+:root.fondo-cielo, .fondo-cielo {
+    --fondo-pantalla: #cce2f2;
+    --fondo-elemento: #eaf2fa;
+    --fondo-alterno: #b3d1ea;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-cielo.forzar-iluminacion-oscura,
+.fondo-cielo.forzar-iluminacion-oscura {
+    --fondo-pantalla: #0c1a24;
+    --fondo-elemento: #0f222e;
+    --fondo-alterno: #142c3a;
+    --fondo-flotante: #102128;
+}
+
+/* MENTA — Verde menta, fresco, revitalizante */
+:root.fondo-menta, .fondo-menta {
+    --fondo-pantalla: #c5e6d6;
+    --fondo-elemento: #e8f5ef;
+    --fondo-alterno: #a8d9c2;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-menta.forzar-iluminacion-oscura,
+.fondo-menta.forzar-iluminacion-oscura {
+    --fondo-pantalla: #0a1a0f;
+    --fondo-elemento: #0d2415;
+    --fondo-alterno: #112e1c;
+    --fondo-flotante: #0d2014;
+}
+
+/* ARENA — Arena beige, natural, organico */
+:root.fondo-arena, .fondo-arena {
+    --fondo-pantalla: #d9cdbf;
+    --fondo-elemento: #f0e9e0;
+    --fondo-alterno: #cbbcad;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-arena.forzar-iluminacion-oscura,
+.fondo-arena.forzar-iluminacion-oscura {
+    --fondo-pantalla: #1a1714;
+    --fondo-elemento: #221f1b;
+    --fondo-alterno: #2b2722;
+    --fondo-flotante: #201d19;
+}
+
+/* LILA — Lila suave, delicate, sofisticado */
+:root.fondo-lila, .fondo-lila {
+    --fondo-pantalla: #e5d0ec;
+    --fondo-elemento: #f5ecf7;
+    --fondo-alterno: #d8bde0;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-lila.forzar-iluminacion-oscura,
+.fondo-lila.forzar-iluminacion-oscura {
+    --fondo-pantalla: #1a0f20;
+    --fondo-elemento: #201428;
+    --fondo-alterno: #281830;
+    --fondo-flotante: #1c1124;
+}
+
+/* SELVA — Verde bosque profundo, oscuro, dramatico */
+:root.fondo-selva, .fondo-selva {
+    --fondo-pantalla: #bce0d8;
+    --fondo-elemento: #e2f2ee;
+    --fondo-alterno: #a0d0c5;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-selva.forzar-iluminacion-oscura,
+.fondo-selva.forzar-iluminacion-oscura {
+    --fondo-pantalla: #022c22;
+    --fondo-elemento: #05332a;
+    --fondo-alterno: #064035;
+    --fondo-flotante: #043028;
+}
+
+/* MEDIANOCHE — Azul noche profundo, elegante */
+:root.fondo-medianoche, .fondo-medianoche {
+    --fondo-pantalla: #d0d5e8;
+    --fondo-elemento: #eaeef5;
+    --fondo-alterno: #b8bfd6;
+    --fondo-flotante: #ffffff;
+}
+:root.fondo-medianoche.forzar-iluminacion-oscura,
+.fondo-medianoche.forzar-iluminacion-oscura {
+    --fondo-pantalla: #0a0f1a;
+    --fondo-elemento: #0f1623;
+    --fondo-alterno: #141d2e;
+    --fondo-flotante: #0c1220;
+}
+
+/* CARMESI — Rojo intenso, audaz, dramatico */
+:root.fondo-carmesi:not(.forzar-iluminacion-oscura),
+.fondo-carmesi:not(.forzar-iluminacion-oscura) {
+    --fondo-pantalla: #8c1c1c;
+    --fondo-elemento: #a82424;
+    --fondo-alterno: #761818;
+    --fondo-flotante: #b83030;
+    --texto-fuerte: #fef2f2;
+    --texto-base: #fecaca;
+    --texto-suave: #fca5a5;
+    --texto-invertido: #450a0a;
+}
+:root.fondo-carmesi.forzar-iluminacion-oscura,
+.fondo-carmesi.forzar-iluminacion-oscura {
+    --fondo-pantalla: #2e0808;
+    --fondo-elemento: #3e0c0c;
+    --fondo-alterno: #4e1010;
+    --fondo-flotante: #3a0a0a;
+    --texto-fuerte: #fef2f2;
+    --texto-base: #fecaca;
+    --texto-suave: #fca5a5;
+    --texto-invertido: #450a0a;
+}
+
+/* BOSQUE — Verde oscuro, natural, profundo */
+:root.fondo-bosque:not(.forzar-iluminacion-oscura),
+.fondo-bosque:not(.forzar-iluminacion-oscura) {
+    --fondo-pantalla: #1a4a2a;
+    --fondo-elemento: #226034;
+    --fondo-alterno: #143820;
+    --fondo-flotante: #28703c;
+    --texto-fuerte: #f0fdf4;
+    --texto-base: #bbf7d0;
+    --texto-suave: #86efac;
+    --texto-invertido: #052e16;
+}
+:root.fondo-bosque.forzar-iluminacion-oscura,
+.fondo-bosque.forzar-iluminacion-oscura {
+    --fondo-pantalla: #081a0e;
+    --fondo-elemento: #0c2414;
+    --fondo-alterno: #10301a;
+    --fondo-flotante: #0a1c10;
+    --texto-fuerte: #f0fdf4;
+    --texto-base: #bbf7d0;
+    --texto-suave: #86efac;
+    --texto-invertido: #052e16;
+}
+
+/* MARINO — Azul marino, serio, corporativo */
+:root.fondo-marino:not(.forzar-iluminacion-oscura),
+.fondo-marino:not(.forzar-iluminacion-oscura) {
+    --fondo-pantalla: #1a2a5a;
+    --fondo-elemento: #20346e;
+    --fondo-alterno: #142248;
+    --fondo-flotante: #264080;
+    --texto-fuerte: #eff6ff;
+    --texto-base: #bfdbfe;
+    --texto-suave: #93c5fd;
+    --texto-invertido: #172554;
+}
+:root.fondo-marino.forzar-iluminacion-oscura,
+.fondo-marino.forzar-iluminacion-oscura {
+    --fondo-pantalla: #0a122e;
+    --fondo-elemento: #0e183a;
+    --fondo-alterno: #121e48;
+    --fondo-flotante: #0c142e;
+    --texto-fuerte: #eff6ff;
+    --texto-base: #bfdbfe;
+    --texto-suave: #93c5fd;
+    --texto-invertido: #172554;
+}
+
+/* CARBON — Gris carbon, sobrio, elegante */
+:root.fondo-carbon:not(.forzar-iluminacion-oscura),
+.fondo-carbon:not(.forzar-iluminacion-oscura) {
+    --fondo-pantalla: #2a2a2e;
+    --fondo-elemento: #36363a;
+    --fondo-alterno: #202024;
+    --fondo-flotante: #404044;
+    --texto-fuerte: #f4f4f5;
+    --texto-base: #d4d4d8;
+    --texto-suave: #a1a1aa;
+    --texto-invertido: #18181b;
+}
+:root.fondo-carbon.forzar-iluminacion-oscura,
+.fondo-carbon.forzar-iluminacion-oscura {
+    --fondo-pantalla: #121214;
+    --fondo-elemento: #1a1a1c;
+    --fondo-alterno: #222226;
+    --fondo-flotante: #18181a;
+    --texto-fuerte: #f4f4f5;
+    --texto-base: #d4d4d8;
+    --texto-suave: #a1a1aa;
+    --texto-invertido: #18181b;
+}
+
+/* VINO — Tinto borgoña, rico, lujoso */
+:root.fondo-vino:not(.forzar-iluminacion-oscura),
+.fondo-vino:not(.forzar-iluminacion-oscura) {
+    --fondo-pantalla: #5e1a30;
+    --fondo-elemento: #74203c;
+    --fondo-alterno: #4c1426;
+    --fondo-flotante: #84284a;
+    --texto-fuerte: #fdf2f8;
+    --texto-base: #fbcfe8;
+    --texto-suave: #f9a8d4;
+    --texto-invertido: #2d0a18;
+}
+:root.fondo-vino.forzar-iluminacion-oscura,
+.fondo-vino.forzar-iluminacion-oscura {
+    --fondo-pantalla: #220a14;
+    --fondo-elemento: #2e0e1a;
+    --fondo-alterno: #3a1222;
+    --fondo-flotante: #260c16;
+    --texto-fuerte: #fdf2f8;
+    --texto-base: #fbcfe8;
+    --texto-suave: #f9a8d4;
+    --texto-invertido: #2d0a18;
+}
+
+/* AZABACHE — Negro profundo, minimalista radical */
+:root.fondo-azabache:not(.forzar-iluminacion-oscura),
+.fondo-azabache:not(.forzar-iluminacion-oscura) {
+    --fondo-pantalla: #121212;
+    --fondo-elemento: #1e1e1e;
+    --fondo-alterno: #0a0a0a;
+    --fondo-flotante: #262626;
+    --texto-fuerte: #fafafa;
+    --texto-base: #d4d4d4;
+    --texto-suave: #9ca3af;
+    --texto-invertido: #0a0a0a;
+}
+:root.fondo-azabache.forzar-iluminacion-oscura,
+.fondo-azabache.forzar-iluminacion-oscura {
+    --fondo-pantalla: #050505;
+    --fondo-elemento: #0e0e0e;
+    --fondo-alterno: #000000;
+    --fondo-flotante: #141414;
+    --texto-fuerte: #fafafa;
+    --texto-base: #d4d4d4;
+    --texto-suave: #9ca3af;
+    --texto-invertido: #0a0a0a;
+}
+
+/* =========================================
+   TEXTURAS DE FONDO POR MODO
+   Se aplican segun el modo (claro/oscuro),
+   no segun el preset de color de fondo.
+   ========================================= */
+
+:root:not(.forzar-iluminacion-oscura) {
+    --fondo-textura: none;
+}
+
+:root.forzar-iluminacion-oscura {
+    --fondo-textura: radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 50%);
+}
+
+/* =========================================
+   TRANSICION SUAVE (clase temporal para cambios)
+   ========================================= */
+
+:root.transicion-personalizacion,
+.transicion-personalizacion {
+    transition: background-color var(--transicion-lenta),
+                color var(--transicion-base),
+                border-color var(--transicion-base),
+                box-shadow var(--transicion-base);
+}
+:root.transicion-personalizacion *,
+.transicion-personalizacion * {
+    transition: background-color var(--transicion-lenta),
+                color var(--transicion-base),
+                border-color var(--transicion-base),
+                box-shadow var(--transicion-base);
+}
+
+/* =========================================
+   AJUSTES DE TEXTURA (5 opciones)
+   ========================================= */
+
+:root.textura-ninguna,
+.textura-ninguna {
+    --fondo-textura: none;
+}
+
+:root.textura-punto,
+.textura-punto {
+    --fondo-textura: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.12) 1px, transparent 0);
+}
+
+:root.textura-linea,
+.textura-linea {
+    --fondo-textura: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+    );
+}
+
+:root.textura-cuadricula,
+.textura-cuadricula {
+    --fondo-textura: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.10) 1px, transparent 0), repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,0.06) 8px, rgba(0,0,0,0.06) 9px), repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.06) 8px, rgba(0,0,0,0.06) 9px);
+}
+
+:root.textura-grain,
+.textura-grain {
+    --fondo-textura: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+:root.textura-punto body { background-size: 3px 3px; }
+:root.textura-cuadricula body { background-size: 9px 9px; }
+
+/* =========================================
+   AJUSTES DE FUENTE (7 opciones)
+   ========================================= */
+
+:root.fuente-sistema,
+.fuente-sistema {
+    --fuente-base: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --fuente-titulos: var(--fuente-base);
+}
+
+:root.fuente-serif,
+.fuente-serif {
+    --fuente-base: Georgia, "Times New Roman", "Noto Serif", serif;
+    --fuente-titulos: var(--fuente-base);
+}
+
+:root.fuente-sans,
+.fuente-sans {
+    --fuente-base: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --fuente-titulos: var(--fuente-base);
+}
+
+:root.fuente-mono,
+.fuente-mono {
+    --fuente-base: "JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", monospace;
+    --fuente-titulos: var(--fuente-base);
+}
+
+:root.fuente-escritura,
+.fuente-escritura {
+    --fuente-base: "Segoe Print", "Comic Sans MS", "Patrick Hand", cursive;
+    --fuente-titulos: var(--fuente-base);
+}
+
+:root.fuente-humanista,
+.fuente-humanista {
+    --fuente-base: "Fira Sans", "Nunito Sans", "PT Sans", system-ui, sans-serif;
+    --fuente-titulos: "Fira Sans", "Nunito Sans", system-ui, sans-serif;
+}
+
+:root.fuente-decorativa,
+.fuente-decorativa {
+    --fuente-base: "Playfair Display", "DM Serif Display", "Lora", serif;
+    --fuente-titulos: "Playfair Display", "DM Serif Display", Georgia, serif;
+}
+
+/* =========================================
+   AJUSTES DE ESPACIADO (5 niveles)
+   ========================================= */
+
+:root.espaciado-muy-estrecho,
+.espaciado-muy-estrecho {
+    --espacio-minimo: 0.03125rem;
+    --espacio-pequeno: 0.125rem;
+    --espacio-normal: 0.25rem;
+    --espacio-mediano: 0.5rem;
+    --espacio-grande: 0.875rem;
+    --espacio-gigante: 1.25rem;
+}
+
+:root.espaciado-estrecho,
+.espaciado-estrecho {
+    --espacio-minimo: 0.0625rem;
+    --espacio-pequeno: 0.25rem;
+    --espacio-normal: 0.5rem;
+    --espacio-mediano: 0.875rem;
+    --espacio-grande: 1.25rem;
+    --espacio-gigante: 1.75rem;
+}
+
+:root.espaciado-normal,
+.espaciado-normal {
+    --espacio-minimo: 0.25rem;
+    --espacio-pequeno: 0.5rem;
+    --espacio-normal: 1rem;
+    --espacio-mediano: 1.5rem;
+    --espacio-grande: 2rem;
+    --espacio-gigante: 3rem;
+}
+
+:root.espaciado-amplio,
+.espaciado-amplio {
+    --espacio-minimo: 0.375rem;
+    --espacio-pequeno: 0.75rem;
+    --espacio-normal: 1.25rem;
+    --espacio-mediano: 2rem;
+    --espacio-grande: 3rem;
+    --espacio-gigante: 4.5rem;
+}
+
+:root.espaciado-muy-amplio,
+.espaciado-muy-amplio {
+    --espacio-minimo: 0.5rem;
+    --espacio-pequeno: 1rem;
+    --espacio-normal: 1.5rem;
+    --espacio-mediano: 2.5rem;
+    --espacio-grande: 4rem;
+    --espacio-gigante: 6rem;
+}
+
+/* =========================================
+   AJUSTES DE TAMAÑO DE LETRA (5 niveles)
+   ========================================= */
+
+:root.tamano-muy-pequeno,
+.tamano-muy-pequeno {
+    --tamano-2xs: 0.4375rem;
+    --tamano-xs: 0.5625rem;
+    --tamano-md: 0.625rem;
+    --tamano-sm: 0.6875rem;
+    --tamano-base: 0.75rem;
+    --tamano-lg: 0.875rem;
+    --tamano-xl: 1rem;
+    --tamano-2xl: 1.125rem;
+    --tamano-3xl: 1.375rem;
+    --tamano-4xl: 1.75rem;
+}
+
+:root.tamano-pequeno,
+.tamano-pequeno {
+    --tamano-2xs: 0.5rem;
+    --tamano-xs: 0.625rem;
+    --tamano-md: 0.6875rem;
+    --tamano-sm: 0.75rem;
+    --tamano-base: 0.875rem;
+    --tamano-lg: 1rem;
+    --tamano-xl: 1.125rem;
+    --tamano-2xl: 1.25rem;
+    --tamano-3xl: 1.625rem;
+    --tamano-4xl: 2rem;
+}
+
+:root.tamano-grande,
+.tamano-grande {
+    --tamano-2xs: 0.6875rem;
+    --tamano-xs: 0.8125rem;
+    --tamano-md: 0.875rem;
+    --tamano-sm: 0.9375rem;
+    --tamano-base: 1.125rem;
+    --tamano-lg: 1.25rem;
+    --tamano-xl: 1.375rem;
+    --tamano-2xl: 1.625rem;
+    --tamano-3xl: 2rem;
+    --tamano-4xl: 3rem;
+}
+
+:root.tamano-muy-grande,
+.tamano-muy-grande {
+    --tamano-2xs: 0.875rem;
+    --tamano-xs: 1rem;
+    --tamano-md: 1.125rem;
+    --tamano-sm: 1.25rem;
+    --tamano-base: 1.375rem;
+    --tamano-lg: 1.625rem;
+    --tamano-xl: 1.875rem;
+    --tamano-2xl: 2.25rem;
+    --tamano-3xl: 3rem;
+    --tamano-4xl: 4rem;
+}
+
+/* =========================================
+   AJUSTES DE REDONDEADO (5 niveles)
+   ========================================= */
+
+:root.radio-ninguno,
+.radio-ninguno {
+    --radio-redondeado: 0;
+}
+
+:root.radio-sutil,
+.radio-sutil {
+    --radio-redondeado: 0.25rem;
+}
+
+:root.radio-normal,
+.radio-normal {
+    --radio-redondeado: 0.5rem;
+}
+
+:root.radio-redondeado,
+.radio-redondeado {
+    --radio-redondeado: 0.75rem;
+}
+
+:root.radio-circular,
+.radio-circular {
+    --radio-redondeado: 1.5rem;
+}
+
+/* =========================================
+   AJUSTES DE ANIMACIONES (4 velocidades)
+   ========================================= */
+
+:root.animacion-instantaneo,
+.animacion-instantaneo {
+    --transicion-base: 0s;
+    --transicion-lenta: 0s;
+}
+
+:root.animacion-rapido,
+.animacion-rapido {
+    --transicion-base: 0.1s ease;
+    --transicion-lenta: 0.15s ease;
+}
+
+:root.animacion-normal,
+.animacion-normal {
+    --transicion-base: 0.2s ease;
+    --transicion-lenta: 0.4s ease;
+}
+
+:root.animacion-lento,
+.animacion-lento {
+    --transicion-base: 0.4s ease;
+    --transicion-lenta: 0.8s ease;
+}
+
+/* =========================================
+   AJUSTES DE GROSOR DE FUENTE (5 niveles)
+   ========================================= */
+
+:root.grosor-delgado,
+.grosor-delgado {
+    --grosor-base: 200;
+    --grosor-titulos: 300;
+}
+
+:root.grosor-ligero,
+.grosor-ligero {
+    --grosor-base: 300;
+    --grosor-titulos: 400;
+}
+
+:root.grosor-normal,
+.grosor-normal {
+    --grosor-base: 400;
+    --grosor-titulos: 600;
+}
+
+:root.grosor-seminegrita,
+.grosor-seminegrita {
+    --grosor-base: 500;
+    --grosor-titulos: 700;
+}
+
+:root.grosor-negrita,
+.grosor-negrita {
+    --grosor-base: 700;
+    --grosor-titulos: 900;
+}
+
+/* =========================================
+   AJUSTES DE SOMBRAS (5 niveles)
+   ========================================= */
+
+:root.sombra-ninguna,
+.sombra-ninguna {
+    --sombra-suave: none;
+    --sombra-flotante: none;
+    --sombra-elevada: none;
+}
+
+:root.sombra-sutil,
+.sombra-sutil {
+    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --sombra-flotante: 0 2px 4px 0 rgb(0 0 0 / 0.06);
+    --sombra-elevada: 0 4px 8px -2px rgb(0 0 0 / 0.08);
+}
+
+:root.sombra-normal,
+.sombra-normal {
+    --sombra-suave: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+    --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.1), 0 4px 8px -4px rgb(0 0 0 / 0.06);
+}
+
+:root.sombra-marcada,
+.sombra-marcada {
+    --sombra-suave: 0 2px 4px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+    --sombra-flotante: 0 8px 20px -4px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08);
+    --sombra-elevada: 0 16px 32px -8px rgb(0 0 0 / 0.15), 0 8px 16px -8px rgb(0 0 0 / 0.1);
+}
+
+:root.sombra-pronunciada,
+.sombra-pronunciada {
+    --sombra-suave: 0 4px 8px 0 rgb(0 0 0 / 0.12), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+    --sombra-flotante: 0 12px 28px -4px rgb(0 0 0 / 0.18), 0 6px 12px -6px rgb(0 0 0 / 0.12);
+    --sombra-elevada: 0 24px 48px -10px rgb(0 0 0 / 0.22), 0 12px 24px -10px rgb(0 0 0 / 0.15);
+}
+
+/* =========================================
+   FORZADO DE TEMA — Debe estar al final para
+   ganar sobre cualquier preset. Solo cambia
+   colores de texto, trazo y sombra — los
+   --fondo-* los definen los presets fondo-*
+   o el modo oscuro de cada uno.
+   ========================================= */
+
+:root.forzar-iluminacion-clara {
+    --texto-fuerte: #0f172a;
+    --texto-base: #334155;
+    --texto-suave: #64748b;
+    --texto-invertido: #ffffff;
+    --trazo-suave: #e2e8f0;
+    --trazo-fuerte: #cbd5e1;
+}
+
+:root:where(.forzar-iluminacion-clara) {
+    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+    --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+    --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08);
+}
+
+:root.forzar-iluminacion-oscura {
+    --texto-fuerte: #f1f5f9;
+    --texto-base: #cbd5e1;
+    --texto-suave: #64748b;
+    --texto-invertido: #0f172a;
+    --trazo-suave: #1e3a5f;
+    --trazo-fuerte: #2d4a6f;
+}
+
+:root:where(.forzar-iluminacion-oscura) {
+    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.2), 0 1px 3px 0 rgb(0 0 0 / 0.3);
+    --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.5), 0 4px 8px -4px rgb(0 0 0 / 0.3);
+}

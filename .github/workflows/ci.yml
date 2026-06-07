@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo, pdo_mysql, json, mbstring
+          ini-values: error_reporting=E_ALL
+
+      - name: PHP syntax check
+        run: |
+          find . -name '*.php' ! -path './vendor/*' ! -path './plantillas/*' -exec php -l {} \; | (! grep -v 'No syntax errors detected')
+
+      - name: Download PHP_CodeSniffer
+        run: curl -LO https://github.com/squizlabs/PHP_CodeSniffer/releases/download/3.7.2/phpcs.phar
+
+      - name: Validate PSR-12
+        run: |
+          php phpcs.phar --standard=phpcs.xml.dist --extensions=php \
+            --ignore=vendor,plantillas,tests \
+            .
+
+      - name: Auto-fix PSR-12 (if applicable)
+        run: |
+            curl -LO https://github.com/squizlabs/PHP_CodeSniffer/releases/download/3.7.2/phpcbf.phar
+            php phpcbf.phar --standard=phpcs.xml.dist --extensions=php \
+              --ignore=vendor,plantillas,tests \
+              . || true
+
+      - name: Download PHPStan
+        run: curl -LO https://github.com/phpstan/phpstan/releases/download/2.1.10/phpstan.phar
+
+      - name: PHPStan static analysis
+        run: php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress || true
+        continue-on-error: true
+
+      - name: Download PHPUnit
+        run: curl -LO https://phar.phpunit.de/phpunit-11.phar
+
+      - name: Run tests
+        run: php phpunit-11.phar --configuration=tests/phpunit.xml --do-not-cache-result --no-coverage

@@ -1,0 +1,16 @@
+parameters:
+    level: 0
+    paths:
+        - .
+    scanFiles:
+        - servidor/autoload.php
+    excludePaths:
+        - plantillas/
+        - tests/
+        - src/modulos/*.php
+        - src/vistas/*.php
+        - src/modulos/*/*.php
+    ignoreErrors:
+        - '#Constant [A-Z_]+ not found#'
+        - '#Function [a-z_]+ not found#'
+        - '#Class [A-Z][a-zA-Z]+ not found#'

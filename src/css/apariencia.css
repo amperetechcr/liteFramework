@@ -1,0 +1,79 @@
+/* =========================================
+   APARIENCIA: Controles de personalizacion.
+   Usa variables del framework para reaccionar
+   a cambios de paleta, estilo y tema en vivo.
+   ========================================= */
+
+.apariencia-tema-toggle { display: flex; gap: var(--espacio-pequeno); }
+
+.apariencia-tema-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.3rem;
+    padding: 0.5rem 1rem; border: 1.5px solid var(--trazo-fuerte);
+    border-radius: var(--radio-redondeado); background: var(--fondo-elemento);
+    color: var(--texto-base); font-size: var(--tamano-md); font-weight: 600;
+    cursor: pointer; transition: all var(--transicion-base); white-space: nowrap;
+}
+.apariencia-tema-btn:hover { border-color: var(--color-marca); }
+.apariencia-tema-btn.activo {
+    background: var(--color-marca); color: var(--texto-invertido); border-color: var(--color-marca);
+    box-shadow: var(--sombra-suave);
+}
+
+.apariencia-colores { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.apariencia-color {
+    width: 36px; height: 36px; border: 3px solid transparent;
+    border-radius: 50%; cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: var(--tamano-xs); font-weight: 700; padding: 0; flex-shrink: 0;
+    background: #e2e8f0;
+}
+.apariencia-color:hover { transform: scale(1.15); box-shadow: var(--sombra-flotante); }
+.apariencia-color.activo {
+    border-color: var(--texto-fuerte);
+    box-shadow: 0 0 0 3px var(--color-marca-claro), var(--sombra-flotante);
+    transform: scale(1.1);
+}
+
+.apariencia-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.apariencia-pill {
+    padding: 0.35rem 0.7rem; border: 1.5px solid var(--trazo-fuerte);
+    border-radius: var(--radio-redondeado); background: var(--fondo-elemento); color: var(--texto-base);
+    font-size: var(--tamano-xs); font-weight: 500; cursor: pointer;
+    transition: all var(--transicion-base); white-space: nowrap;
+}
+.apariencia-pill:hover { border-color: var(--color-marca); color: var(--color-marca); }
+.apariencia-pill.activo {
+    background: var(--color-marca); color: var(--texto-invertido); border-color: var(--color-marca);
+    box-shadow: var(--sombra-suave);
+}
+
+.apariencia-temas { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.apariencia-tema-chip {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.7rem; border: 2px solid var(--trazo-suave);
+    border-radius: var(--radio-redondeado); background: var(--fondo-elemento);
+    cursor: pointer; transition: all var(--transicion-base);
+}
+.apariencia-tema-chip:hover { border-color: var(--color-marca); }
+.apariencia-tema-chip.activo {
+    border-color: var(--color-marca); background: var(--color-marca-claro);
+    box-shadow: 0 0 0 1px var(--color-marca);
+}
+.apariencia-tema-circulo {
+    width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+}
+.apariencia-tema-nombre {
+    font-size: var(--tamano-xs); font-weight: 600; color: var(--texto-base); white-space: nowrap;
+}
+
+.apariencia-font-preview {
+    margin-top: var(--espacio-pequeno); font-size: var(--tamano-sm); color: var(--texto-base);
+    line-height: 1.5; padding: var(--espacio-pequeno);
+    background: var(--fondo-pantalla); border-radius: var(--radio-redondeado);
+    border: 1px solid var(--trazo-suave);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}

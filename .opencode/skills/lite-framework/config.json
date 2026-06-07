@@ -1,0 +1,32 @@
+{
+  "name": "lite-framework-expert",
+  "description": "Framework PHP ligero MVC con arquitectura en español. Cubre creación de módulos, rutas, modelos ORM, migraciones, generador de módulos CRUD, RBAC, seguridad y personalización UI.",
+  "version": "2.0.0",
+  "language": "es",
+  "triggers": [
+    "crear módulo",
+    "generar módulo",
+    "nueva ruta",
+    "modelo",
+    "migración",
+    "autenticación",
+    "permisos",
+    "crud",
+    "controlador api",
+    "liteframework",
+    "lite-framework"
+  ],
+  "author": "liteFramework Team",
+  "scope": ["php", "html", "sql", "javascript", "css"],
+  "conventions": {
+    "naming": "camelCase",
+    "language": "español",
+    "architecture": "MVC"
+  },
+  "fileSnippets": {
+    "module": ".opencode/skills/lite-framework/snippets/modulo_completo.php",
+    "model": ".opencode/skills/lite-framework/snippets/modelo_ejemplo.php",
+    "route": ".opencode/skills/lite-framework/snippets/ruta_ejemplo.php",
+    "validation": ".opencode/skills/lite-framework/snippets/validacion_ejemplo.php"
+  }
+}

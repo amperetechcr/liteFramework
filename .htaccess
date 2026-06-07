@@ -1,0 +1,88 @@
+# =============================================
+# LITE FRAMEWORK - Configuracion del servidor
+# =============================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Forzar uso de HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+    # === REGLAS DE SEGURIDAD (bloquear carpetas internas) ===
+
+    # Si la solicitud es para una carpeta interna, mostrar 403
+    RewriteCond %{REQUEST_URI} ^/servidor/ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/rutas/ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/storage/ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/src/vistas/ [NC,OR]
+    RewriteCond %{REQUEST_URI} ^/\.env [NC]
+    RewriteRule ^ - [F,L]
+
+    # Front controller: enviar todo lo que no sea archivo real a index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# =============================================
+# CABECERAS DE SEGURIDAD
+# =============================================
+
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    Header unset Server
+    Header always unset X-Powered-By
+</IfModule>
+
+# =============================================
+# PROTECCION DE ARCHIVOS SENSIBLES
+# =============================================
+
+<FilesMatch "\.(sql|md|env|log|ini|conf|sh|bat)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^(\.env|\.htaccess|\.htpasswd)$">
+    Require all denied
+</FilesMatch>
+
+# =============================================
+# CONFIGURACION DE SEGURIDAD
+# =============================================
+
+Options -Indexes
+
+# =============================================
+# PAGINAS DE ERROR
+# =============================================
+
+ErrorDocument 400 /src/error.php?code=400
+ErrorDocument 401 /src/error.php?code=401
+ErrorDocument 403 /src/error.php?code=403
+ErrorDocument 404 /src/error.php?code=404
+ErrorDocument 500 /src/error.php?code=500
+ErrorDocument 503 /src/error.php?code=503
+
+# =============================================
+# COMPATIBILIDAD CON PHP
+# =============================================
+
+<IfModule mod_php.c>
+    php_flag display_errors off
+    php_flag log_errors on
+# === LIMITES_PHP_INICIO ===
+# Generado automaticamente desde /configuracion - 2026-06-02 23:02:40
+# NO editar a mano. Use la UI de Configuracion.
+php_value memory_limit 102400M
+php_value post_max_size 10240M
+php_value upload_max_filesize 1024M
+php_value max_file_uploads 1000
+php_value max_execution_time 600
+# === LIMITES_PHP_FIN ===
+</IfModule>

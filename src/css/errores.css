@@ -1,0 +1,197 @@
+:root {
+    --fondo: #0f172a;
+    --superficie: #1e293b;
+    --superficie-2: #334155;
+    --texto: #f1f5f9;
+    --texto-opaco: #94a3b8;
+    --acento: #3b82f6;
+    --error: #ef4444;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.error-codigo {
+    font-size: 10rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--acento), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.error-icono {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1.5rem;
+    color: var(--texto-opaco);
+}
+
+.error-titulo {
+    font-size: var(--tamano-3xl);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.error-mensaje {
+    font-size: var(--tamano-base);
+    color: var(--texto-opaco);
+    margin-bottom: 2rem;
+    max-width: 450px;
+}
+
+.error-detalle {
+    background: var(--superficie);
+    border: 1px solid var(--superficie-2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: left;
+    font-family: 'Consolas', monospace;
+    font-size: var(--tamano-md);
+    color: var(--error);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.error-trace {
+    background: var(--superficie);
+    border: 1px solid var(--superficie-2);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: var(--tamano-xs);
+    color: var(--texto-opaco);
+}
+
+.enlaces {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--acento);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: var(--tamano-sm);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.boton:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+}
+
+.boton-secundario {
+    background: var(--superficie-2);
+}
+
+.boton-secundario:hover {
+    background: #475569;
+}
+
+.error-diagnostico {
+    background: var(--superficie);
+    border: 1px solid var(--superficie-2);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: left;
+}
+.error-diagnostico h2 {
+    font-size: var(--tamano-lg, 1.125rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--texto);
+}
+.error-diagnostico ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin: 0;
+}
+.error-diagnostico li {
+    margin-bottom: 0.5rem;
+    font-size: var(--tamano-md, 0.875rem);
+    line-height: 1.6;
+    color: var(--texto-opaco);
+}
+.error-diagnostico-detalle {
+    text-align: left;
+}
+.diagnostico-item {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--superficie-2);
+}
+.diagnostico-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.diagnostico-tipo {
+    display: inline-block;
+    background: var(--acento);
+    color: white;
+    font-size: var(--tamano-xs, 0.75rem);
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.diagnostico-item p {
+    font-size: var(--tamano-md, 0.875rem);
+    color: var(--texto-opaco);
+    margin: 0;
+}
+.error-remedio {
+    border-color: var(--acento);
+}
+.error-remedio p {
+    color: var(--acento);
+    font-weight: 600;
+}
+.boton-reparar {
+    margin-top: 0.75rem;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    text-align: center;
+    color: var(--texto-opaco);
+    font-size: var(--tamano-md);
+    border-top: 1px solid var(--superficie-2);
+}

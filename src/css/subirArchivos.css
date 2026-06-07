@@ -1,0 +1,294 @@
+/* Tarjeta de archivo en el listado */
+
+.tarjeta-archivo {
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.tarjeta-archivo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    background: linear-gradient(135deg, var(--color-marca-claro) 0%, transparent 60%);
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.tarjeta-archivo:hover::before {
+    opacity: 0.08;
+}
+
+.tarjeta-archivo .etiqueta-tipo-archivo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.etiqueta-tipo-archivo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.0625rem 0.375rem;
+    border-radius: var(--radio-redondeado) 0 var(--radio-redondeado) 0;
+    font-size: var(--tamano-2xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.4;
+}
+
+.etiqueta-tipo-archivo[data-tipo="imagen"] { background: #dbeafe; color: #1e40af; }
+.etiqueta-tipo-archivo[data-tipo="documento"] { background: #fef3c7; color: #92400e; }
+.etiqueta-tipo-archivo[data-tipo="video"] { background: #fce7f3; color: #9d174d; }
+.etiqueta-tipo-archivo[data-tipo="audio"] { background: #ede9fe; color: #5b21b6; }
+.etiqueta-tipo-archivo[data-tipo="comprimido"] { background: #d1fae5; color: #065f46; }
+.etiqueta-tipo-archivo[data-tipo="ejecutable"] { background: #fee2e2; color: #991b1b; }
+.etiqueta-tipo-archivo[data-tipo="codigo"] { background: #e0e7ff; color: #3730a3; }
+.etiqueta-tipo-archivo[data-tipo="base"] { background: #f3f4f6; color: #374151; }
+
+/* Tarjeta de carpeta */
+
+.tarjeta-carpeta {
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.tarjeta-carpeta:hover {
+    background: var(--realce-flotante, rgba(0,0,0,0.03));
+    border-color: var(--color-marca);
+    transform: translateY(-2px);
+}
+
+/* Zona de subida */
+
+#zona-subida {
+    position: relative;
+    border: 2px dashed var(--trazo-fuerte);
+    border-radius: var(--radio-redondeado);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    background: var(--fondo-elemento);
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#zona-subida input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+#zona-subida input[type="file"]:focus-visible + * {
+    outline: 2px solid var(--color-marca);
+    outline-offset: 2px;
+    border-radius: var(--radio-redondeado);
+}
+
+/* Resumen de seleccion */
+
+.archivos-seleccion-resumen {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-pequeno);
+    padding: 0.375rem 0.625rem;
+    background: var(--color-marca-claro);
+    border-radius: var(--radio-redondeado);
+    font-size: var(--tamano-md);
+    color: var(--color-marca);
+    font-weight: 600;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 400px;
+}
+
+.archivos-seleccion-resumen.visible {
+    display: flex;
+}
+
+.archivos-seleccion-resumen button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: var(--tamano-xs);
+    font-weight: 700;
+    text-decoration: underline;
+    padding: 0.125rem 0.25rem;
+}
+
+.archivos-seleccion-resumen button:hover {
+    opacity: 0.7;
+}
+
+/* Formulario */
+
+.archivos-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-normal);
+}
+
+/* Contenedor de progreso */
+
+.archivos-contenedor-progreso {
+    margin-top: var(--espacio-normal);
+    animation: aparecerProgreso 0.35s ease-out;
+}
+
+@keyframes aparecerProgreso {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.archivos-mensaje {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10001;
+    min-width: 280px;
+    max-width: 450px;
+}
+
+.archivos-mensaje:not([data-variante]) {
+    display: none;
+}
+
+.archivos-tarjeta-progreso {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-normal);
+    padding: var(--espacio-normal);
+    border: 1px solid var(--trazo-suave);
+    border-radius: var(--radio-redondeado);
+    background: var(--fondo-elemento);
+}
+
+.archivos-tarjeta-progreso.exito {
+    border-color: var(--color-exito);
+    background: color-mix(in srgb, var(--color-exito) 6%, var(--fondo-elemento));
+}
+
+.archivos-progreso-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--espacio-pequeno);
+    flex-wrap: wrap;
+}
+
+.archivos-progreso-estadisticas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-normal);
+    align-items: center;
+    font-size: var(--tamano-md);
+    color: var(--texto-base);
+}
+
+.archivos-progreso-barra {
+    width: 100%;
+    height: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--fondo-alterno);
+}
+
+.archivos-progreso-barra::-webkit-progress-bar {
+    background: var(--fondo-alterno);
+    border-radius: 999px;
+}
+
+.archivos-progreso-barra::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--color-marca), color-mix(in srgb, var(--color-marca) 70%, white));
+    border-radius: 999px;
+    transition: width 0.2s ease-out;
+}
+
+.archivos-progreso-barra::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--color-marca), color-mix(in srgb, var(--color-marca) 70%, white));
+    border-radius: 999px;
+}
+
+.archivos-progreso-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--espacio-pequeno);
+}
+
+.archivos-progreso-nombre {
+    font-weight: 700;
+    font-size: var(--tamano-sm);
+    color: var(--texto-fuerte);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 280px;
+}
+
+/* Barra de cuota */
+
+.archivos-barra-cuota {
+    width: 100%;
+    height: 6px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.archivos-barra-cuota::-webkit-progress-bar {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 999px;
+}
+
+.archivos-barra-cuota::-webkit-progress-value {
+    background: currentColor;
+    border-radius: 999px;
+    transition: width 0.3s;
+}
+
+.archivos-barra-cuota::-moz-progress-bar {
+    background: currentColor;
+    border-radius: 999px;
+}
+
+.barra-cuota-normal {
+    color: var(--color-marca);
+}
+
+.barra-cuota-advertencia {
+    color: var(--color-peligro);
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .archivos-progreso-estadisticas {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--espacio-pequeno);
+    }
+    .archivos-progreso-nombre {
+        max-width: 180px;
+    }
+}
