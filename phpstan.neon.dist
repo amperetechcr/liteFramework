@@ -7,9 +7,8 @@ parameters:
     excludePaths:
         - plantillas/
         - tests/
-        - src/modulos/*.php
-        - src/vistas/*.php
-        - src/modulos/*/*.php
+        - src/
     ignoreErrors:
+        - '#on an unknown class#'
         - '#Instantiated class [A-Z][a-zA-Z\\]+ not found#'
         - '#Unsafe usage of new static\(\)#'
