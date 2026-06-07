@@ -109,7 +109,7 @@ class GestorSesiones
 
             if (empty($_SESSION['huella_seguridad_cliente']) || !hash_equals($_SESSION['huella_seguridad_cliente'], $huellaActual)) {
                 RegistroAuditoria::seguridad('Posible secuestro de sesion detectado', [
-                    'id_operador' => $_SESSION['operador_id'] ?? null,
+                    'id_operador' => (int)$_SESSION['operador_id'],
                     'huella_esperada' => $_SESSION['huella_seguridad_cliente'] ?? 'vacia',
                     'huella_actual' => $huellaActual,
                     'ip_actual' => $_SERVER['REMOTE_ADDR'] ?? '',

@@ -148,8 +148,7 @@ class SubirArchivosControlador extends ControladorBase
             exit;
         }
 
-        $id = filter_var($id, FILTER_VALIDATE_INT);
-        if ($id === false || $id <= 0) {
+        if ($id <= 0) {
             http_response_code(400);
             echo json_encode(['error' => 'ID de archivo invalido']);
             exit;

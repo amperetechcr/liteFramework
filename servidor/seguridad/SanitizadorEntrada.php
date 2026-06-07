@@ -25,16 +25,14 @@ class SanitizadorEntrada
     public static function sanitizarArregloGlobal(array $arregloEntrada): array
     {
         $arregloLimpio = [];
-        if (is_array($arregloEntrada)) {
-            foreach ($arregloEntrada as $clave => $valor) {
-                if (is_array($valor)) {
-                    $arregloLimpio[$clave] = self::sanitizarArregloGlobal($valor);
-                } elseif (is_string($valor) && (str_contains(strtolower($clave), 'email') || str_contains(strtolower($clave), 'correo'))) {
-                    $procesado = self::procesarCorreoElectronico($valor);
-                    $arregloLimpio[$clave] = $procesado !== false ? $procesado : self::sanitizarTextoBase($valor);
-                } else {
-                    $arregloLimpio[$clave] = self::sanitizarTextoBase($valor);
-                }
+        foreach ($arregloEntrada as $clave => $valor) {
+            if (is_array($valor)) {
+                $arregloLimpio[$clave] = self::sanitizarArregloGlobal($valor);
+            } elseif (is_string($valor) && (str_contains(strtolower($clave), 'email') || str_contains(strtolower($clave), 'correo'))) {
+                $procesado = self::procesarCorreoElectronico($valor);
+                $arregloLimpio[$clave] = $procesado !== false ? $procesado : self::sanitizarTextoBase($valor);
+            } else {
+                $arregloLimpio[$clave] = self::sanitizarTextoBase($valor);
             }
         }
         return $arregloLimpio;

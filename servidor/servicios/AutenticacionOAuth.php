@@ -117,12 +117,10 @@ class AutenticacionOAuth
 
         if (!$correo) {
             $emails = $this->peticionGet('https://api.github.com/user/emails', $accessToken);
-            if (is_array($emails)) {
-                foreach ($emails as $e) {
-                    if (!empty($e['primary']) && !empty($e['verified'])) {
-                        $correo = $e['email'];
-                        break;
-                    }
+            foreach ($emails as $e) {
+                if (is_array($e) && !empty($e['primary']) && !empty($e['verified'])) {
+                    $correo = $e['email'];
+                    break;
                 }
             }
         }

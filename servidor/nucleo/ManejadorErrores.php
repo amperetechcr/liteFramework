@@ -79,8 +79,8 @@ class ManejadorErrores
             $error['message'],
             0,
             $error['type'],
-            $error['file'] ?? '',
-            $error['line'] ?? 0
+            $error['file'],
+            $error['line']
         );
 
         self::loggear($excepcion, 'FATAL');

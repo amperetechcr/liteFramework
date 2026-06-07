@@ -105,10 +105,10 @@ class CrudApiControlador
                 $respuesta['codigo_error'] = 'sin_permiso';
                 return [403, $respuesta];
             }
-            if (empty($idEntidad) && (int)$idEntidad === 0) {
-                $idAlternativo = $payload['id_' . $entidadDinamica] ?? 0;
-                if (!empty($idAlternativo)) {
-                    $idEntidad = (int)$idAlternativo;
+            if ($idEntidad === 0) {
+                $idAlternativo = (int)($payload['id_' . $entidadDinamica] ?? 0);
+                if ($idAlternativo !== 0) {
+                    $idEntidad = $idAlternativo;
                 } else {
                     $respuesta['mensaje_error'] = 'Identificador de registro no proporcionado.';
                     $respuesta['codigo_error'] = 'datos_invalidos';
@@ -134,7 +134,7 @@ class CrudApiControlador
                 $respuesta['codigo_error'] = 'sin_permiso';
                 return [403, $respuesta];
             }
-            if (empty($idEntidad) && (int)$idEntidad === 0) {
+            if ($idEntidad === 0) {
                 $respuesta['mensaje_error'] = 'Identificador de registro no proporcionado.';
                 $respuesta['codigo_error'] = 'datos_invalidos';
                 return [400, $respuesta];
@@ -182,8 +182,8 @@ class CrudApiControlador
                 }
                 $stmtTotal->execute();
                 $totalRegistros = (int)$stmtTotal->fetchColumn();
-                $totalPaginas = $limiteRegistros > 0 ? (int)ceil($totalRegistros / $limiteRegistros) : 1;
-                $paginaActual = $limiteRegistros > 0 ? (int)floor($inicioDesde / $limiteRegistros) + 1 : 1;
+                $totalPaginas = (int)ceil($totalRegistros / (float)$limiteRegistros);
+                $paginaActual = (int)floor($inicioDesde / (float)$limiteRegistros) + 1;
 
                 $instruccionSQL = "SELECT * FROM {$entidadDinamica} {$clausulaWhere} ORDER BY {$ordenColumna} {$ordenDireccion} LIMIT {$limiteRegistros} OFFSET {$inicioDesde}";
             }

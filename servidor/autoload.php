@@ -163,11 +163,9 @@ spl_autoload_register(function (string $clase) use ($mapaNamespaced, $alias): vo
     }
     if (isset($alias[$clase])) {
         $nsClase = $alias[$clase];
-        if (isset($mapaNamespaced[$nsClase])) {
-            require_once $mapaNamespaced[$nsClase];
-            if (!class_exists($clase, false)) {
-                class_alias($nsClase, $clase);
-            }
+        require_once $mapaNamespaced[$nsClase];
+        if (!class_exists($clase, false)) {
+            class_alias($nsClase, $clase);
         }
     }
     $prefijo = 'LiteFramework\\';

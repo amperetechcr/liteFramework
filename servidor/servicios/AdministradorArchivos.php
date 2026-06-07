@@ -67,6 +67,11 @@ class AdministradorArchivos
     ) {
     }
 
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
     // ─── Operaciones principales ───
 
     public function subir(array $archivoFila, int $idOperador, array $opciones = []): array
@@ -142,8 +147,8 @@ class AdministradorArchivos
 
         return [
             'estado_operacion' => true,
-            'datos' => $archivo ? $archivo->aArreglo() : null,
-            'archivo_id' => $archivo->id_archivo ?? null,
+            'datos' => $archivo->aArreglo(),
+            'archivo_id' => $archivo->id_archivo,
         ];
     }
 

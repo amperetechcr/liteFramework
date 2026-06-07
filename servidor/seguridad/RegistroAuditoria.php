@@ -111,6 +111,7 @@ class RegistroAuditoria
 
         $jsonDetalles = json_encode($contexto, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
+        /** @phpstan-ignore-next-line $_SERVER puede no tener REMOTE_ADDR en CLI */
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'desconocida';
         self::escribirEnBitacoraBD($nivel, $modulo, $accion, $jsonDetalles, $idOperador, $ip);
         self::escribirEnArchivo($nivel, $modulo, $accion, $contexto);

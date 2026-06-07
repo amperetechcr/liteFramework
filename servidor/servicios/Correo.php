@@ -27,9 +27,9 @@ class Correo
     private string $cuerpoTexto = '';
     private array $adjuntos = [];
     private array $destinatariosCopia = [];
-    private array $destinatariosCopiaOculta = [];
 
-    private $conexion = null;
+
+    private mixed $conexion = null;
 
     public function __construct(?LoggerInterface $logger = null)
     {

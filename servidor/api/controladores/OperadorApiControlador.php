@@ -36,11 +36,12 @@ class OperadorApiControlador
         }
 
         $limitador = new LimitadorPeticiones();
-        $claveRate = 'registro:' . $_SERVER['REMOTE_ADDR'] ?? '';
+        $claveRate = 'registro:' . ($_SERVER['REMOTE_ADDR'] ?? '');
 
         if ($limitador->haExcedido($claveRate, 3, 900)) {
             RegistroAuditoria::seguridad('Registro bloqueado por tasa', [
                 'correo_intentado' => $correoElectronico,
+                /** @phpstan-ignore-next-line $_SERVER puede no tener REMOTE_ADDR en CLI */
                 'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
             ]);
             $respuesta['mensaje_error'] = 'Demasiados intentos. Espere unos minutos e intente de nuevo.';

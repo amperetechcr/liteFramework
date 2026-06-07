@@ -26,6 +26,7 @@ if (file_exists($archivoUltimoId)) {
     echo "[SSE Daemon] Reanudando desde ID {$ultimoId}\n";
 }
 
+/** @phpstan-ignore-next-line - bucle infinito intencional para daemon */
 while (true) {
     try {
         $bd = \LiteFramework\Config\ConexionBaseDatos::obtenerInstancia()->obtenerConector();

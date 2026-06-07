@@ -121,7 +121,7 @@ class GeneradorModulo
         foreach ($camposRaw as $campo) {
             $partes = explode(':', $campo);
             $campos[] = [
-                'nombre' => $partes[0] ?? '',
+                'nombre' => $partes[0],
                 'tipo' => $partes[1] ?? 'string',
                 'reglas' => $partes[2] ?? '',
             ];

@@ -95,8 +95,9 @@ function h(string $texto): string
 
 $uri = $_SERVER['REQUEST_URI'];
 $base = dirname($_SERVER['SCRIPT_NAME']);
-$ruta = substr(parse_url($uri, PHP_URL_PATH), strlen($base));
-if ($ruta === false || $ruta === '') {
+$path = parse_url($uri, PHP_URL_PATH) ?? '';
+$ruta = substr($path, strlen($base));
+if ($ruta === '') {
     $ruta = '/';
 }
 $ruta = preg_replace('#/index\.php$#', '/', $ruta);

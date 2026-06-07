@@ -88,7 +88,7 @@ class DocumentoPdf extends Modelo
     {
         $arr = parent::aArreglo();
         $arr['fecha_formateada'] = $this->fechaFormateada();
-        $arr['operador_nombre'] = $this->operador()?->nombre_completo ?? '—';
+        $arr['operador_nombre'] = $this->operador()?->nombre_completo ?: '—';
         return $arr;
     }
 }

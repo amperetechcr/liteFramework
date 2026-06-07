@@ -234,7 +234,7 @@ class GeneradorEstadisticas
             $valor = (float)($fila[$colValor] ?? 0);
             $porcentaje = $maxValor > 0 ? ($valor / $maxValor) * 100 : 0;
             $color = $colores[$indice % count($colores)];
-            $formateado = is_int($valor) ? number_format($valor, 0) : number_format($valor, 2);
+            $formateado = $valor == (int)$valor ? number_format($valor, 0) : number_format($valor, 2);
 
             $html .= '<div class="barra-estadistica">';
             $html .= '<span class="barra-etiqueta">' . h($etiqueta) . '</span>';

@@ -89,9 +89,7 @@ class Validador
     private function reglaRequerido(string $campo, array $params): void
     {
         $valor = $this->datos[$campo] ?? '';
-        if (is_string($valor) && trim($valor) === '') {
-            $this->agregarError($campo, 'requerido');
-        } elseif ($valor === null || $valor === '') {
+        if (trim($valor) === '') {
             $this->agregarError($campo, 'requerido');
         }
     }

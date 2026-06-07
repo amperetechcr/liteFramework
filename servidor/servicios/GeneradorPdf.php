@@ -24,7 +24,7 @@ class GeneradorPdf
 
     private static array $tamanosValidos  = ['A4', 'Carta', 'Oficio', 'A3', 'A5'];
     private static array $orientacionesValidas = ['vertical', 'horizontal'];
-    private static array $margenesValidos = ['estrecho', 'normal', 'amplio'];
+
 
     private static array $margenesMapa = [
         'estrecho' => '8mm 6mm',
