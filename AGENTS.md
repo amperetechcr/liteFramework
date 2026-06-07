@@ -101,5 +101,5 @@ openclaw agent --agent main --message "Ejecuta los tests y reporta resultados"
 - RBAC, CSRF, WAF, rate limiting, auditoria dual
 - SSE en tiempo real con daemon auto-start
 - Apache multi-thread (XAMPP) con compresión gzip
-- PHPUnit 11 (377 tests, 926 aserciones)
+- PHPUnit 11 (404 tests, 970 aserciones)
 - PHPStan level 7, PHPCS 0 errores
