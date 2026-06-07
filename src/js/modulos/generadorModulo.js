@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     var URL_BASE = window.location.origin + (window.__basePath || '');
@@ -13,17 +13,22 @@
 
     var TIPOS = ['string', 'text', 'int', 'decimal', 'bool', 'email', 'date', 'datetime'];
 
-    function pascalToSnake(str) {
+    function pascalToSnake(str)
+    {
         return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
     }
 
-    function inferirTabla(clase) {
-        if (!clase) return '';
+    function inferirTabla(clase)
+    {
+        if (!clase) {
+            return '';
+        }
         var plural = pascalToSnake(clase);
         return plural;
     }
 
-    function actualizarPreview() {
+    function actualizarPreview()
+    {
         var clase = claseInput.value.trim();
         var tabla = tablaInput.value.trim() || inferirTabla(clase);
         var campos = obtenerCampos();
@@ -43,11 +48,15 @@
         html += '<div class="preview-campo"><span class="preview-tipo">class</span> <span class="preview-clase">' + escapeHtml(clase) + '</span> extends Modelo {</div>';
         html += '<div class="preview-campo" style="padding-left:1rem"><span class="preview-nombre">// Tabla: ' + escapeHtml(tabla || inferirTabla(clase)) + '</span></div>';
 
-        campos.forEach(function(c) {
+        campos.forEach(function (c) {
             var tipoMostrar = mapearTipoPHPDoc(c.tipo);
             var reglasStr = '';
-            if (c.requerido) reglasStr += ' required';
-            if (c.unico) reglasStr += ' unique';
+            if (c.requerido) {
+                reglasStr += ' required';
+            }
+            if (c.unico) {
+                reglasStr += ' unique';
+            }
             html += '<div class="preview-campo" style="padding-left:1rem">' +
                 '<span class="preview-nombre">' + escapeHtml(pascalToSnake(c.nombre)) + '</span>' +
                 '<span class="preview-tipo">' + tipoMostrar + '</span>' +
@@ -59,26 +68,32 @@
         previewDiv.innerHTML = html;
     }
 
-    function mapearTipoPHPDoc(tipo) {
+    function mapearTipoPHPDoc(tipo)
+    {
         var mapa = { string: 'VARCHAR(255)', text: 'TEXT', int: 'INTEGER', decimal: 'DECIMAL(12,2)', bool: 'BOOL', email: 'VARCHAR(255)', date: 'DATE', datetime: 'DATETIME' };
         return mapa[tipo] || 'VARCHAR(255)';
     }
 
-    function escapeHtml(str) {
+    function escapeHtml(str)
+    {
         var div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
     }
 
-    function actualizarContador() {
+    function actualizarContador()
+    {
         var count = contenedorCampos.children.length;
-        if (contadorCampos) contadorCampos.textContent = count + ' campo' + (count !== 1 ? 's' : '');
+        if (contadorCampos) {
+            contadorCampos.textContent = count + ' campo' + (count !== 1 ? 's' : '');
+        }
     }
 
-    function obtenerCampos() {
+    function obtenerCampos()
+    {
         var campos = [];
         var filas = contenedorCampos.querySelectorAll('.fila-campo-repetible');
-        filas.forEach(function(fila) {
+        filas.forEach(function (fila) {
             var nombre = fila.querySelector('.campo-nombre').value.trim();
             var tipo = fila.querySelector('.campo-tipo').value;
             var requerido = fila.querySelector('.regla-requerido').checked;
@@ -90,7 +105,8 @@
         return campos;
     }
 
-    function crearFilaCampo(datos) {
+    function crearFilaCampo(datos)
+    {
         datos = datos || {};
         var nombre = datos.nombre || '';
         var tipo = datos.tipo || 'string';
@@ -104,7 +120,7 @@
         html += '<input type="text" class="campo-entrada campo-nombre" placeholder="nombre_campo" value="' + escapeHtml(nombre) + '" required>';
 
         html += '<select class="campo-entrada campo-tipo">';
-        TIPOS.forEach(function(t) {
+        TIPOS.forEach(function (t) {
             html += '<option value="' + t + '"' + (t === tipo ? ' selected' : '') + '>' + t + '</option>';
         });
         html += '</select>';
@@ -119,7 +135,7 @@
         div.innerHTML = html;
 
         var inputs = div.querySelectorAll('input, select');
-        inputs.forEach(function(inp) {
+        inputs.forEach(function (inp) {
             inp.addEventListener('change', actualizarPreview);
             inp.addEventListener('input', actualizarPreview);
         });
@@ -127,7 +143,8 @@
         return div;
     }
 
-    function agregarCampo(datos) {
+    function agregarCampo(datos)
+    {
         var fila = crearFilaCampo(datos);
         contenedorCampos.appendChild(fila);
         actualizarContador();
@@ -140,19 +157,21 @@
     agregarCampo({ nombre: 'descripcion', tipo: 'text' });
 
     // --- Evento: Agregar campo ---
-    btnAgregar.addEventListener('click', function() {
+    btnAgregar.addEventListener('click', function () {
         var fila = agregarCampo({});
         var nombreInput = fila.querySelector('.campo-nombre');
-        if (nombreInput) nombreInput.focus();
+        if (nombreInput) {
+            nombreInput.focus();
+        }
     });
 
     // --- Evento: Eliminar campo ---
-    contenedorCampos.addEventListener('click', function(e) {
+    contenedorCampos.addEventListener('click', function (e) {
         if (e.target.classList.contains('eliminar-campo')) {
             var fila = e.target.closest('.fila-campo-repetible');
             if (fila && contenedorCampos.children.length > 1) {
                 fila.classList.add('eliminando');
-                setTimeout(function() {
+                setTimeout(function () {
                     fila.remove();
                     actualizarContador();
                     actualizarPreview();
@@ -162,7 +181,7 @@
     });
 
     // --- Evento: Inferir tabla en vivo ---
-    claseInput.addEventListener('input', function() {
+    claseInput.addEventListener('input', function () {
         var val = this.value.trim();
         if (tablaInput.value.trim() === '' || tablaInput.dataset.auto === 'true' || !tablaInput.dataset.auto) {
             tablaInput.value = '';
@@ -171,7 +190,7 @@
         actualizarPreview();
     });
 
-    tablaInput.addEventListener('input', function() {
+    tablaInput.addEventListener('input', function () {
         if (this.value.trim()) {
             this.dataset.auto = 'false';
         } else {
@@ -181,7 +200,7 @@
     });
 
     // --- Evento: Submit ---
-    formulario.addEventListener('submit', function(e) {
+    formulario.addEventListener('submit', function (e) {
         e.preventDefault();
         var btn = document.getElementById('btn-generar');
         btn.disabled = true;
@@ -190,10 +209,14 @@
         var claseNombre = claseInput.value.trim();
         var campos = obtenerCampos();
 
-        var camposRaw = campos.map(function(c) {
+        var camposRaw = campos.map(function (c) {
             var reglas = [];
-            if (c.requerido) reglas.push('required');
-            if (c.unico) reglas.push('unique');
+            if (c.requerido) {
+                reglas.push('required');
+            }
+            if (c.unico) {
+                reglas.push('unique');
+            }
             return c.nombre + ':' + c.tipo + (reglas.length ? ':' + reglas.join('|') : '');
         });
 
@@ -210,8 +233,9 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
+        .then(function (r) {
+            return r.json(); })
+        .then(function (res) {
             btn.disabled = false;
             btn.textContent = 'Generar Módulo';
 
@@ -224,7 +248,8 @@
                     '<div><p class="texto-negrita">' + escapeHtml(mensaje) + '</p>';
                 if (errores.length > 0) {
                     html += '<ul class="margen-superior-pequeno margen-0">';
-                    errores.forEach(function(e) { html += '<li class="texto-sm">' + escapeHtml(e) + '</li>'; });
+                    errores.forEach(function (e) {
+                        html += '<li class="texto-sm">' + escapeHtml(e) + '</li>'; });
                     html += '</ul>';
                 }
                 html += '</div></div>';
@@ -241,7 +266,7 @@
 
             if (archivos.length > 0) {
                 html += '<div class="margen-inferior-normal"><p class="texto-negrita texto-sm margen-inferior-pequeno">Archivos generados</p>';
-                archivos.forEach(function(a) {
+                archivos.forEach(function (a) {
                     var icono = '';
                     switch (a.tipo) {
                         case 'Migracion': icono = '🗄'; break;
@@ -264,7 +289,7 @@
 
             if (pasos.length > 0) {
                 html += '<div><p class="texto-negrita texto-sm margen-inferior-pequeno">Pasos siguientes</p>';
-                pasos.forEach(function(p) {
+                pasos.forEach(function (p) {
                     html += '<div class="resultado-paso">' + escapeHtml(p) + '</div>';
                 });
                 html += '</div>';
@@ -272,7 +297,7 @@
 
             contenedor.innerHTML = html;
         })
-        .catch(function() {
+        .catch(function () {
             btn.disabled = false;
             btn.textContent = 'Generar Módulo';
             document.getElementById('resultado-generador').innerHTML =
@@ -281,7 +306,7 @@
     });
 
     // --- Keyboard shortcut: Ctrl+Enter ---
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             formulario.dispatchEvent(new Event('submit'));
             e.preventDefault();

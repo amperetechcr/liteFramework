@@ -1,5 +1,6 @@
 class LiteSse {
-    constructor(url) {
+    constructor(url)
+    {
         this.url = url;
         this.suscriptores = {};
         this.intentosReconexion = 0;
@@ -9,8 +10,11 @@ class LiteSse {
         this.conectar();
     }
 
-    conectar() {
-        if (this.eventSource) this.eventSource.close();
+    conectar()
+    {
+        if (this.eventSource) {
+            this.eventSource.close();
+        }
 
         this.eventSource = new EventSource(this.url, { withCredentials: true });
 
@@ -32,13 +36,13 @@ class LiteSse {
         };
 
         this.eventSource.addEventListener('sse.conectado', (e) => {
-            try { this.despachar('sse.conectado', JSON.parse(e.data)); }
-            catch { this.despachar('sse.conectado', {}); }
+            try {
+                this.despachar('sse.conectado', JSON.parse(e.data)); } catch { this.despachar('sse.conectado', {}); }
         });
 
         this.eventSource.addEventListener('sse.error', (e) => {
-            try { this.despachar('sse.error', JSON.parse(e.data)); }
-            catch { this.despachar('sse.error', {}); }
+            try {
+                this.despachar('sse.error', JSON.parse(e.data)); } catch { this.despachar('sse.error', {}); }
         });
 
         this.eventSource.onerror = () => {
@@ -86,6 +90,6 @@ class LiteSse {
         this.conectado = false;
         this.suscriptores = {};
     }
-}
+    }
 
-export { LiteSse };
+    export { LiteSse };

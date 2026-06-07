@@ -3,8 +3,11 @@ var LUNA = '\u263E';
 
 var DATOS_CLIENTE = null;
 
-function inicializarCliente() {
-    if (DATOS_CLIENTE) return;
+function inicializarCliente()
+{
+    if (DATOS_CLIENTE) {
+        return;
+    }
     try {
         DATOS_CLIENTE = {
             screen: (screen.width || 0) + 'x' + (screen.height || 0),
@@ -21,7 +24,8 @@ function inicializarCliente() {
             touch: 'ontouchstart' in window,
             plataforma: navigator.platform || null
         };
-    } catch (e) {}
+    } catch (e) {
+    }
 }
 
 const MAPA_ERRORES_URL = {
@@ -43,10 +47,12 @@ const MAPA_MENSAJES_URL = {
     'respaldo_restaurado': 'Base de datos restaurada exitosamente desde el respaldo.'
 };
 
-function inicializarTema() {
+function inicializarTema()
+{
     const raiz = document.documentElement;
 
-    function aplicarTema(oscuro) {
+    function aplicarTema(oscuro)
+    {
         raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
         raiz.classList.add(oscuro ? 'forzar-iluminacion-oscura' : 'forzar-iluminacion-clara');
         var alternador = document.getElementById('alternador-tema');
@@ -68,7 +74,7 @@ function inicializarTema() {
 
     var alternador = document.getElementById('alternador-tema');
     if (alternador) {
-        alternador.addEventListener('click', function() {
+        alternador.addEventListener('click', function () {
             const esOscuro = raiz.classList.contains('forzar-iluminacion-oscura');
             aplicarTema(!esOscuro);
             localStorage.setItem('tema-lite-framework', esOscuro ? 'claro' : 'oscuro');
@@ -79,9 +85,12 @@ function inicializarTema() {
     }
 }
 
-function mostrarErroresPorURL() {
+function mostrarErroresPorURL()
+{
     const cuerpoPagina = document.body;
-    if (!cuerpoPagina) return;
+    if (!cuerpoPagina) {
+        return;
+    }
 
     const codigoError = cuerpoPagina.getAttribute('data-error') || '';
     const codigoMensaje = cuerpoPagina.getAttribute('data-mensaje') || '';
@@ -99,9 +108,12 @@ function mostrarErroresPorURL() {
     }
 }
 
-function alternarEstadoCarga(formulario, activo, elemento) {
+function alternarEstadoCarga(formulario, activo, elemento)
+{
     elemento = elemento || formulario.querySelector('button[type="submit"]');
-    if (!elemento) return;
+    if (!elemento) {
+        return;
+    }
 
     if (activo) {
         elemento.disabled = true;
@@ -118,161 +130,253 @@ function alternarEstadoCarga(formulario, activo, elemento) {
     }
 }
 
-function aplicarFondo(nombre) {
+function aplicarFondo(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bfondo-\S+/g, '').trim();
     raiz.classList.add('fondo-' + nombre);
-    try { localStorage.setItem('fondo-lite-framework', nombre || 'blanco'); } catch (e) {}
+    try {
+        localStorage.setItem('fondo-lite-framework', nombre || 'blanco'); } catch (e) {
+        }
 }
 
-function inicializarFondo() {
+function inicializarFondo()
+{
     try {
         var guardado = localStorage.getItem('fondo-lite-framework');
-        if (guardado) aplicarFondo(guardado);
-    } catch (e) {}
+        if (guardado) {
+            aplicarFondo(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarTextura(nombre) {
+function aplicarTextura(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\btextura-\S+/g, '').trim();
     raiz.classList.add('textura-' + nombre);
-    try { localStorage.setItem('textura-lite-framework', nombre || 'ninguna'); } catch (e) {}
+    try {
+        localStorage.setItem('textura-lite-framework', nombre || 'ninguna'); } catch (e) {
+        }
 }
 
-function inicializarTextura() {
+function inicializarTextura()
+{
     try {
         var guardado = localStorage.getItem('textura-lite-framework');
-        if (guardado) aplicarTextura(guardado);
-    } catch (e) {}
+        if (guardado) {
+            aplicarTextura(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarFuente(nombre) {
+function aplicarFuente(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bfuente-\S+/g, '').trim();
-    if (nombre !== 'sistema') raiz.classList.add('fuente-' + nombre);
-    try { localStorage.setItem('fuente-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'sistema') {
+        raiz.classList.add('fuente-' + nombre);
+    }
+    try {
+        localStorage.setItem('fuente-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarFuente() {
+function inicializarFuente()
+{
     try {
         var guardado = localStorage.getItem('fuente-lite-framework');
-        if (guardado && guardado !== 'sistema') aplicarFuente(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'sistema') {
+            aplicarFuente(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarEspaciado(nombre) {
+function aplicarEspaciado(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bespaciado-\S+/g, '').trim();
-    if (nombre !== 'normal') raiz.classList.add('espaciado-' + nombre);
-    try { localStorage.setItem('espaciado-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'normal') {
+        raiz.classList.add('espaciado-' + nombre);
+    }
+    try {
+        localStorage.setItem('espaciado-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarEspaciado() {
+function inicializarEspaciado()
+{
     try {
         var guardado = localStorage.getItem('espaciado-lite-framework');
-        if (guardado && guardado !== 'normal') aplicarEspaciado(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'normal') {
+            aplicarEspaciado(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarTamano(nombre) {
+function aplicarTamano(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\btamano-\S+/g, '').trim();
-    if (nombre !== 'normal') raiz.classList.add('tamano-' + nombre);
-    try { localStorage.setItem('tamano-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'normal') {
+        raiz.classList.add('tamano-' + nombre);
+    }
+    try {
+        localStorage.setItem('tamano-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarTamano() {
+function inicializarTamano()
+{
     try {
         var guardado = localStorage.getItem('tamano-lite-framework');
-        if (guardado && guardado !== 'normal') aplicarTamano(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'normal') {
+            aplicarTamano(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarRadio(nombre) {
+function aplicarRadio(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bradio-\S+/g, '').trim();
-    if (nombre !== 'normal') raiz.classList.add('radio-' + nombre);
-    try { localStorage.setItem('radio-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'normal') {
+        raiz.classList.add('radio-' + nombre);
+    }
+    try {
+        localStorage.setItem('radio-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarRadio() {
+function inicializarRadio()
+{
     try {
         var guardado = localStorage.getItem('radio-lite-framework');
-        if (guardado && guardado !== 'normal') aplicarRadio(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'normal') {
+            aplicarRadio(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarAnimacion(nombre) {
+function aplicarAnimacion(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\banimacion-\S+/g, '').trim();
-    if (nombre !== 'normal') raiz.classList.add('animacion-' + nombre);
-    try { localStorage.setItem('animacion-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'normal') {
+        raiz.classList.add('animacion-' + nombre);
+    }
+    try {
+        localStorage.setItem('animacion-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarAnimacion() {
+function inicializarAnimacion()
+{
     try {
         var guardado = localStorage.getItem('animacion-lite-framework');
-        if (guardado && guardado !== 'normal') aplicarAnimacion(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'normal') {
+            aplicarAnimacion(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarGrosor(nombre) {
+function aplicarGrosor(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bgrosor-\S+/g, '').trim();
-    if (nombre !== 'normal') raiz.classList.add('grosor-' + nombre);
-    try { localStorage.setItem('grosor-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'normal') {
+        raiz.classList.add('grosor-' + nombre);
+    }
+    try {
+        localStorage.setItem('grosor-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarGrosor() {
+function inicializarGrosor()
+{
     try {
         var guardado = localStorage.getItem('grosor-lite-framework');
-        if (guardado && guardado !== 'normal') aplicarGrosor(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'normal') {
+            aplicarGrosor(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarSombra(nombre) {
+function aplicarSombra(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bsombra-\S+/g, '').trim();
-    if (nombre !== 'normal') raiz.classList.add('sombra-' + nombre);
-    try { localStorage.setItem('sombra-lite-framework', nombre); } catch (e) {}
+    if (nombre !== 'normal') {
+        raiz.classList.add('sombra-' + nombre);
+    }
+    try {
+        localStorage.setItem('sombra-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarSombra() {
+function inicializarSombra()
+{
     try {
         var guardado = localStorage.getItem('sombra-lite-framework');
-        if (guardado && guardado !== 'normal') aplicarSombra(guardado);
-    } catch (e) {}
+        if (guardado && guardado !== 'normal') {
+            aplicarSombra(guardado);
+        }
+    } catch (e) {
+    }
 }
 
-function aplicarPaleta(nombre) {
+function aplicarPaleta(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bpaleta-\S+/g, '').trim();
     raiz.classList.add('paleta-' + nombre);
-    try { localStorage.setItem('paleta-lite-framework', nombre); } catch (e) {}
+    try {
+        localStorage.setItem('paleta-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function aplicarEstilo(nombre) {
+function aplicarEstilo(nombre)
+{
     var raiz = document.documentElement;
     raiz.className = raiz.className.replace(/\bestilo-\S+/g, '').trim();
     raiz.classList.add('estilo-' + nombre);
-    try { localStorage.setItem('estilo-lite-framework', nombre); } catch (e) {}
+    try {
+        localStorage.setItem('estilo-lite-framework', nombre); } catch (e) {
+        }
 }
 
-function inicializarPaleta() {
+function inicializarPaleta()
+{
     try {
         var paletaGuardada = localStorage.getItem('paleta-lite-framework');
-        if (paletaGuardada) aplicarPaleta(paletaGuardada);
-    } catch (e) {}
+        if (paletaGuardada) {
+            aplicarPaleta(paletaGuardada);
+        }
+    } catch (e) {
+    }
 }
 
-function inicializarEstilo() {
+function inicializarEstilo()
+{
     try {
         var estiloGuardado = localStorage.getItem('estilo-lite-framework');
-        if (estiloGuardado) aplicarEstilo(estiloGuardado);
-    } catch (e) {}
+        if (estiloGuardado) {
+            aplicarEstilo(estiloGuardado);
+        }
+    } catch (e) {
+    }
 }
 
-function restablecerPersonalizacion() {
+function restablecerPersonalizacion()
+{
     aplicarPaleta('indigo');
     aplicarEstilo('moderno');
     aplicarFondo('blanco');
@@ -289,9 +393,11 @@ function restablecerPersonalizacion() {
      'fuente-lite-framework',
      'espaciado-lite-framework', 'tamano-lite-framework',
      'radio-lite-framework', 'animacion-lite-framework',
-     'grosor-lite-framework', 'sombra-lite-framework'].forEach(function(k) {
-        try { localStorage.removeItem(k); } catch (e) {}
-    });
+     'grosor-lite-framework', 'sombra-lite-framework'].forEach(function (k) {
+        try {
+            localStorage.removeItem(k); } catch (e) {
+            }
+     });
     var raiz = document.documentElement;
     raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
     var alternador = document.getElementById('alternador-tema');
@@ -303,7 +409,8 @@ function restablecerPersonalizacion() {
     }
 }
 
-function obtenerConfiguracionUI() {
+function obtenerConfiguracionUI()
+{
     try {
         return {
             paleta: localStorage.getItem('paleta-lite-framework') || 'indigo',
@@ -324,7 +431,8 @@ function obtenerConfiguracionUI() {
     }
 }
 
-function csrfToken() {
+function csrfToken()
+{
     if (typeof window.obtenerTokenCSRF === 'function') {
         return window.obtenerTokenCSRF();
     }
@@ -333,15 +441,21 @@ function csrfToken() {
     return meta ? meta.value : '';
 }
 
-function actualizarTokenCSRF(nuevoToken) {
-    if (!nuevoToken) return;
+function actualizarTokenCSRF(nuevoToken)
+{
+    if (!nuevoToken) {
+        return;
+    }
     var meta = document.querySelector('meta[name="csrf-token"]');
-    if (meta) { meta.setAttribute('content', nuevoToken); }
+    if (meta) {
+        meta.setAttribute('content', nuevoToken); }
     var input = document.querySelector('input[name="token_peticion"]');
-    if (input) { input.value = nuevoToken; }
+    if (input) {
+        input.value = nuevoToken; }
 }
 
-function guardarPersonalizacionServidor() {
+function guardarPersonalizacionServidor()
+{
     var config = obtenerConfiguracionUI();
     var rutaApi = window.rutaApi || '/api';
     return fetch(rutaApi, {
@@ -368,8 +482,9 @@ function guardarPersonalizacionServidor() {
             tema: config.tema
         })
     })
-    .then(function(r) { return r.json(); })
-    .then(function(resp) {
+    .then(function (r) {
+        return r.json(); })
+    .then(function (resp) {
         actualizarTokenCSRF(resp.nuevo_token);
         if (resp.estado_operacion && window.NotificadorHubble) {
             window.NotificadorHubble.mostrar('Preferencias guardadas en el servidor.', 'exito', 4000);
@@ -378,14 +493,15 @@ function guardarPersonalizacionServidor() {
         }
         return resp;
     })
-    .catch(function(err) {
+    .catch(function (err) {
         if (window.NotificadorHubble) {
             window.NotificadorHubble.mostrar('Error de red al guardar preferencias.', 'peligro', 5000);
         }
     });
 }
 
-function cargarPersonalizacionServidor() {
+function cargarPersonalizacionServidor()
+{
     var rutaApi = window.rutaApi || '/api';
     return fetch(rutaApi, {
         method: 'POST',
@@ -399,8 +515,9 @@ function cargarPersonalizacionServidor() {
             token_peticion: csrfToken()
         })
     })
-    .then(function(r) { return r.json(); })
-    .then(function(resp) {
+    .then(function (r) {
+        return r.json(); })
+    .then(function (resp) {
         if (resp.nuevo_token) {
             actualizarTokenCSRF(resp.nuevo_token);
         }
@@ -422,27 +539,44 @@ function cargarPersonalizacionServidor() {
             if (d.textura && d.textura !== 'ninguna') {
                 aplicarTextura(d.textura);
             }
-            if (d.paleta) aplicarPaleta(d.paleta);
-            if (d.estilo) aplicarEstilo(d.estilo);
-            if (d.fuente) aplicarFuente(d.fuente);
-            if (d.espaciado) aplicarEspaciado(d.espaciado);
-            if (d.tamano) aplicarTamano(d.tamano);
-            if (d.radio) aplicarRadio(d.radio);
-            if (d.animacion) aplicarAnimacion(d.animacion);
+            if (d.paleta) {
+                aplicarPaleta(d.paleta);
+            }
+            if (d.estilo) {
+                aplicarEstilo(d.estilo);
+            }
+            if (d.fuente) {
+                aplicarFuente(d.fuente);
+            }
+            if (d.espaciado) {
+                aplicarEspaciado(d.espaciado);
+            }
+            if (d.tamano) {
+                aplicarTamano(d.tamano);
+            }
+            if (d.radio) {
+                aplicarRadio(d.radio);
+            }
+            if (d.animacion) {
+                aplicarAnimacion(d.animacion);
+            }
             if (d.tema) {
                 var raiz = document.documentElement;
                 raiz.classList.remove('forzar-iluminacion-clara', 'forzar-iluminacion-oscura');
                 raiz.classList.add(d.tema === 'oscuro' ? 'forzar-iluminacion-oscura' : 'forzar-iluminacion-clara');
                 var alternador = document.getElementById('alternador-tema');
-                if (alternador) alternador.textContent = d.tema === 'oscuro' ? LUNA : SOL;
+                if (alternador) {
+                    alternador.textContent = d.tema === 'oscuro' ? LUNA : SOL;
+                }
             }
         }
         return resp;
     })
-    .catch(function() {});
+    .catch(function () {});
 }
 
-function alternarTransicionSuave(activo) {
+function alternarTransicionSuave(activo)
+{
     var raiz = document.documentElement;
     if (activo) {
         raiz.classList.add('transicion-personalizacion');

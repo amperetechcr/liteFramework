@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     var metaApi = document.querySelector('meta[name="api-base"]');
@@ -17,22 +17,30 @@
     var lista;
     var accionEstadoPendiente = null;
 
-    function abrirModal(el) {
-        if (!el) return;
+    function abrirModal(el)
+    {
+        if (!el) {
+            return;
+        }
         el.hidden = false;
         document.body.style.overflow = 'hidden';
     }
 
-    function cerrarTodosLosModales() {
-        document.querySelectorAll('.modal-superposicion').forEach(function(m) { m.hidden = true; });
+    function cerrarTodosLosModales()
+    {
+        document.querySelectorAll('.modal-superposicion').forEach(function (m) {
+            m.hidden = true; });
         document.body.style.overflow = '';
     }
 
-    function vincularBotonesEditar() {
-        document.querySelectorAll('.boton-editar').forEach(function(boton) {
-            boton.addEventListener('click', function() {
+    function vincularBotonesEditar()
+    {
+        document.querySelectorAll('.boton-editar').forEach(function (boton) {
+            boton.addEventListener('click', function () {
                 var tarjeta = this.closest('.operador-tarjeta');
-                if (!tarjeta) return;
+                if (!tarjeta) {
+                    return;
+                }
                 campoId.value = tarjeta.getAttribute('data-id');
                 campoNombre.value = tarjeta.getAttribute('data-nombre');
                 campoCorreo.value = tarjeta.getAttribute('data-correo');
@@ -43,9 +51,10 @@
         });
     }
 
-    function vincularBotonesEstado() {
-        document.querySelectorAll('.boton-suspender, .boton-activar').forEach(function(boton) {
-            boton.addEventListener('click', function() {
+    function vincularBotonesEstado()
+    {
+        document.querySelectorAll('.boton-suspender, .boton-activar').forEach(function (boton) {
+            boton.addEventListener('click', function () {
                 var id = this.getAttribute('data-id');
                 var nombre = this.getAttribute('data-nombre');
                 var esSuspender = this.classList.contains('boton-suspender');
@@ -66,13 +75,15 @@
         });
     }
 
-    document.getElementById('confirmar-cambio-estado').addEventListener('click', async function() {
-        if (!accionEstadoPendiente) return;
+    document.getElementById('confirmar-cambio-estado').addEventListener('click', async function () {
+        if (!accionEstadoPendiente) {
+            return;
+        }
 
         var datos = {
             id_entidad: parseInt(accionEstadoPendiente.id),
             accion_crud: accionEstadoPendiente.accion,
-            token_peticion: document.querySelector('[name="token_peticion"]')?.value || ''
+            token_peticion: document.querySelector('[name="token_peticion"]') ? .value || ''
         };
 
         if (typeof window.alternarEstadoCarga === 'function') {
@@ -91,7 +102,7 @@
             });
             var resultado = await res.json();
             if (resultado.nuevo_token) {
-                document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+                document.querySelectorAll('[name="token_peticion"]').forEach(function (el) {
                     el.value = resultado.nuevo_token;
                 });
             }
@@ -100,7 +111,9 @@
                     window.NotificadorHubble.mostrar(accionEstadoPendiente.mensajeExito, 'exito');
                 }
                 cerrarTodosLosModales();
-                if (lista) lista.recargar(1);
+                if (lista) {
+                    lista.recargar(1);
+                }
             } else {
                 if (window.NotificadorHubble) {
                     window.NotificadorHubble.mostrar(resultado.mensaje_error || 'Error.', 'peligro');
@@ -118,7 +131,7 @@
         }
     });
 
-    formularioEditar.addEventListener('submit', async function(evento) {
+    formularioEditar.addEventListener('submit', async function (evento) {
         evento.preventDefault();
         var idValor = parseInt(campoId.value);
         if (isNaN(idValor) || idValor <= 0) {
@@ -152,7 +165,7 @@
             });
             var resultado = await res.json();
             if (resultado.nuevo_token) {
-                document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+                document.querySelectorAll('[name="token_peticion"]').forEach(function (el) {
                     el.value = resultado.nuevo_token;
                 });
             }
@@ -179,7 +192,7 @@
     });
 
     if (document.getElementById('boton-nuevo-operador')) {
-        document.getElementById('boton-nuevo-operador').addEventListener('click', function() {
+        document.getElementById('boton-nuevo-operador').addEventListener('click', function () {
             abrirModal(modalNuevo);
         });
     }
@@ -188,25 +201,33 @@
         vincularFormularioAutenticacion('formularioRegistroOperador', 'registrar_operador', rutaApi);
     }
 
-    function actualizarResumen() {
+    function actualizarResumen()
+    {
         var srcActivos = document.getElementById('total-activos-partial');
         var srcSuspendidos = document.getElementById('total-suspendidos-partial');
         var srcTotal = document.getElementById('total-operadores-partial');
         if (srcActivos) {
             var el = document.getElementById('total-activos');
-            if (el) el.textContent = srcActivos.getAttribute('data-total');
+            if (el) {
+                el.textContent = srcActivos.getAttribute('data-total');
+            }
         }
         if (srcSuspendidos) {
             var el = document.getElementById('total-suspendidos');
-            if (el) el.textContent = srcSuspendidos.getAttribute('data-total');
+            if (el) {
+                el.textContent = srcSuspendidos.getAttribute('data-total');
+            }
         }
         if (srcTotal) {
             var el = document.getElementById('total-operadores-resumen');
-            if (el) el.textContent = srcTotal.getAttribute('data-total');
+            if (el) {
+                el.textContent = srcTotal.getAttribute('data-total');
+            }
         }
     }
 
-    function inicializarLista() {
+    function inicializarLista()
+    {
         if (typeof window.ListaFiltrable !== 'function') {
             return setTimeout(inicializarLista, 100);
         }
@@ -222,7 +243,7 @@
                 { id: 'filtro-estado', paramName: 'estado' }
             ],
             busquedaId: 'filtro-buscar',
-            afterRender: function() {
+            afterRender: function () {
                 vincularBotonesEditar();
                 vincularBotonesEstado();
                 actualizarResumen();
@@ -231,34 +252,40 @@
         lista.inicializarEventos();
         lista.sincronizarConUrl();
         lista.vincularPaginacion();
-        document.addEventListener('moduloListaActualizar', function() {
+        document.addEventListener('moduloListaActualizar', function () {
             lista.recargar(1);
         });
     }
 
     if (window.liteSse) {
-        window.liteSse.subscribir('operador.registrado', function() {
-            if (lista) lista.recargar(1);
+        window.liteSse.subscribir('operador.registrado', function () {
+            if (lista) {
+                lista.recargar(1);
+            }
         });
-        window.liteSse.subscribir('operador.actualizado', function() {
-            if (lista) lista.recargar(1);
+        window.liteSse.subscribir('operador.actualizado', function () {
+            if (lista) {
+                lista.recargar(1);
+            }
         });
     }
 
-    document.querySelectorAll('.modal-superposicion').forEach(function(m) {
-        m.addEventListener('click', function(e) {
-            if (e.target === m) { m.hidden = true; document.body.style.overflow = ''; }
+    document.querySelectorAll('.modal-superposicion').forEach(function (m) {
+        m.addEventListener('click', function (e) {
+            if (e.target === m) {
+                m.hidden = true; document.body.style.overflow = ''; }
         });
     });
 
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             var abierto = document.querySelector('.modal-superposicion:not([hidden])');
-            if (abierto) { abierto.hidden = true; document.body.style.overflow = ''; }
+            if (abierto) {
+                abierto.hidden = true; document.body.style.overflow = ''; }
         }
     });
 
-    document.querySelectorAll('.modal-cerrar').forEach(function(btn) {
+    document.querySelectorAll('.modal-cerrar').forEach(function (btn) {
         btn.addEventListener('click', cerrarTodosLosModales);
     });
 

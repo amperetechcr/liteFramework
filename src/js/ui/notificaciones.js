@@ -1,5 +1,6 @@
 class NotificadorHubble {
-    constructor() {
+    constructor()
+    {
         this.contenedor = this.crearContenedor();
         this.cola = [];
         this.temporizadorLote = null;
@@ -14,7 +15,8 @@ class NotificadorHubble {
         };
     }
 
-    crearContenedor() {
+    crearContenedor()
+    {
         let contenedor = document.getElementById('contenedor-notificaciones-hubble');
         if (!contenedor) {
             contenedor = document.createElement('div');
@@ -26,18 +28,26 @@ class NotificadorHubble {
         return contenedor;
     }
 
-    factorDuracion(total) {
-        if (total <= 2) return 1;
-        if (total <= 4) return 0.7;
-        if (total <= 6) return 0.5;
+    factorDuracion(total)
+    {
+        if (total <= 2) {
+            return 1;
+        }
+        if (total <= 4) {
+            return 0.7;
+        }
+        if (total <= 6) {
+            return 0.5;
+        }
         return 0.35;
     }
 
-    mostrarConSugerencias(mensaje, sugerencias, tipo, duracion) {
+    mostrarConSugerencias(mensaje, sugerencias, tipo, duracion)
+    {
         var html = mensaje ? '<p>' + mensaje + '</p>' : '';
         if (sugerencias && sugerencias.length) {
             html += '<ul style="margin:8px 0 0 0;padding-left:16px;font-size:12px;text-align:left">';
-            sugerencias.forEach(function(s) {
+            sugerencias.forEach(function (s) {
                 html += '<li style="margin-bottom:4px">' + s + '</li>';
             });
             html += '</ul>';
@@ -45,7 +55,8 @@ class NotificadorHubble {
         this.mostrar(html, tipo, duracion);
     }
 
-    mostrar(mensaje, tipo, duracion) {
+    mostrar(mensaje, tipo, duracion)
+    {
         tipo = tipo || 'informacion';
         const base = duracion || this.duracionPorTipo[tipo] || 4000;
         this.cola.push({ mensaje, tipo, duracionBase: base });
@@ -56,12 +67,15 @@ class NotificadorHubble {
         this.temporizadorLote = setTimeout(() => this.vaciarCola(), 50);
     }
 
-    vaciarCola() {
+    vaciarCola()
+    {
         this.temporizadorLote = null;
         const lote = [...this.cola];
         this.cola = [];
 
-        if (!lote.length) return;
+        if (!lote.length) {
+            return;
+        }
 
         const factor = this.factorDuracion(lote.length);
 
@@ -78,13 +92,15 @@ class NotificadorHubble {
         });
     }
 
-    limitarVisibles() {
+    limitarVisibles()
+    {
         while (this.contenedor.children.length >= this.maxVisibles) {
             this.cerrarElemento(this.contenedor.children[0]);
         }
     }
 
-    mostrarNotificacion(mensaje, tipo, duracion) {
+    mostrarNotificacion(mensaje, tipo, duracion)
+    {
         const elemento = document.createElement('div');
         elemento.setAttribute('role', 'alert');
         elemento.className = 'notificacion-flotante';
@@ -125,8 +141,11 @@ class NotificadorHubble {
         });
     }
 
-    cerrarElemento(elemento) {
-        if (elemento._cerrando) return;
+    cerrarElemento(elemento)
+    {
+        if (elemento._cerrando) {
+            return;
+        }
         elemento._cerrando = true;
         elemento.classList.remove('estado-visible');
         elemento.style.transition = '';
@@ -139,7 +158,8 @@ class NotificadorHubble {
         }, 400);
     }
 
-    iniciarDeslizamiento(elemento, alCerrar) {
+    iniciarDeslizamiento(elemento, alCerrar)
+    {
         let inicioX = 0, desplazamientoX = 0, arrastrando = false;
 
         const alInicio = (x) => {
@@ -149,15 +169,21 @@ class NotificadorHubble {
         };
 
         const alMovimiento = (x) => {
-            if (!arrastrando) return;
+            if (!arrastrando) {
+                return;
+            }
             desplazamientoX = x - inicioX;
-            if (desplazamientoX > 0) desplazamientoX = 0;
+            if (desplazamientoX > 0) {
+                desplazamientoX = 0;
+            }
             elemento.style.transform = `translateX(${desplazamientoX}px)`;
             elemento.style.opacity = 1 - Math.min(Math.abs(desplazamientoX) / 200, 0.8);
         };
 
         const alFinal = () => {
-            if (!arrastrando) return;
+            if (!arrastrando) {
+                return;
+            }
             arrastrando = false;
             elemento.style.transition = 'opacity 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             if (Math.abs(desplazamientoX) > 80) {
@@ -187,7 +213,8 @@ class NotificadorHubble {
 const notificadorHubble = new NotificadorHubble();
 window.NotificadorHubble = notificadorHubble;
 
-function MostrarNotificacionSistema(mensaje, tipo) {
+function MostrarNotificacionSistema(mensaje, tipo)
+{
     if (window.NotificadorHubble) {
         window.NotificadorHubble.mostrar(mensaje, tipo);
     }

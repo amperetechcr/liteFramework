@@ -1,10 +1,12 @@
 class ConfirmadorHubble {
-    constructor() {
+    constructor()
+    {
         this.elemento = null;
         this.resolucion = null;
     }
 
-    mostrar(mensaje, textoAceptar, modoPeligro) {
+    mostrar(mensaje, textoAceptar, modoPeligro)
+    {
         if (this.elemento) {
             this.cerrar();
         }
@@ -33,33 +35,34 @@ class ConfirmadorHubble {
 
         var self = this;
 
-        return new Promise(function(resolver) {
+        return new Promise(function (resolver) {
             self.resolucion = resolver;
 
-            function resolverCon(valor) {
+            function resolverCon(valor)
+            {
                 self.cerrar();
                 resolver(valor);
             }
 
-            self.elemento.querySelector('#confirmacion-aceptar').addEventListener('click', function() {
+            self.elemento.querySelector('#confirmacion-aceptar').addEventListener('click', function () {
                 resolverCon(true);
             });
 
-            self.elemento.querySelector('#confirmacion-cancelar').addEventListener('click', function() {
+            self.elemento.querySelector('#confirmacion-cancelar').addEventListener('click', function () {
                 resolverCon(false);
             });
 
-            self.elemento.querySelector('#confirmacion-cerrar').addEventListener('click', function() {
+            self.elemento.querySelector('#confirmacion-cerrar').addEventListener('click', function () {
                 resolverCon(false);
             });
 
-            self.elemento.addEventListener('click', function(e) {
+            self.elemento.addEventListener('click', function (e) {
                 if (e.target === self.elemento) {
                     resolverCon(false);
                 }
             });
 
-            self.manejadorTecla = function(e) {
+            self.manejadorTecla = function (e) {
                 if (e.key === 'Escape') {
                     resolverCon(false);
                 }
@@ -68,7 +71,8 @@ class ConfirmadorHubble {
         });
     }
 
-    cerrar() {
+    cerrar()
+    {
         if (this.elemento) {
             this.elemento.remove();
             this.elemento = null;

@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     var formulario = document.getElementById('formularioEstadistica');
@@ -14,12 +14,15 @@
     var baseUrlValor = baseUrl ? baseUrl.getAttribute('data-base-url') : '';
     var operadorId = document.querySelector('script[data-operador-id]') ? document.querySelector('script[data-operador-id]').getAttribute('data-operador-id') : '';
 
-    if (!formulario) return;
+    if (!formulario) {
+        return;
+    }
 
     var esEdicion = false;
     var lista;
 
-    function csrfToken() {
+    function csrfToken()
+    {
         if (typeof window.obtenerTokenCSRF === 'function') {
             return window.obtenerTokenCSRF();
         }
@@ -27,37 +30,51 @@
         return meta ? meta.getAttribute('content') : tokenInicial;
     }
 
-    function actualizarTokens(nuevoToken) {
+    function actualizarTokens(nuevoToken)
+    {
         tokenInicial = nuevoToken;
-        document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+        document.querySelectorAll('[name="token_peticion"]').forEach(function (el) {
             el.value = nuevoToken;
         });
     }
 
-    function notificar(mensaje, tipo) {
+    function notificar(mensaje, tipo)
+    {
         if (window.NotificadorHubble && typeof window.NotificadorHubble.mostrar === 'function') {
             window.NotificadorHubble.mostrar(mensaje, tipo);
         }
     }
 
-    function reiniciarFormulario() {
+    function reiniciarFormulario()
+    {
         esEdicion = false;
-        if (botonSubmit) botonSubmit.textContent = 'Guardar estadistica';
+        if (botonSubmit) {
+            botonSubmit.textContent = 'Guardar estadistica';
+        }
         formulario.reset();
         var campoAccion = formulario.querySelector('[name="accion"]');
-        if (campoAccion) campoAccion.value = 'crear';
+        if (campoAccion) {
+            campoAccion.value = 'crear';
+        }
         var campoIdOculto = formulario.querySelector('input[name="id_entidad"]');
-        if (campoIdOculto) campoIdOculto.remove();
+        if (campoIdOculto) {
+            campoIdOculto.remove();
+        }
     }
 
-    function prepararEdicion(id, titulo, descripcion, consulta, tipo, columnas, configuracion) {
+    function prepararEdicion(id, titulo, descripcion, consulta, tipo, columnas, configuracion)
+    {
         esEdicion = true;
 
         var accionInput = formulario.querySelector('[name="accion"]');
-        if (accionInput) accionInput.value = 'actualizar';
+        if (accionInput) {
+            accionInput.value = 'actualizar';
+        }
 
         var tablaInput = formulario.querySelector('[name="entidad"]');
-        if (tablaInput) tablaInput.value = 'estadistica';
+        if (tablaInput) {
+            tablaInput.value = 'estadistica';
+        }
 
         var idExistente = formulario.querySelector('input[name="id_entidad"]');
         if (idExistente) {
@@ -77,20 +94,26 @@
         campoColumnas.value = columnas || '';
         campoConfiguracion.value = configuracion || '';
 
-        if (botonSubmit) botonSubmit.textContent = 'Guardar estadistica';
+        if (botonSubmit) {
+            botonSubmit.textContent = 'Guardar estadistica';
+        }
 
         campoTitulo.focus();
         campoTitulo.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    function verEstadistica(id) {
+    function verEstadistica(id)
+    {
         var url = (baseUrlValor || '') + '/estadisticas/ver/' + id;
         window.open(url, '_blank', 'width=1000,height=750');
     }
 
-    async function eliminarEstadistica(id) {
+    async function eliminarEstadistica(id)
+    {
         var confirmado = await window.ConfirmadorHubble.mostrar('Eliminar esta estadistica? Esta accion no se puede deshacer.');
-        if (!confirmado) return;
+        if (!confirmado) {
+            return;
+        }
 
         var token = csrfToken();
 
@@ -114,7 +137,9 @@
             if (resultado.estado_operacion === true) {
                 notificar('Estadistica eliminada correctamente.', 'exito');
                 document.dispatchEvent(new CustomEvent('moduloListaActualizar'));
-                if (esEdicion) reiniciarFormulario();
+                if (esEdicion) {
+                    reiniciarFormulario();
+                }
             } else {
                 var msg = resultado.mensaje_error || 'Error al eliminar.';
                 notificar(msg, 'peligro');
@@ -124,31 +149,38 @@
         }
     }
 
-    function vincularBotones() {
-        document.querySelectorAll('.boton-ver-estadistica').forEach(function(btn) {
+    function vincularBotones()
+    {
+        document.querySelectorAll('.boton-ver-estadistica').forEach(function (btn) {
             btn.removeEventListener('click', verHandler);
             btn.addEventListener('click', verHandler);
         });
 
-        document.querySelectorAll('.boton-editar-estadistica').forEach(function(btn) {
+        document.querySelectorAll('.boton-editar-estadistica').forEach(function (btn) {
             btn.removeEventListener('click', editarHandler);
             btn.addEventListener('click', editarHandler);
         });
 
-        document.querySelectorAll('.boton-eliminar-estadistica').forEach(function(btn) {
+        document.querySelectorAll('.boton-eliminar-estadistica').forEach(function (btn) {
             btn.removeEventListener('click', eliminarHandler);
             btn.addEventListener('click', eliminarHandler);
         });
     }
 
-    function verHandler() {
+    function verHandler()
+    {
         var id = parseInt(this.getAttribute('data-id'));
-        if (!isNaN(id) && id > 0) verEstadistica(id);
+        if (!isNaN(id) && id > 0) {
+            verEstadistica(id);
+        }
     }
 
-    function editarHandler() {
+    function editarHandler()
+    {
         var id = parseInt(this.getAttribute('data-id'));
-        if (!id || id <= 0) return;
+        if (!id || id <= 0) {
+            return;
+        }
 
         var tarjeta = this.closest('.estadistica-tarjeta');
         var titulo = tarjeta ? (tarjeta.getAttribute('data-titulo') || '') : '';
@@ -161,12 +193,16 @@
         prepararEdicion(id, titulo, descripcion, consulta, tipo, columnas, configuracion);
     }
 
-    function eliminarHandler() {
+    function eliminarHandler()
+    {
         var id = parseInt(this.getAttribute('data-id'));
-        if (!isNaN(id) && id > 0) eliminarEstadistica(id);
+        if (!isNaN(id) && id > 0) {
+            eliminarEstadistica(id);
+        }
     }
 
-    function inicializarLista() {
+    function inicializarLista()
+    {
         if (typeof window.ListaFiltrable !== 'function') {
             return setTimeout(inicializarLista, 100);
         }
@@ -180,7 +216,7 @@
                 { id: 'filtroBuscar', paramName: 'buscar' }
             ],
             busquedaId: 'filtroBuscar',
-            afterRender: function() {
+            afterRender: function () {
                 vincularBotones();
             }
         });
@@ -188,12 +224,12 @@
         lista.sincronizarConUrl();
         lista.vincularPaginacion();
 
-        document.addEventListener('moduloListaActualizar', function() {
+        document.addEventListener('moduloListaActualizar', function () {
             lista.recargar(1);
         });
     }
 
-    formulario.addEventListener('submit', async function(evento) {
+    formulario.addEventListener('submit', async function (evento) {
         evento.preventDefault();
 
         var token = csrfToken();

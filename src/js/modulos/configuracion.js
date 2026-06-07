@@ -1,7 +1,8 @@
-(function() {
+(function () {
     'use strict';
 
-    function csrfToken() {
+    function csrfToken()
+    {
         if (typeof window.obtenerTokenCSRF === 'function') {
             return window.obtenerTokenCSRF();
         }
@@ -10,12 +11,15 @@
         return meta ? meta.value : '';
     }
 
-    function serializarFormulario(form) {
+    function serializarFormulario(form)
+    {
         var formData = new FormData(form);
         var datos = {};
-        formData.forEach(function(valor, clave) {
+        formData.forEach(function (valor, clave) {
             if (clave in datos) {
-                if (!Array.isArray(datos[clave])) datos[clave] = [datos[clave]];
+                if (!Array.isArray(datos[clave])) {
+                    datos[clave] = [datos[clave]];
+                }
                 datos[clave].push(valor);
             } else {
                 datos[clave] = valor;
@@ -24,19 +28,21 @@
 
         var categorias = [];
         var checks = form.querySelectorAll('input[name="categorias_mime[]"]:checked');
-        checks.forEach(function(c) { categorias.push(c.value); });
+        checks.forEach(function (c) {
+            categorias.push(c.value); });
         datos['tipos_mime_permitidos'] = categorias.join(',');
 
         var campos = form.querySelectorAll('input[data-version]');
         datos['versiones'] = {};
-        campos.forEach(function(campo) {
+        campos.forEach(function (campo) {
             datos['versiones'][campo.name] = parseInt(campo.getAttribute('data-version'), 10);
         });
 
         return datos;
     }
 
-    function actualizarEstadoBoton(form) {
+    function actualizarEstadoBoton(form)
+    {
         var input = form.querySelector('#cfg-confirmacion');
         var boton = form.querySelector('#btn-guardar-config');
         if (input && boton) {
@@ -44,11 +50,12 @@
         }
     }
 
-    function enviarConfiguracion(form, mensajeEl) {
+    function enviarConfiguracion(form, mensajeEl)
+    {
         var datos = serializarFormulario(form);
         delete datos['versiones'];
 
-        var modoRepositorio = document.getElementById('cfg-modo-repositorio')?.checked || false;
+        var modoRepositorio = document.getElementById('cfg-modo-repositorio') ? .checked || false;
 
         var payload = {
             token_peticion: csrfToken(),
@@ -74,8 +81,8 @@
             },
             body: new URLSearchParams(payload).toString()
         })
-        .then(function(r) {
-            return r.json().then(function(resp) {
+        .then(function (r) {
+            return r.json().then(function (resp) {
                 if (r.ok && resp.estado_operacion) {
                     var html = '<div class="notificacion-flotante estado-visible" data-variante="exito">Configuracion guardada correctamente.</div>';
                     if (resp.datos && resp.datos.hubo_conflictos) {
@@ -102,28 +109,34 @@
                 }
             });
         })
-        .catch(function(err) {
+        .catch(function (err) {
             mensajeEl.innerHTML = '<div class="notificacion-flotante estado-visible" data-variante="peligro">Error de red: ' + err.message + '</div>';
         });
     }
 
-    function alternarModoRepositorio() {
+    function alternarModoRepositorio()
+    {
         var checkbox = document.getElementById('cfg-modo-repositorio');
         var seccionExts = document.getElementById('cfg-seccion-extensiones');
-        if (!checkbox || !seccionExts) return;
+        if (!checkbox || !seccionExts) {
+            return;
+        }
 
         var desactivar = checkbox.checked;
         seccionExts.style.opacity = desactivar ? '0.4' : '1';
-        seccionExts.querySelectorAll('input, textarea, button, select').forEach(function(el) {
+        seccionExts.querySelectorAll('input, textarea, button, select').forEach(function (el) {
             el.disabled = desactivar;
         });
 
         var checks = document.querySelectorAll('input[name="categorias_mime[]"]');
-        checks.forEach(function(c) { c.disabled = desactivar; });
+        checks.forEach(function (c) {
+            c.disabled = desactivar; });
         var labels = document.querySelectorAll('input[name="categorias_mime[]"]');
-        labels.forEach(function(l) {
+        labels.forEach(function (l) {
             var label = l.closest('label');
-            if (label) label.style.opacity = desactivar ? '0.4' : '1';
+            if (label) {
+                label.style.opacity = desactivar ? '0.4' : '1';
+            }
         });
 
         var fieldset = document.querySelector('fieldset.tarjeta');
@@ -132,18 +145,20 @@
         }
     }
 
-    function inicializarPestanas() {
+    function inicializarPestanas()
+    {
         var pestanas = document.querySelectorAll('.pestana');
         var paneles = document.querySelectorAll('.pestana-panel');
 
-        pestanas.forEach(function(pestana) {
-            pestana.addEventListener('click', function() {
+        pestanas.forEach(function (pestana) {
+            pestana.addEventListener('click', function () {
                 var tab = this.getAttribute('data-tab');
 
-                pestanas.forEach(function(p) { p.classList.remove('activa'); });
+                pestanas.forEach(function (p) {
+                    p.classList.remove('activa'); });
                 this.classList.add('activa');
 
-                paneles.forEach(function(panel) {
+                paneles.forEach(function (panel) {
                     if (panel.getAttribute('data-panel') === tab) {
                         panel.hidden = false;
                         panel.classList.add('activo');
@@ -156,14 +171,15 @@
         });
     }
 
-    function inicializar() {
+    function inicializar()
+    {
         inicializarPestanas();
 
         var form = document.getElementById('formularioConfiguracionArchivos');
         if (form) {
             var inputConfirmar = form.querySelector('#cfg-confirmacion');
             if (inputConfirmar) {
-                inputConfirmar.addEventListener('input', function() {
+                inputConfirmar.addEventListener('input', function () {
                     actualizarEstadoBoton(form);
                 });
             }
@@ -174,7 +190,7 @@
                 alternarModoRepositorio();
             }
 
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 var mensajeEl = document.getElementById('mensaje-config-archivos');
                 enviarConfiguracion(form, mensajeEl);

@@ -1,10 +1,15 @@
-export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi) {
+export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi)
+{
     const formulario = document.getElementById(idFormulario);
-    if (!formulario) return;
+    if (!formulario) {
+        return;
+    }
 
-    if (!rutaApi) rutaApi = window.rutaApi || '/api';
+    if (!rutaApi) {
+        rutaApi = window.rutaApi || '/api';
+    }
 
-    formulario.addEventListener('submit', async function(evento) {
+    formulario.addEventListener('submit', async function (evento) {
         evento.preventDefault();
 
         if (formulario.querySelector('.campo-error')) {
@@ -14,8 +19,10 @@ export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi) {
         const datosFormulario = new FormData(formulario);
         const cuerpo = {};
 
-        datosFormulario.forEach(function(valor, clave) {
-            if (clave === 'token_peticion') return;
+        datosFormulario.forEach(function (valor, clave) {
+            if (clave === 'token_peticion') {
+                return;
+            }
             cuerpo[clave] = typeof valor === 'string' ? valor.trim() : valor;
         });
 
@@ -42,18 +49,19 @@ export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi) {
             if (typeof window.analizarRespuestaServidor === 'function') {
                 resultado = await window.analizarRespuestaServidor(res);
             } else {
-                if (!res.ok) throw new Error('Error del servidor.');
+                if (!res.ok) {
+                    throw new Error('Error del servidor.');
+                }
                 resultado = await res.json();
             }
 
             if (resultado.nuevo_token) {
-                document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+                document.querySelectorAll('[name="token_peticion"]').forEach(function (el) {
                     el.value = resultado.nuevo_token;
                 });
             }
 
             if (resultado.estado_operacion === true) {
-
                 if (tipo === 'iniciar_sesion') {
                     window.location.href = resultado.redireccion || '/inicio';
                     return;
@@ -73,7 +81,6 @@ export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi) {
                     document.dispatchEvent(eventoActualizacionGlobal);
                     return;
                 }
-
             } else {
                 const codigo = resultado.codigo_error || '';
                 const mensajes = {
@@ -89,17 +96,17 @@ export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi) {
                     window.NotificadorHubble.mostrar(msg, 'peligro', 5000);
                 }
             }
-
         } catch (e) {
             if (e.respuesta && e.respuesta.nuevo_token) {
-                document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+                document.querySelectorAll('[name="token_peticion"]').forEach(function (el) {
                     el.value = e.respuesta.nuevo_token;
                 });
             }
             if (window.NotificadorHubble) {
                 window.NotificadorHubble.mostrar(
                     e.message || 'Error de conexión con el servidor.',
-                    'peligro', 5000
+                    'peligro',
+                    5000
                 );
             }
         } finally {

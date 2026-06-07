@@ -1,4 +1,5 @@
-function mostrarErrorCampo(campo, mensaje) {
+function mostrarErrorCampo(campo, mensaje)
+{
     campo.style.borderColor = 'var(--color-peligro)';
 
     let elementoError = campo.parentNode.querySelector('.campo-error');
@@ -10,7 +11,8 @@ function mostrarErrorCampo(campo, mensaje) {
     elementoError.textContent = mensaje;
 }
 
-function limpiarErrorCampo(campo) {
+function limpiarErrorCampo(campo)
+{
     campo.style.borderColor = '';
     const elementoError = campo.parentNode.querySelector('.campo-error');
     if (elementoError) {
@@ -18,7 +20,8 @@ function limpiarErrorCampo(campo) {
     }
 }
 
-function limpiarTodosErrores(formulario) {
+function limpiarTodosErrores(formulario)
+{
     formulario.querySelectorAll('.campo-error').forEach(el => el.remove());
     formulario.querySelectorAll('input, textarea, select').forEach(el => el.style.borderColor = '');
 }
@@ -33,18 +36,20 @@ const SeguridadSistema = {
         "/": '&#x2F;'
     },
 
-    sanitizarTexto: function(textoEntrada) {
-        if (!textoEntrada) return '';
-        const expresionRegularGlobal = /[&<>"'/]/ig;
+    sanitizarTexto: function (textoEntrada) {
+        if (!textoEntrada) {
+            return '';
+        }
+        const expresionRegularGlobal = /[&<>"'/] / ig;
         return textoEntrada.replace(expresionRegularGlobal, (caracter) => this.mapaCaracteresPeligrosos[caracter]);
     },
 
-    validarEstructuraCorreo: function(correo) {
+    validarEstructuraCorreo: function (correo) {
         const patronCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return patronCorreo.test(correo);
     },
 
-    validarFuerzaContrasena: function(contrasena) {
+    validarFuerzaContrasena: function (contrasena) {
         const longitudOk = contrasena.length >= 8;
         const tieneMayuscula = /[A-Z]/.test(contrasena);
         const tieneDigito = /\d/.test(contrasena);
@@ -52,7 +57,7 @@ const SeguridadSistema = {
         return longitudOk && tieneMayuscula && tieneDigito && tieneSimbolo;
     },
 
-    protegerFormulariosGlobales: function() {
+    protegerFormulariosGlobales: function () {
         const todosLosFormularios = document.querySelectorAll('form');
 
         todosLosFormularios.forEach(formulario => {
@@ -88,17 +93,17 @@ const SeguridadSistema = {
                     }
                 });
 
-                if (!validacionAprobada) {
-                    evento.preventDefault();
-                    if (window.NotificadorHubble) {
-                        window.NotificadorHubble.mostrar('Corrija los errores marcados en cada campo.', 'peligro', 3000);
-                    }
+            if (!validacionAprobada) {
+                evento.preventDefault();
+                if (window.NotificadorHubble) {
+                    window.NotificadorHubble.mostrar('Corrija los errores marcados en cada campo.', 'peligro', 3000);
                 }
+            }
             });
         });
     },
 
-    inicializarProtocolos: function() {
+    inicializarProtocolos: function () {
         this.protegerFormulariosGlobales();
     }
 };

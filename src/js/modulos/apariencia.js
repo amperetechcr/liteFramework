@@ -1,27 +1,35 @@
-(function() {
+(function () {
     'use strict';
 
-    function esperarLite(cb) {
-        if (typeof window.aplicarPaleta === 'function') { cb(); return; }
-        setTimeout(function() { esperarLite(cb); }, 80);
+    function esperarLite(cb)
+    {
+        if (typeof window.aplicarPaleta === 'function') {
+            cb(); return; }
+        setTimeout(function () {
+            esperarLite(cb); }, 80);
     }
 
-    function leer(clave, defecto) {
-        try { return localStorage.getItem(clave) || defecto; } catch(e) { return defecto; }
+    function leer(clave, defecto)
+    {
+        try {
+            return localStorage.getItem(clave) || defecto; } catch (e) {
+            return defecto; }
     }
 
     var temporizadorGuardado = null;
 
-    function guardarAlServidor() {
+    function guardarAlServidor()
+    {
         clearTimeout(temporizadorGuardado);
-        temporizadorGuardado = setTimeout(function() {
+        temporizadorGuardado = setTimeout(function () {
             if (typeof window.guardarPersonalizacionServidor === 'function') {
                 window.guardarPersonalizacionServidor();
             }
         }, 600);
     }
 
-    function syncTodo() {
+    function syncTodo()
+    {
         var paleta = leer('paleta-lite-framework', 'indigo');
         var estilo = leer('estilo-lite-framework', 'moderno');
         var radio = leer('radio-lite-framework', 'normal');
@@ -34,50 +42,52 @@
         var fondo = leer('fondo-lite-framework', 'blanco');
         var textura = leer('textura-lite-framework', 'ninguna');
 
-        document.querySelectorAll('.apariencia-color[data-paleta]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-color[data-paleta]').forEach(function (b) {
             b.textContent = b.getAttribute('data-paleta') === paleta ? '\u2713' : '';
             b.classList.toggle('activo', b.getAttribute('data-paleta') === paleta);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-estilo]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-estilo]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-estilo') === estilo);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-radio]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-radio]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-radio') === radio);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-animacion]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-animacion]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-animacion') === animacion);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-espaciado]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-espaciado]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-espaciado') === espaciado);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-tamano]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-tamano]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-tamano') === tamano);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-grosor]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-grosor]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-grosor') === grosor);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-sombra]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-sombra]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-sombra') === sombra);
         });
 
-        document.querySelectorAll('.apariencia-color[data-fondo]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-color[data-fondo]').forEach(function (b) {
             b.textContent = b.getAttribute('data-fondo') === fondo ? '\u2713' : '';
             b.classList.toggle('activo', b.getAttribute('data-fondo') === fondo);
         });
 
-        document.querySelectorAll('.apariencia-pill[data-textura]').forEach(function(b) {
+        document.querySelectorAll('.apariencia-pill[data-textura]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-textura') === textura);
         });
 
         var sel = document.getElementById('selector-fuente');
-        if (sel) sel.value = fuente;
+        if (sel) {
+            sel.value = fuente;
+        }
 
         var prev = document.getElementById('preview-fuente');
         if (prev) {
@@ -89,17 +99,25 @@
         var oscuro = raiz.classList.contains('forzar-iluminacion-oscura');
         var btnC = document.getElementById('btn-tema-claro');
         var btnO = document.getElementById('btn-tema-oscuro');
-        if (btnC) btnC.classList.toggle('activo', !oscuro);
-        if (btnO) btnO.classList.toggle('activo', oscuro);
+        if (btnC) {
+            btnC.classList.toggle('activo', !oscuro);
+        }
+        if (btnO) {
+            btnO.classList.toggle('activo', oscuro);
+        }
     }
 
-    function esColorClaro(r, g, b) {
-        return (r*299 + g*587 + b*114) / 1000 > 150;
+    function esColorClaro(r, g, b)
+    {
+        return (r * 299 + g * 587 + b * 114) / 1000 > 150;
     }
 
-    function actualizarColoresSwatch() {
+    function actualizarColoresSwatch()
+    {
         var contenedor = document.getElementById('selector-fondo');
-        if (!contenedor) return;
+        if (!contenedor) {
+            return;
+        }
         var esOscuro = document.documentElement.classList.contains('forzar-iluminacion-oscura');
         var tmp = document.createElement('div');
         var fondos = (window.VALORES_UI && window.VALORES_UI.fondos_validos) || [];
@@ -119,7 +137,8 @@
                     b = parseInt(hex.substring(4,6), 16);
                 } else {
                     var m = c.match(/\d+/g);
-                    if (m && m.length >= 3) { r = +m[0]; g = +m[1]; b = +m[2]; }
+                    if (m && m.length >= 3) {
+                        r = +m[0]; g = +m[1]; b = +m[2]; }
                 }
                 btn.style.color = (r != null && esColorClaro(r,g,b)) ? '#1e293b' : '#ffffff';
             }
@@ -127,29 +146,35 @@
         document.body.removeChild(tmp);
     }
 
-    esperarLite(function() {
+    esperarLite(function () {
 
-        document.getElementById('btn-tema-claro').addEventListener('click', function() {
+        document.getElementById('btn-tema-claro').addEventListener('click', function () {
             var raiz = document.documentElement;
             raiz.classList.remove('forzar-iluminacion-oscura');
             raiz.classList.add('forzar-iluminacion-clara');
-            try { localStorage.setItem('tema-lite-framework', 'claro'); } catch(e) {}
-            syncTodo();
-            guardarAlServidor();
+            try {
+                localStorage.setItem('tema-lite-framework', 'claro'); } catch (e) {
+                }
+                syncTodo();
+                guardarAlServidor();
         });
 
-        document.getElementById('btn-tema-oscuro').addEventListener('click', function() {
+        document.getElementById('btn-tema-oscuro').addEventListener('click', function () {
             var raiz = document.documentElement;
             raiz.classList.remove('forzar-iluminacion-clara');
             raiz.classList.add('forzar-iluminacion-oscura');
-            try { localStorage.setItem('tema-lite-framework', 'oscuro'); } catch(e) {}
-            syncTodo();
-            guardarAlServidor();
+            try {
+                localStorage.setItem('tema-lite-framework', 'oscuro'); } catch (e) {
+                }
+                syncTodo();
+                guardarAlServidor();
         });
 
-        document.getElementById('selector-paleta').addEventListener('click', function(e) {
+        document.getElementById('selector-paleta').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-color');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var paleta = btn.getAttribute('data-paleta');
             if (paleta && window.aplicarPaleta) {
                 window.aplicarPaleta(paleta);
@@ -158,9 +183,11 @@
             }
         });
 
-        document.getElementById('selector-estilo').addEventListener('click', function(e) {
+        document.getElementById('selector-estilo').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-estilo]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var estilo = btn.getAttribute('data-estilo');
             if (estilo && window.aplicarEstilo) {
                 window.aplicarEstilo(estilo);
@@ -169,7 +196,7 @@
             }
         });
 
-        document.getElementById('selector-fuente').addEventListener('change', function(e) {
+        document.getElementById('selector-fuente').addEventListener('change', function (e) {
             var fuente = e.target.value;
             if (fuente && window.aplicarFuente) {
                 window.aplicarFuente(fuente);
@@ -178,9 +205,11 @@
             }
         });
 
-        document.getElementById('selector-espaciado').addEventListener('click', function(e) {
+        document.getElementById('selector-espaciado').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-espaciado]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var esp = btn.getAttribute('data-espaciado');
             if (esp && window.aplicarEspaciado) {
                 window.aplicarEspaciado(esp);
@@ -189,9 +218,11 @@
             }
         });
 
-        document.getElementById('selector-tamano').addEventListener('click', function(e) {
+        document.getElementById('selector-tamano').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-tamano]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var tam = btn.getAttribute('data-tamano');
             if (tam && window.aplicarTamano) {
                 window.aplicarTamano(tam);
@@ -200,9 +231,11 @@
             }
         });
 
-        document.getElementById('selector-radio').addEventListener('click', function(e) {
+        document.getElementById('selector-radio').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-radio]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var radio = btn.getAttribute('data-radio');
             if (radio && window.aplicarRadio) {
                 window.aplicarRadio(radio);
@@ -211,9 +244,11 @@
             }
         });
 
-        document.getElementById('selector-animacion').addEventListener('click', function(e) {
+        document.getElementById('selector-animacion').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-animacion]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var animacion = btn.getAttribute('data-animacion');
             if (animacion && window.aplicarAnimacion) {
                 window.aplicarAnimacion(animacion);
@@ -222,9 +257,11 @@
             }
         });
 
-        document.getElementById('selector-grosor').addEventListener('click', function(e) {
+        document.getElementById('selector-grosor').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-grosor]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var gros = btn.getAttribute('data-grosor');
             if (gros && window.aplicarGrosor) {
                 window.aplicarGrosor(gros);
@@ -233,9 +270,11 @@
             }
         });
 
-        document.getElementById('selector-sombra').addEventListener('click', function(e) {
+        document.getElementById('selector-sombra').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-sombra]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var sombr = btn.getAttribute('data-sombra');
             if (sombr && window.aplicarSombra) {
                 window.aplicarSombra(sombr);
@@ -244,9 +283,11 @@
             }
         });
 
-        document.getElementById('selector-fondo').addEventListener('click', function(e) {
+        document.getElementById('selector-fondo').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-color[data-fondo]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var fond = btn.getAttribute('data-fondo');
             if (fond && window.aplicarFondo) {
                 window.aplicarFondo(fond);
@@ -255,9 +296,11 @@
             }
         });
 
-        document.getElementById('selector-textura').addEventListener('click', function(e) {
+        document.getElementById('selector-textura').addEventListener('click', function (e) {
             var btn = e.target.closest('.apariencia-pill[data-textura]');
-            if (!btn) return;
+            if (!btn) {
+                return;
+            }
             var text = btn.getAttribute('data-textura');
             if (text && window.aplicarTextura) {
                 window.aplicarTextura(text);
@@ -266,7 +309,7 @@
             }
         });
 
-        document.getElementById('btn-restablecer').addEventListener('click', function() {
+        document.getElementById('btn-restablecer').addEventListener('click', function () {
             if (typeof window.restablecerPersonalizacion === 'function') {
                 window.restablecerPersonalizacion();
                 syncTodo();
@@ -274,7 +317,7 @@
             }
         });
 
-        document.getElementById('btn-guardar-servidor').addEventListener('click', function() {
+        document.getElementById('btn-guardar-servidor').addEventListener('click', function () {
             clearTimeout(temporizadorGuardado);
             if (typeof window.guardarPersonalizacionServidor === 'function') {
                 window.guardarPersonalizacionServidor();

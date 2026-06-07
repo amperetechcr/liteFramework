@@ -1,10 +1,13 @@
 var MANEJADOR_ERRORES_EN_USO = false;
 
-function iniciarManejoGlobalErrores() {
-    if (MANEJADOR_ERRORES_EN_USO) return;
+function iniciarManejoGlobalErrores()
+{
+    if (MANEJADOR_ERRORES_EN_USO) {
+        return;
+    }
     MANEJADOR_ERRORES_EN_USO = true;
 
-    window.addEventListener('unhandledrejection', function(evento) {
+    window.addEventListener('unhandledrejection', function (evento) {
         var error = evento.reason;
         var mensaje = 'Error inesperado en la aplicación.';
 
@@ -22,12 +25,13 @@ function iniciarManejoGlobalErrores() {
         }
     });
 
-    window.addEventListener('error', function(evento) {
+    window.addEventListener('error', function (evento) {
         console.error('[Error Global]', evento.error || evento.message);
     });
 }
 
-function manejarErrorFetch(error, mensajePorDefecto) {
+function manejarErrorFetch(error, mensajePorDefecto)
+{
     mensajePorDefecto = mensajePorDefecto || 'Error de comunicación con el servidor.';
 
     console.error('[Fetch Error]', error);
@@ -53,7 +57,8 @@ function manejarErrorFetch(error, mensajePorDefecto) {
     return error;
 }
 
-async function analizarRespuestaServidor(respuesta) {
+async function analizarRespuestaServidor(respuesta)
+{
     if (!respuesta) {
         throw new Error('El servidor no respondió.');
     }
@@ -77,7 +82,8 @@ async function analizarRespuestaServidor(respuesta) {
             throw error;
         }
 
-        var textoError = await respuesta.text().catch(function() { return ''; });
+        var textoError = await respuesta.text().catch(function () {
+            return ''; });
         var mensajeError;
         if (respuesta.status === 500) {
             mensajeError = 'Error interno del servidor.';
@@ -99,7 +105,8 @@ async function analizarRespuestaServidor(respuesta) {
     }
 
     if (!tipoContenido || !tipoContenido.includes('application/json')) {
-        var textoInesperado = await respuesta.text().catch(function() { return ''; });
+        var textoInesperado = await respuesta.text().catch(function () {
+            return ''; });
         var mensajeHtml = 'El servidor no devolvió JSON.';
         if (textoInesperado.length > 0 && textoInesperado.length < 200) {
             mensajeHtml += ' Respuesta: ' + textoInesperado.substring(0, 200);

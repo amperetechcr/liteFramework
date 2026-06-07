@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     var formulario = document.getElementById('formularioDocumento');
@@ -10,12 +10,15 @@
     var baseUrl = document.querySelector('script[data-base-url]');
     var baseUrlValor = baseUrl ? baseUrl.getAttribute('data-base-url') : '';
 
-    if (!formulario) return;
+    if (!formulario) {
+        return;
+    }
 
     var esEdicion = false;
     var lista;
 
-    function csrfToken() {
+    function csrfToken()
+    {
         if (typeof window.obtenerTokenCSRF === 'function') {
             return window.obtenerTokenCSRF();
         }
@@ -23,38 +26,54 @@
         return meta ? meta.getAttribute('content') : tokenInicial;
     }
 
-    function actualizarTokens(nuevoToken) {
+    function actualizarTokens(nuevoToken)
+    {
         tokenInicial = nuevoToken;
-        document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+        document.querySelectorAll('[name="token_peticion"]').forEach(function (el) {
             el.value = nuevoToken;
         });
     }
 
-    function notificar(mensaje, tipo) {
+    function notificar(mensaje, tipo)
+    {
         if (window.NotificadorHubble && typeof window.NotificadorHubble.mostrar === 'function') {
             window.NotificadorHubble.mostrar(mensaje, tipo);
         }
     }
 
-    function reiniciarFormulario() {
+    function reiniciarFormulario()
+    {
         esEdicion = false;
-        if (campoIdDocumento) campoIdDocumento.remove();
-        if (botonSubmit) botonSubmit.textContent = 'Guardar plantilla';
+        if (campoIdDocumento) {
+            campoIdDocumento.remove();
+        }
+        if (botonSubmit) {
+            botonSubmit.textContent = 'Guardar plantilla';
+        }
         formulario.reset();
         var campoAccion = formulario.querySelector('[name="accion"]');
-        if (campoAccion) campoAccion.value = 'crear';
+        if (campoAccion) {
+            campoAccion.value = 'crear';
+        }
         var campoIdOculto = formulario.querySelector('input[name="id_entidad"]');
-        if (campoIdOculto) campoIdOculto.remove();
+        if (campoIdOculto) {
+            campoIdOculto.remove();
+        }
     }
 
-    function prepararEdicion(id, titulo, contenido) {
+    function prepararEdicion(id, titulo, contenido)
+    {
         esEdicion = true;
 
         var accionInput = formulario.querySelector('[name="accion"]');
-        if (accionInput) accionInput.value = 'actualizar';
+        if (accionInput) {
+            accionInput.value = 'actualizar';
+        }
 
         var tablaInput = formulario.querySelector('[name="entidad"]');
-        if (tablaInput) tablaInput.value = 'documento_pdf';
+        if (tablaInput) {
+            tablaInput.value = 'documento_pdf';
+        }
 
         var idExistente = formulario.querySelector('input[name="id_entidad"]');
         if (idExistente) {
@@ -70,20 +89,26 @@
         campoTitulo.value = titulo;
         campoContenido.value = contenido;
 
-        if (botonSubmit) botonSubmit.textContent = 'Guardar plantilla';
+        if (botonSubmit) {
+            botonSubmit.textContent = 'Guardar plantilla';
+        }
 
         campoTitulo.focus();
         campoTitulo.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    function imprimirDocumento(id) {
+    function imprimirDocumento(id)
+    {
         var url = (baseUrlValor || '') + '/generadorPdf/imprimir/' + id;
         window.open(url, '_blank', 'width=900,height=700');
     }
 
-    async     function eliminarDocumento(id) {
+    async     function eliminarDocumento(id)
+    {
         var confirmado = await window.ConfirmadorHubble.mostrar('Eliminar esta plantilla? Esta accion no se puede deshacer.');
-        if (!confirmado) return;
+        if (!confirmado) {
+            return;
+        }
 
         var token = csrfToken();
 
@@ -107,7 +132,9 @@
             if (resultado.estado_operacion === true) {
                 notificar('Plantilla eliminada correctamente.', 'exito');
                 document.dispatchEvent(new CustomEvent('moduloListaActualizar'));
-                if (esEdicion) reiniciarFormulario();
+                if (esEdicion) {
+                    reiniciarFormulario();
+                }
             } else {
                 var msg = resultado.mensaje_error || 'Error al eliminar.';
                 notificar(msg, 'peligro');
@@ -117,29 +144,34 @@
         }
     }
 
-    function vincularBotones() {
-        document.querySelectorAll('.boton-imprimir-documento').forEach(function(btn) {
+    function vincularBotones()
+    {
+        document.querySelectorAll('.boton-imprimir-documento').forEach(function (btn) {
             btn.removeEventListener('click', imprimirHandler);
             btn.addEventListener('click', imprimirHandler);
         });
 
-        document.querySelectorAll('.boton-editar-documento').forEach(function(btn) {
+        document.querySelectorAll('.boton-editar-documento').forEach(function (btn) {
             btn.removeEventListener('click', editarHandler);
             btn.addEventListener('click', editarHandler);
         });
 
-        document.querySelectorAll('.boton-eliminar-documento').forEach(function(btn) {
+        document.querySelectorAll('.boton-eliminar-documento').forEach(function (btn) {
             btn.removeEventListener('click', eliminarHandler);
             btn.addEventListener('click', eliminarHandler);
         });
     }
 
-    function imprimirHandler() {
+    function imprimirHandler()
+    {
         var id = parseInt(this.getAttribute('data-id'));
-        if (!isNaN(id) && id > 0) imprimirDocumento(id);
+        if (!isNaN(id) && id > 0) {
+            imprimirDocumento(id);
+        }
     }
 
-    function editarHandler() {
+    function editarHandler()
+    {
         var id = parseInt(this.getAttribute('data-id'));
         var titulo = this.getAttribute('data-titulo') || '';
         var contenido = this.getAttribute('data-contenido') || '';
@@ -154,12 +186,16 @@
         }
     }
 
-    function eliminarHandler() {
+    function eliminarHandler()
+    {
         var id = parseInt(this.getAttribute('data-id'));
-        if (!isNaN(id) && id > 0) eliminarDocumento(id);
+        if (!isNaN(id) && id > 0) {
+            eliminarDocumento(id);
+        }
     }
 
-    function inicializarLista() {
+    function inicializarLista()
+    {
         if (typeof window.ListaFiltrable !== 'function') {
             return setTimeout(inicializarLista, 100);
         }
@@ -173,7 +209,7 @@
                 { id: 'filtroBuscar', paramName: 'buscar' }
             ],
             busquedaId: 'filtroBuscar',
-            afterRender: function() {
+            afterRender: function () {
                 vincularBotones();
             }
         });
@@ -181,12 +217,12 @@
         lista.sincronizarConUrl();
         lista.vincularPaginacion();
 
-        document.addEventListener('moduloListaActualizar', function() {
+        document.addEventListener('moduloListaActualizar', function () {
             lista.recargar(1);
         });
     }
 
-    formulario.addEventListener('submit', async function(evento) {
+    formulario.addEventListener('submit', async function (evento) {
         evento.preventDefault();
 
         var token = csrfToken();

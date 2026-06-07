@@ -1,18 +1,20 @@
-(function() {
+(function () {
     'use strict';
 
     var rutaActual = new URLSearchParams(window.location.search).get('ruta') || '';
 
-    function obtenerBasePathLocal() {
+    function obtenerBasePathLocal()
+    {
         if (typeof window.obtenerBasePath === 'function') {
             return window.obtenerBasePath();
         }
-        return window.location.pathname.replace(/\/[^/]*$/, '') || '';
+        return window.location.pathname.replace(/\/[^/] * $ / , '') || '';
     }
 
     var basePath = obtenerBasePathLocal();
 
-    function csrfToken() {
+    function csrfToken()
+    {
         if (typeof window.obtenerTokenCSRF === 'function') {
             return window.obtenerTokenCSRF();
         }
@@ -22,37 +24,58 @@
         return meta ? meta.value : '';
     }
 
-    function actualizarTokenCSRF(nuevoToken) {
-        if (!nuevoToken) return;
-        document.querySelectorAll('input[name="csrf_token"], input[name="token_peticion"]').forEach(function(el) {
+    function actualizarTokenCSRF(nuevoToken)
+    {
+        if (!nuevoToken) {
+            return;
+        }
+        document.querySelectorAll('input[name="csrf_token"], input[name="token_peticion"]').forEach(function (el) {
             el.value = nuevoToken;
         });
         var meta = document.querySelector('meta[name="csrf-token"]');
-        if (meta) meta.content = nuevoToken;
+        if (meta) {
+            meta.content = nuevoToken;
+        }
     }
 
-    function escapeHtml(texto) {
+    function escapeHtml(texto)
+    {
         var div = document.createElement('div');
         div.textContent = texto == null ? '' : String(texto);
         return div.innerHTML;
     }
 
-    function formatearMB(bytes) {
-        if (bytes == null || isNaN(bytes)) return '0.00 MB';
+    function formatearMB(bytes)
+    {
+        if (bytes == null || isNaN(bytes)) {
+            return '0.00 MB';
+        }
         var mb = bytes / 1048576;
-        if (mb < 0.01) return (bytes / 1024).toFixed(2) + ' KB';
+        if (mb < 0.01) {
+            return (bytes / 1024).toFixed(2) + ' KB';
+        }
         return mb.toFixed(2) + ' MB';
     }
 
-    function formatearVelocidadMB(bytesPorSeg) {
-        if (!isFinite(bytesPorSeg) || bytesPorSeg <= 0) return '0.00 MB/s';
+    function formatearVelocidadMB(bytesPorSeg)
+    {
+        if (!isFinite(bytesPorSeg) || bytesPorSeg <= 0) {
+            return '0.00 MB/s';
+        }
         return (bytesPorSeg / 1048576).toFixed(2) + ' MB/s';
     }
 
-    function formatearTiempoRestante(segundos) {
-        if (!isFinite(segundos) || segundos <= 0 || segundos === Infinity) return 'calculando...';
-        if (segundos < 1) return 'menos de 1s';
-        if (segundos < 60) return Math.round(segundos) + 's';
+    function formatearTiempoRestante(segundos)
+    {
+        if (!isFinite(segundos) || segundos <= 0 || segundos === Infinity) {
+            return 'calculando...';
+        }
+        if (segundos < 1) {
+            return 'menos de 1s';
+        }
+        if (segundos < 60) {
+            return Math.round(segundos) + 's';
+        }
         if (segundos < 3600) {
             var m = Math.floor(segundos / 60);
             var s = Math.round(segundos % 60);
@@ -63,8 +86,11 @@
         return h + 'h ' + rm + 'm';
     }
 
-    function mostrarNotificacion(elemento, mensaje, tipo) {
-        if (!elemento) return;
+    function mostrarNotificacion(elemento, mensaje, tipo)
+    {
+        if (!elemento) {
+            return;
+        }
         elemento.className = 'notificacion-flotante estado-visible';
         elemento.setAttribute('data-variante', tipo === 'exito' ? 'exito' : (tipo === 'error' ? 'peligro' : 'informacion'));
         elemento.setAttribute('role', tipo === 'error' ? 'alert' : 'status');
@@ -72,13 +98,16 @@
         if (window.NotificadorHubble) {
             window.NotificadorHubble.mostrar(mensaje, tipo === 'exito' ? 'exito' : (tipo === 'error' ? 'peligro' : 'informacion'));
         }
-        setTimeout(function() {
+        setTimeout(function () {
             elemento.classList.remove('estado-visible');
         }, 6000);
     }
 
-    function crearBarraProgreso(contenedor, archivo, restantes, total) {
-        if (!contenedor) return;
+    function crearBarraProgreso(contenedor, archivo, restantes, total)
+    {
+        if (!contenedor) {
+            return;
+        }
         var totalArchivos = total || 0;
         var numArchivo = totalArchivos - (restantes || 0);
         var progresoTexto = totalArchivos > 1 ? 'Archivo ' + numArchivo + ' de ' + totalArchivos : '';
@@ -106,8 +135,11 @@
         contenedor.style.display = 'block';
     }
 
-    function actualizarProgreso(contenedor, loaded, total, velocidad, restante) {
-        if (!contenedor) return;
+    function actualizarProgreso(contenedor, loaded, total, velocidad, restante)
+    {
+        if (!contenedor) {
+            return;
+        }
         var porcentaje = total > 0 ? (loaded / total) * 100 : 0;
         var barra = contenedor.querySelector('#progreso-barra');
         var pctEl = contenedor.querySelector('#progreso-porcentaje');
@@ -115,35 +147,63 @@
         var velEl = contenedor.querySelector('#progreso-velocidad');
         var subidoEl = contenedor.querySelector('#progreso-subido');
         var restEl = contenedor.querySelector('#progreso-restante');
-        if (barra) barra.value = porcentaje;
-        if (pctEl) pctEl.textContent = porcentaje.toFixed(1) + '%';
-        if (detalleEl) detalleEl.textContent = formatearMB(loaded) + ' de ' + formatearMB(total);
-        if (velEl) velEl.textContent = formatearVelocidadMB(velocidad);
-        if (subidoEl) subidoEl.textContent = formatearMB(loaded);
-        if (restEl) restEl.textContent = formatearTiempoRestante(restante);
+        if (barra) {
+            barra.value = porcentaje;
+        }
+        if (pctEl) {
+            pctEl.textContent = porcentaje.toFixed(1) + '%';
+        }
+        if (detalleEl) {
+            detalleEl.textContent = formatearMB(loaded) + ' de ' + formatearMB(total);
+        }
+        if (velEl) {
+            velEl.textContent = formatearVelocidadMB(velocidad);
+        }
+        if (subidoEl) {
+            subidoEl.textContent = formatearMB(loaded);
+        }
+        if (restEl) {
+            restEl.textContent = formatearTiempoRestante(restante);
+        }
     }
 
-    function confirmarExitoProgreso(contenedor) {
-        if (!contenedor) return;
+    function confirmarExitoProgreso(contenedor)
+    {
+        if (!contenedor) {
+            return;
+        }
         var tarjeta = contenedor.querySelector('.archivos-tarjeta-progreso');
-        if (tarjeta) tarjeta.classList.add('exito');
+        if (tarjeta) {
+            tarjeta.classList.add('exito');
+        }
     }
 
-    function ocultarBarraProgreso(contenedor) {
-        if (!contenedor) return;
+    function ocultarBarraProgreso(contenedor)
+    {
+        if (!contenedor) {
+            return;
+        }
         contenedor.style.display = 'none';
         contenedor.innerHTML = '';
     }
 
-    function renderizarTarjetaArchivo(archivo) {
+    function renderizarTarjetaArchivo(archivo)
+    {
         var mime = (archivo.tipo_mime || '').toLowerCase();
         var tipo = 'base';
-        if (archivo.es_imagen || archivo.esImagen) tipo = 'imagen';
-        else if (mime.includes('video')) tipo = 'video';
-        else if (mime.includes('audio')) tipo = 'audio';
-        else if (mime.includes('pdf') || mime.includes('document') || mime.includes('sheet') || mime.includes('text')) tipo = 'documento';
-        else if (mime.includes('zip') || mime.includes('rar') || mime.includes('tar') || mime.includes('gzip') || mime.includes('7z')) tipo = 'comprimido';
-        else if (mime.includes('dosexec') || mime.includes('msdownload') || mime.includes('executable') || mime.includes('x-msi')) tipo = 'ejecutable';
+        if (archivo.es_imagen || archivo.esImagen) {
+            tipo = 'imagen';
+        } else if (mime.includes('video')) {
+            tipo = 'video';
+        } else if (mime.includes('audio')) {
+            tipo = 'audio';
+        } else if (mime.includes('pdf') || mime.includes('document') || mime.includes('sheet') || mime.includes('text')) {
+            tipo = 'documento';
+        } else if (mime.includes('zip') || mime.includes('rar') || mime.includes('tar') || mime.includes('gzip') || mime.includes('7z')) {
+            tipo = 'comprimido';
+        } else if (mime.includes('dosexec') || mime.includes('msdownload') || mime.includes('executable') || mime.includes('x-msi')) {
+            tipo = 'ejecutable';
+        }
 
         var iconoHtml;
         if (archivo.es_imagen || archivo.esImagen) {
@@ -156,7 +216,7 @@
         var etiquetas = '';
         if (archivo.etiquetas) {
             etiquetas = '<div class="etiquetas">';
-            archivo.etiquetas.split(',').forEach(function(et) {
+            archivo.etiquetas.split(',').forEach(function (et) {
                 etiquetas += '<span class="etiqueta">' + escapeHtml(et.trim()) + '</span>';
             });
             etiquetas += '</div>';
@@ -181,43 +241,58 @@
             '</article>';
     }
 
-    function navegarACarpeta(ruta) {
+    function navegarACarpeta(ruta)
+    {
         rutaActual = ruta;
         var url = basePath + '/archivos?ajax=1&partial=lista' + (ruta ? '&ruta=' + encodeURIComponent(ruta) : '');
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(function(r) { return r.text(); })
-            .then(function(html) {
+            .then(function (r) {
+                return r.text(); })
+            .then(function (html) {
                 var contenedor = document.getElementById('contenedor-lista-archivos');
-                if (contenedor) contenedor.innerHTML = html;
+                if (contenedor) {
+                    contenedor.innerHTML = html;
+                }
             })
-            .catch(function(err) {
-                if (window.NotificadorHubble) window.NotificadorHubble.mostrar('Error al cargar la carpeta', 'peligro');
+            .catch(function (err) {
+                if (window.NotificadorHubble) {
+                    window.NotificadorHubble.mostrar('Error al cargar la carpeta', 'peligro');
+                }
             });
     }
 
-    function agregarTarjetaAlListado(archivo) {
+    function agregarTarjetaAlListado(archivo)
+    {
         var rutaArchivo = archivo.ruta_mostrar || '';
-        if (rutaArchivo !== rutaActual) return;
+        if (rutaArchivo !== rutaActual) {
+            return;
+        }
 
         var destino = document.querySelector('.explorador-archivos > .rejilla-automatica');
-        if (!destino) return;
+        if (!destino) {
+            return;
+        }
 
         var tarjetaHtml = renderizarTarjetaArchivo(archivo);
         var div = document.createElement('div');
         div.innerHTML = tarjetaHtml;
         var nodo = div.firstElementChild;
-        if (!nodo) return;
+        if (!nodo) {
+            return;
+        }
         nodo.style.opacity = '0';
         nodo.style.transform = 'translateY(-10px)';
         nodo.style.transition = 'opacity 0.3s, transform 0.3s';
 
         destino.insertBefore(nodo, destino.firstChild);
-        requestAnimationFrame(function() { nodo.style.opacity = '1'; nodo.style.transform = 'translateY(0)'; });
+        requestAnimationFrame(function () {
+            nodo.style.opacity = '1'; nodo.style.transform = 'translateY(0)'; });
         actualizarContador(1);
         ocultarAvisoVacio();
     }
 
-    function actualizarContador(delta) {
+    function actualizarContador(delta)
+    {
         var global = document.querySelector('#contenedor-lista-archivos .etiqueta-marca');
         if (global && delta) {
             var actual = parseInt(global.textContent, 10) || 0;
@@ -225,18 +300,25 @@
         }
     }
 
-    function ocultarAvisoVacio() {
+    function ocultarAvisoVacio()
+    {
         var aviso = document.querySelector('.archivos-aviso-vacio');
-        if (aviso) aviso.style.display = 'none';
+        if (aviso) {
+            aviso.style.display = 'none';
+        }
     }
 
-    function eliminarTarjetaUI(boton) {
+    function eliminarTarjetaUI(boton)
+    {
         var fila = boton.closest('.tarjeta-archivo');
-        if (!fila) return;
+        if (!fila) {
+            return;
+        }
         fila.style.transition = 'opacity 0.3s, transform 0.3s';
         fila.style.opacity = '0';
         fila.style.transform = 'translateX(20px)';
-        setTimeout(function() { fila.remove(); actualizarContador(-1); }, 300);
+        setTimeout(function () {
+            fila.remove(); actualizarContador(-1); }, 300);
     }
 
     var colaSubida = [];
@@ -244,7 +326,8 @@
     var subidaEnProgreso = false;
     var totalSubidos = 0;
 
-    function subirArchivoIndividual(form, archivo, mensajeEl, progresoEl, etiquetas, modulo, descripcion, restantes, totalEnCola, callback) {
+    function subirArchivoIndividual(form, archivo, mensajeEl, progresoEl, etiquetas, modulo, descripcion, restantes, totalEnCola, callback)
+    {
         var input = document.getElementById('archivo');
         var maxBytes = parseInt(input.getAttribute('data-max-size') || '41943040', 10);
         if (archivo.size > maxBytes) {
@@ -270,22 +353,27 @@
 
         var btnCancelar = progresoEl.querySelector('#progreso-cancelar');
         if (btnCancelar) {
-            btnCancelar.addEventListener('click', function() {
+            btnCancelar.addEventListener('click', function () {
                 subidaCancelada = true;
                 xhr.abort();
             });
         }
 
-        xhr.upload.addEventListener('progress', function(e) {
-            if (!e.lengthComputable) return;
+        xhr.upload.addEventListener('progress', function (e) {
+            if (!e.lengthComputable) {
+                return;
+            }
             var ahora = Date.now();
             var deltaT = (ahora - ultimoTiempoCalculo) / 1000;
             if (deltaT >= 0.3) {
                 var deltaBytes = e.loaded - ultimosBytesRecibidos;
                 var velInstant = deltaBytes / deltaT;
                 historialVelocidad.push(velInstant);
-                if (historialVelocidad.length > 5) historialVelocidad.shift();
-                velocidadSuavizada = historialVelocidad.reduce(function(a,b){return a+b;},0) / historialVelocidad.length;
+                if (historialVelocidad.length > 5) {
+                    historialVelocidad.shift();
+                }
+                velocidadSuavizada = historialVelocidad.reduce(function (a,b) {
+                    return a + b;},0) / historialVelocidad.length;
                 ultimoTiempoCalculo = ahora;
                 ultimosBytesRecibidos = e.loaded;
             }
@@ -293,20 +381,27 @@
             actualizarProgreso(progresoEl, e.loaded, e.total, velocidadSuavizada, restante);
         });
 
-        xhr.addEventListener('load', function() {
-            if (subidaCancelada) return;
+        xhr.addEventListener('load', function () {
+            if (subidaCancelada) {
+                return;
+            }
             try {
                 var datos = JSON.parse(xhr.responseText);
                 if (xhr.status >= 200 && xhr.status < 300 && datos.exito) {
                     totalSubidos++;
                     actualizarTokenCSRF(datos.nuevo_token);
                     confirmarExitoProgreso(progresoEl);
-                    if (datos.archivo) agregarTarjetaAlListado(datos.archivo);
+                    if (datos.archivo) {
+                        agregarTarjetaAlListado(datos.archivo);
+                    }
                     callback(true);
                 } else {
                     var msg = datos.error || ('Error del servidor: ' + xhr.status);
-                    if (datos.codigo === 'excede_limite_php' && datos.limite_php) msg += ' (PHP: ' + datos.limite_php + ')';
-                    else if (datos.codigo === 'cuota_excedida' && datos.cuota_mb) msg += ' (Cuota: ' + datos.cuota_mb + ' MB)';
+                    if (datos.codigo === 'excede_limite_php' && datos.limite_php) {
+                        msg += ' (PHP: ' + datos.limite_php + ')';
+                    } else if (datos.codigo === 'cuota_excedida' && datos.cuota_mb) {
+                        msg += ' (Cuota: ' + datos.cuota_mb + ' MB)';
+                    }
                     mostrarNotificacion(mensajeEl, '"' + archivo.name + '": ' + msg, 'error');
                     callback(false);
                 }
@@ -316,12 +411,12 @@
             }
         });
 
-        xhr.addEventListener('error', function() {
+        xhr.addEventListener('error', function () {
             mostrarNotificacion(mensajeEl, '"' + archivo.name + '": Error de conexion', 'error');
             callback(false);
         });
 
-        xhr.addEventListener('abort', function() {
+        xhr.addEventListener('abort', function () {
             if (!subidaCancelada) {
                 mostrarNotificacion(mensajeEl, '"' + archivo.name + '": Subida cancelada', 'error');
             }
@@ -332,14 +427,23 @@
         var csrfInput = form.querySelector('input[name="csrf_token"]');
         fd.append('csrf_token', csrfInput ? csrfInput.value : csrfToken());
         fd.append('archivo', archivo);
-        if (archivo.webkitRelativePath) fd.append('ruta_relativa', archivo.webkitRelativePath);
-        if (etiquetas) fd.append('etiquetas', etiquetas);
-        if (modulo) fd.append('modulo_origen', modulo);
-        if (descripcion) fd.append('descripcion', descripcion);
+        if (archivo.webkitRelativePath) {
+            fd.append('ruta_relativa', archivo.webkitRelativePath);
+        }
+        if (etiquetas) {
+            fd.append('etiquetas', etiquetas);
+        }
+        if (modulo) {
+            fd.append('modulo_origen', modulo);
+        }
+        if (descripcion) {
+            fd.append('descripcion', descripcion);
+        }
         xhr.send(fd);
     }
 
-    function procesarColaSubida(form, mensajeEl, progresoEl) {
+    function procesarColaSubida(form, mensajeEl, progresoEl)
+    {
         if (colaSubida.length === 0 || subidaCancelada) {
             subidaEnProgreso = false;
             if (!subidaCancelada && totalSubidos > 0) {
@@ -347,10 +451,13 @@
                 navegarACarpeta(rutaActual);
                 var tokenActual = csrfToken();
                 form.reset();
-                if (tokenActual) actualizarTokenCSRF(tokenActual);
+                if (tokenActual) {
+                    actualizarTokenCSRF(tokenActual);
+                }
                 limpiarSeleccion();
             }
-            setTimeout(function() { ocultarBarraProgreso(progresoEl); }, totalSubidos > 0 ? 1500 : 0);
+            setTimeout(function () {
+                ocultarBarraProgreso(progresoEl); }, totalSubidos > 0 ? 1500 : 0);
             totalSubidos = 0;
             return;
         }
@@ -359,12 +466,13 @@
         var info = colaSubida.shift();
         var restantes = colaSubida.length;
         var totalEnCola = restantes + 1;
-        subirArchivoIndividual(form, info.archivo, mensajeEl, progresoEl, info.etiquetas, info.modulo, info.descripcion, restantes, totalEnCola, function(exito) {
+        subirArchivoIndividual(form, info.archivo, mensajeEl, progresoEl, info.etiquetas, info.modulo, info.descripcion, restantes, totalEnCola, function (exito) {
             procesarColaSubida(form, mensajeEl, progresoEl);
         });
     }
 
-    function obtenerArchivosSeleccionados() {
+    function obtenerArchivosSeleccionados()
+    {
         var archivos = [];
         var inputArchivos = document.getElementById('archivo');
         var inputCarpeta = document.getElementById('archivo-carpeta');
@@ -382,18 +490,23 @@
         return archivos;
     }
 
-    function actualizarResumenSeleccion() {
+    function actualizarResumenSeleccion()
+    {
         var resumen = document.getElementById('archivos-seleccion-resumen');
         var texto = document.getElementById('archivos-seleccion-texto');
         var detalle = document.getElementById('archivos-seleccion-detalle');
         var boton = document.getElementById('archivos-contador-boton');
-        if (!resumen || !texto) return;
+        if (!resumen || !texto) {
+            return;
+        }
 
         var archivos = obtenerArchivosSeleccionados();
 
         if (archivos.length > 0) {
             var totalBytes = 0;
-            for (var i = 0; i < archivos.length; i++) totalBytes += archivos[i].size;
+            for (var i = 0; i < archivos.length; i++) {
+                totalBytes += archivos[i].size;
+            }
 
             texto.textContent = archivos.length + ' archivo(s) seleccionado(s) — ' + formatearMB(totalBytes) + ' total';
 
@@ -402,7 +515,9 @@
                 for (var i = 0; i < archivos.length; i++) {
                     var rp = archivos[i].webkitRelativePath || '';
                     var idx = rp.indexOf('/');
-                    if (idx > 0) carpetas[rp.substring(0, idx)] = true;
+                    if (idx > 0) {
+                        carpetas[rp.substring(0, idx)] = true;
+                    }
                 }
                 var nombres = Object.keys(carpetas);
                 detalle.textContent = 'Carpetas: ' + (nombres.length > 0 ? nombres.join(', ') : '(raiz)');
@@ -410,23 +525,35 @@
             }
 
             resumen.classList.add('visible');
-            if (boton) boton.textContent = '(' + archivos.length + ')';
+            if (boton) {
+                boton.textContent = '(' + archivos.length + ')';
+            }
         } else {
             resumen.classList.remove('visible');
-            if (boton) boton.textContent = '';
-            if (detalle) detalle.style.display = 'none';
+            if (boton) {
+                boton.textContent = '';
+            }
+            if (detalle) {
+                detalle.style.display = 'none';
+            }
         }
     }
 
-    function limpiarSeleccion() {
+    function limpiarSeleccion()
+    {
         var inputArchivos = document.getElementById('archivo');
         var inputCarpeta = document.getElementById('archivo-carpeta');
-        if (inputArchivos) inputArchivos.value = '';
-        if (inputCarpeta) inputCarpeta.value = '';
+        if (inputArchivos) {
+            inputArchivos.value = '';
+        }
+        if (inputCarpeta) {
+            inputCarpeta.value = '';
+        }
         actualizarResumenSeleccion();
     }
 
-    function inicializarEventos() {
+    function inicializarEventos()
+    {
         var form = document.getElementById('form-subir-archivo');
         var mensajeEl = document.getElementById('mensaje-subida');
         var progresoEl = document.getElementById('contenedor-progreso');
@@ -446,14 +573,14 @@
 
         var btnArchivos = document.getElementById('archivos-subir-archivos');
         if (btnArchivos && archivoInput) {
-            btnArchivos.addEventListener('click', function() {
+            btnArchivos.addEventListener('click', function () {
                 archivoInput.click();
             });
         }
 
         var btnCarpeta = document.getElementById('archivos-subir-carpeta');
         if (btnCarpeta && carpetaInput) {
-            btnCarpeta.addEventListener('click', function() {
+            btnCarpeta.addEventListener('click', function () {
                 carpetaInput.click();
             });
         }
@@ -465,7 +592,7 @@
 
         var btnLimpiarForm = document.getElementById('archivos-limpiar-formulario');
         if (btnLimpiarForm) {
-            btnLimpiarForm.addEventListener('click', function(e) {
+            btnLimpiarForm.addEventListener('click', function (e) {
                 e.preventDefault();
                 form.reset();
                 limpiarSeleccion();
@@ -473,7 +600,7 @@
         }
 
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 if (subidaEnProgreso) {
                     mostrarNotificacion(mensajeEl, 'Ya hay una subida en curso.', 'error');
@@ -483,11 +610,13 @@
             });
         }
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             var btnArchivo = e.target.closest('.btn-eliminar-archivo');
             if (btnArchivo) {
                 var id = btnArchivo.getAttribute('data-id');
-                if (id) eliminarArchivo(id, btnArchivo);
+                if (id) {
+                    eliminarArchivo(id, btnArchivo);
+                }
                 return;
             }
 
@@ -495,14 +624,18 @@
             if (btnCarpeta) {
                 var ruta = btnCarpeta.getAttribute('data-ruta');
                 var nombre = btnCarpeta.getAttribute('data-nombre');
-                if (ruta) eliminarCarpeta(ruta, nombre);
+                if (ruta) {
+                    eliminarCarpeta(ruta, nombre);
+                }
                 return;
             }
 
             var carpeta = e.target.closest('.tarjeta-carpeta');
             if (carpeta) {
                 var ruta = carpeta.getAttribute('data-ruta');
-                if (ruta) navegarACarpeta(ruta);
+                if (ruta) {
+                    navegarACarpeta(ruta);
+                }
                 return;
             }
 
@@ -515,7 +648,8 @@
         });
     }
 
-    function subirArchivos(form, mensajeEl, progresoEl) {
+    function subirArchivos(form, mensajeEl, progresoEl)
+    {
         var archivos = obtenerArchivosSeleccionados();
 
         if (archivos.length === 0) {
@@ -532,9 +666,9 @@
         totalSubidos = 0;
         colaSubida = [];
 
-        var etiquetas = form.querySelector('#etiquetas')?.value || '';
-        var modulo = form.querySelector('#modulo_origen')?.value || '';
-        var descripcion = form.querySelector('#descripcion')?.value || '';
+        var etiquetas = form.querySelector('#etiquetas') ? .value || '';
+        var modulo = form.querySelector('#modulo_origen') ? .value || '';
+        var descripcion = form.querySelector('#descripcion') ? .value || '';
 
         for (var i = 0; i < archivos.length; i++) {
             colaSubida.push({
@@ -548,56 +682,76 @@
         procesarColaSubida(form, mensajeEl, progresoEl);
     }
 
-    function eliminarArchivo(id, boton) {
-        window.ConfirmadorHubble.mostrar('¿Estas seguro de eliminar este archivo?').then(function(confirmado) {
-            if (!confirmado) return;
+    function eliminarArchivo(id, boton)
+    {
+        window.ConfirmadorHubble.mostrar('¿Estas seguro de eliminar este archivo?').then(function (confirmado) {
+            if (!confirmado) {
+                return;
+            }
 
             boton.disabled = true;
             var fila = boton.closest('.tarjeta-archivo');
-            if (fila) fila.style.opacity = '0.5';
+            if (fila) {
+                fila.style.opacity = '0.5';
+            }
 
             var formData = new FormData();
             formData.append('id', id);
             formData.append('csrf_token', csrfToken());
 
             fetch(basePath + '/archivos/eliminar', {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-Token': csrfToken(),
-                'Accept': 'application/json'
-            },
-            body: formData
-        })
-        .then(function(r) {
-            if (r.status === 204) return { exito: true, mensaje: 'Eliminado' };
-            return r.text().then(function(texto) {
-                try { return JSON.parse(texto); }
-                catch (e) { return { exito: false, error: 'Respuesta invalida (HTTP ' + r.status + ')' }; }
-            });
-        })
-        .then(function(datos) {
-            if (datos.exito) {
-                actualizarTokenCSRF(datos.nuevo_token);
-                if (window.NotificadorHubble) window.NotificadorHubble.mostrar(datos.mensaje || 'Archivo eliminado', 'exito');
-                eliminarTarjetaUI(boton);
-            } else {
-                if (fila) fila.style.opacity = '1';
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken(),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(function (r) {
+                if (r.status === 204) {
+                    return  exito: true, mensaje: 'Eliminado' };
+                return r.text().then(function (texto) {
+                    try {
+                        return JSON.parse(texto); } catch (e) {
+                        return { exito: false, error: 'Respuesta invalida (HTTP ' + r.status + ')' }; }
+                });
+            })
+            .then(function (datos) {
+                if (datos.exito) {
+                    actualizarTokenCSRF(datos.nuevo_token);
+                    if (window.NotificadorHubble) {
+                        window.NotificadorHubble.mostrar(datos.mensaje || 'Archivo eliminado', 'exito');
+                    }
+                    eliminarTarjetaUI(boton);
+                } else {
+                    if (fila) {
+                        fila.style.opacity = '1';
+                    }
+                    boton.disabled = false;
+                    if (window.NotificadorHubble) {
+                        window.NotificadorHubble.mostrar(datos.error || 'Error al eliminar', 'peligro');
+                    }
+                }
+            })
+            .catch(function (err) {
+                if (fila) {
+                    fila.style.opacity = '1';
+                }
                 boton.disabled = false;
-                if (window.NotificadorHubble) window.NotificadorHubble.mostrar(datos.error || 'Error al eliminar', 'peligro');
-            }
-        })
-        .catch(function(err) {
-            if (fila) fila.style.opacity = '1';
-            boton.disabled = false;
-            if (window.NotificadorHubble) window.NotificadorHubble.mostrar('Error de red: ' + err.message, 'peligro');
-        });
+                if (window.NotificadorHubble) {
+                    window.NotificadorHubble.mostrar('Error de red: ' + err.message, 'peligro');
+                }
+            });
         });
     }
 
-    function eliminarCarpeta(ruta, nombre) {
-        window.ConfirmadorHubble.mostrar('¿Estas seguro de eliminar la carpeta "' + nombre + '" y todos sus archivos?').then(function(confirmado) {
-            if (!confirmado) return;
+    function eliminarCarpeta(ruta, nombre)
+    {
+        window.ConfirmadorHubble.mostrar('¿Estas seguro de eliminar la carpeta "' + nombre + '" y todos sus archivos?').then(function (confirmado) {
+            if (!confirmado) {
+                return;
+            }
 
             var formData = new FormData();
             formData.append('ruta', ruta);
@@ -612,22 +766,30 @@
                 },
                 body: formData
             })
-            .then(function(r) { return r.text(); })
-            .then(function(texto) {
-                try { return JSON.parse(texto); }
-                catch (e) { return { exito: false, error: 'Respuesta invalida (HTTP ' + r.status + ')' }; }
+            .then(function (r) {
+                return r.text(); })
+            .then(function (texto) {
+                try {
+                    return JSON.parse(texto); } catch (e) {
+                    return { exito: false, error: 'Respuesta invalida (HTTP ' + r.status + ')' }; }
             })
-            .then(function(datos) {
+            .then(function (datos) {
                 if (datos.exito) {
                     actualizarTokenCSRF(datos.nuevo_token);
-                    if (window.NotificadorHubble) window.NotificadorHubble.mostrar(datos.mensaje || 'Carpeta eliminada', 'exito');
+                    if (window.NotificadorHubble) {
+                        window.NotificadorHubble.mostrar(datos.mensaje || 'Carpeta eliminada', 'exito');
+                    }
                     navegarACarpeta(rutaActual);
                 } else {
-                    if (window.NotificadorHubble) window.NotificadorHubble.mostrar(datos.error || 'Error al eliminar la carpeta', 'peligro');
+                    if (window.NotificadorHubble) {
+                        window.NotificadorHubble.mostrar(datos.error || 'Error al eliminar la carpeta', 'peligro');
+                    }
                 }
             })
-            .catch(function(err) {
-                if (window.NotificadorHubble) window.NotificadorHubble.mostrar('Error de red: ' + err.message, 'peligro');
+            .catch(function (err) {
+                if (window.NotificadorHubble) {
+                    window.NotificadorHubble.mostrar('Error de red: ' + err.message, 'peligro');
+                }
             });
         });
     }

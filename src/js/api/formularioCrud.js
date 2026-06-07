@@ -1,4 +1,5 @@
-export function vincularFormularioCrud(idFormulario, tipoOperacion, nombreTabla, rutaApi) {
+export function vincularFormularioCrud(idFormulario, tipoOperacion, nombreTabla, rutaApi)
+{
     const formulario = document.getElementById(idFormulario);
 
     if (!formulario) {
@@ -10,13 +11,13 @@ export function vincularFormularioCrud(idFormulario, tipoOperacion, nombreTabla,
         rutaApi = window.rutaApi || '/api';
     }
 
-    formulario.addEventListener('submit', async function(evento) {
+    formulario.addEventListener('submit', async function (evento) {
         evento.preventDefault();
 
         const datosFormulario = new FormData(formulario);
         const datosEnvio = {};
 
-        datosFormulario.forEach(function(valor, clave) {
+        datosFormulario.forEach(function (valor, clave) {
             if (clave === 'token_peticion' || clave === 'accion_crud' || clave === 'tabla_destino') {
                 return;
             }
@@ -60,7 +61,7 @@ export function vincularFormularioCrud(idFormulario, tipoOperacion, nombreTabla,
             }
 
             if (resultadoTransaccion.nuevo_token) {
-                document.querySelectorAll('[name="token_peticion"], #token_peticion').forEach(function(el) {
+                document.querySelectorAll('[name="token_peticion"], #token_peticion').forEach(function (el) {
                     el.value = resultadoTransaccion.nuevo_token;
                 });
             }
@@ -78,7 +79,6 @@ export function vincularFormularioCrud(idFormulario, tipoOperacion, nombreTabla,
                 const mensajeUsuario = mensajesError[codigo] || resultadoTransaccion.mensaje_error || 'Error inesperado del servidor.';
                 notificarFalloTransaccion(mensajeUsuario);
             }
-
         } catch (errorOperacion) {
             console.error('[Error en Transacci\u00F3n As\u00EDncrona]:', errorOperacion.message);
             notificarFalloTransaccion(errorOperacion.message || 'Incapacidad de comunicaci\u00F3n con el m\u00F3dulo procesador del servidor.');
@@ -95,7 +95,8 @@ window.analizarRespuestaHTTP = analizarRespuestaHTTP;
 window.notificarExitoTransaccion = notificarExitoTransaccion;
 window.notificarFalloTransaccion = notificarFalloTransaccion;
 
-export async function analizarRespuestaHTTP(respuesta) {
+export async function analizarRespuestaHTTP(respuesta)
+{
     const tipoContenido = respuesta.headers.get('content-type');
 
     if (!respuesta.ok) {
@@ -113,7 +114,8 @@ export async function analizarRespuestaHTTP(respuesta) {
     return await respuesta.json();
 }
 
-export function notificarExitoTransaccion(formulario, tipoOperacion, datos) {
+export function notificarExitoTransaccion(formulario, tipoOperacion, datos)
+{
     if (tipoOperacion === 'crear') {
         formulario.reset();
     }
@@ -127,7 +129,8 @@ export function notificarExitoTransaccion(formulario, tipoOperacion, datos) {
     document.dispatchEvent(eventoActualizacionGlobal);
 }
 
-export function notificarFalloTransaccion(mensaje) {
+export function notificarFalloTransaccion(mensaje)
+{
     if (typeof window.NotificadorHubble !== 'undefined') {
         window.NotificadorHubble.mostrar(mensaje, 'peligro');
     } else if (typeof window.MostrarNotificacionSistema === 'function') {

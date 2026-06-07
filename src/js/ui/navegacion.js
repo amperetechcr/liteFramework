@@ -5,20 +5,34 @@ var capaLateral = document.getElementById('capa-lateral');
 var botonMenu = document.getElementById('boton-menu-lateral');
 var envoltura = document.getElementById('envoltura-principal');
 
-function cerrarSidebar() {
-    if (barraLateral) barraLateral.classList.remove('activa');
-    if (capaLateral) capaLateral.classList.remove('activa');
-    if (envoltura) envoltura.classList.remove('barra-lateral-activa');
+function cerrarSidebar()
+{
+    if (barraLateral) {
+        barraLateral.classList.remove('activa');
+    }
+    if (capaLateral) {
+        capaLateral.classList.remove('activa');
+    }
+    if (envoltura) {
+        envoltura.classList.remove('barra-lateral-activa');
+    }
     if (botonMenu) {
         botonMenu.setAttribute('aria-expanded', 'false');
         botonMenu.textContent = '\u2630';
     }
 }
 
-function abrirSidebar() {
-    if (barraLateral) barraLateral.classList.add('activa');
-    if (capaLateral) capaLateral.classList.add('activa');
-    if (envoltura) envoltura.classList.add('barra-lateral-activa');
+function abrirSidebar()
+{
+    if (barraLateral) {
+        barraLateral.classList.add('activa');
+    }
+    if (capaLateral) {
+        capaLateral.classList.add('activa');
+    }
+    if (envoltura) {
+        envoltura.classList.add('barra-lateral-activa');
+    }
     if (botonMenu) {
         botonMenu.setAttribute('aria-expanded', 'true');
         botonMenu.textContent = '\u00D7';
@@ -26,7 +40,7 @@ function abrirSidebar() {
 }
 
 if (botonMenu) {
-    botonMenu.addEventListener('click', function() {
+    botonMenu.addEventListener('click', function () {
         if (barraLateral && barraLateral.classList.contains('activa')) {
             cerrarSidebar();
         } else {
@@ -36,20 +50,21 @@ if (botonMenu) {
 }
 
 if (capaLateral) {
-    capaLateral.addEventListener('click', function() {
+    capaLateral.addEventListener('click', function () {
         cerrarSidebar();
     });
 }
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && barraLateral && barraLateral.classList.contains('activa')) {
         cerrarSidebar();
     }
 });
 
-function ejecutarScripts(contenedor) {
+function ejecutarScripts(contenedor)
+{
     var scripts = contenedor.querySelectorAll('script');
-    scripts.forEach(function(scriptViejo) {
+    scripts.forEach(function (scriptViejo) {
         var scriptNuevo = document.createElement('script');
         if (scriptViejo.src) {
             scriptNuevo.src = scriptViejo.src;
@@ -61,8 +76,11 @@ function ejecutarScripts(contenedor) {
     });
 }
 
-function navegarModulo(url, modulo, esPop) {
-    if (!contenidoPrincipal) return;
+function navegarModulo(url, modulo, esPop)
+{
+    if (!contenidoPrincipal) {
+        return;
+    }
 
     var esLento = typeof DATOS_CLIENTE !== 'undefined' && DATOS_CLIENTE &&
         (DATOS_CLIENTE.conexion === '2g' || DATOS_CLIENTE.conexion === 'slow-2g');
@@ -75,11 +93,13 @@ function navegarModulo(url, modulo, esPop) {
     fetch(url + separador + 'ajax=1', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
-    .then(function(res) {
-        if (!res.ok) throw new Error('Error ' + res.status);
+    .then(function (res) {
+        if (!res.ok) {
+            throw new Error('Error ' + res.status);
+        }
         return res.text();
     })
-    .then(function(html) {
+    .then(function (html) {
         contenidoPrincipal.style.opacity = '1';
         contenidoPrincipal.innerHTML = html;
 
@@ -98,7 +118,7 @@ function navegarModulo(url, modulo, esPop) {
         }
 
         var enlacesNav = document.querySelectorAll('.barra-lateral-enlace');
-        enlacesNav.forEach(function(el) {
+        enlacesNav.forEach(function (el) {
             el.classList.remove('enlace-activo');
             el.removeAttribute('aria-current');
             if (el.getAttribute('data-modulo') === modulo) {
@@ -109,7 +129,7 @@ function navegarModulo(url, modulo, esPop) {
 
         cerrarSidebar();
     })
-    .catch(function(error) {
+    .catch(function (error) {
         var mensaje = 'Error al cargar el módulo.';
 
         if (error && error.message) {
@@ -134,7 +154,7 @@ function navegarModulo(url, modulo, esPop) {
     });
 }
 
-window.addEventListener('popstate', function(e) {
+window.addEventListener('popstate', function (e) {
     if (e.state && e.state.url) {
         navegarModulo(e.state.url, e.state.modulo || '', true);
     }
@@ -142,9 +162,9 @@ window.addEventListener('popstate', function(e) {
 
 window.navegarModulo = navegarModulo;
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.barra-lateral-enlace').forEach(function(enlace) {
-        enlace.addEventListener('click', function(e) {
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.barra-lateral-enlace').forEach(function (enlace) {
+        enlace.addEventListener('click', function (e) {
             var modulo = this.getAttribute('data-modulo');
             if (modulo && typeof window.navegarModulo === 'function') {
                 e.preventDefault();

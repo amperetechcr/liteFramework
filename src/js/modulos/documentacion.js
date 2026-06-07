@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     var buscador = document.getElementById('buscadorDocumentacion');
@@ -6,11 +6,14 @@
     var sinResultados = document.getElementById('sinResultados');
     var paginacionDoc = document.getElementById('paginacion-documentacion');
 
-    if (!buscador || !rejilla) return;
+    if (!buscador || !rejilla) {
+        return;
+    }
 
     var tarjetas = rejilla.querySelectorAll('.tarjeta-seccion-doc');
 
-    function normalizar(texto) {
+    function normalizar(texto)
+    {
         return texto.toLowerCase()
             .replace(/[áàäâ]/g, 'a')
             .replace(/[éèëê]/g, 'e')
@@ -22,38 +25,53 @@
             .trim();
     }
 
-    function leerPaginaActual() {
+    function leerPaginaActual()
+    {
         return parseInt(new URLSearchParams(window.location.search).get('pagina') || '1');
     }
 
-    function mostrarPagina(pagina) {
-        tarjetas.forEach(function(t) {
+    function mostrarPagina(pagina)
+    {
+        tarjetas.forEach(function (t) {
             t.style.display = parseInt(t.getAttribute('data-pagina')) === pagina ? '' : 'none';
         });
-        if (sinResultados) sinResultados.style.display = 'none';
+        if (sinResultados) {
+            sinResultados.style.display = 'none';
+        }
     }
 
-    function resturarPaginacion() {
+    function resturarPaginacion()
+    {
         mostrarPagina(leerPaginaActual());
     }
 
     // ---- Paginador asincrono (sin recarga) ----
 
-    function extraerPaginaDeEnlace(el) {
+    function extraerPaginaDeEnlace(el)
+    {
         var href = el.getAttribute('href');
-        if (!href) return null;
+        if (!href) {
+            return null;
+        }
         var m = href.match(/pagina=(\d+)/);
         return m ? parseInt(m[1]) : null;
     }
 
-    function obtenerTotalPaginas() {
-        if (!paginacionDoc) return 1;
+    function obtenerTotalPaginas()
+    {
+        if (!paginacionDoc) {
+            return 1;
+        }
         var nav = paginacionDoc.querySelector('nav');
-        if (!nav) return 1;
+        if (!nav) {
+            return 1;
+        }
         var max = 1;
-        nav.querySelectorAll('[href*="pagina="]').forEach(function(el) {
+        nav.querySelectorAll('[href*="pagina="]').forEach(function (el) {
             var p = extraerPaginaDeEnlace(el);
-            if (p && p > max) max = p;
+            if (p && p > max) {
+                max = p;
+            }
         });
         var activo = nav.querySelector('.paginador-actual');
         if (activo && /^\d+$/.test(activo.textContent.trim())) {
@@ -62,7 +80,8 @@
         return max;
     }
 
-    function crearLink(href, text) {
+    function crearLink(href, text)
+    {
         var a = document.createElement('a');
         a.href = href;
         a.className = 'paginador-enlace';
@@ -71,7 +90,8 @@
         return a;
     }
 
-    function crearActivo(text) {
+    function crearActivo(text)
+    {
         var span = document.createElement('span');
         span.className = 'paginador-enlace paginador-actual';
         span.setAttribute('aria-current', 'page');
@@ -79,18 +99,26 @@
         return span;
     }
 
-    function crearDeshabilitado(text, title) {
+    function crearDeshabilitado(text, title)
+    {
         var span = document.createElement('span');
         span.className = 'paginador-enlace paginador-deshabilitado';
-        if (title) span.setAttribute('title', title);
+        if (title) {
+            span.setAttribute('title', title);
+        }
         span.textContent = text;
         return span;
     }
 
-    function reconstruirPaginador(pagina, total) {
-        if (!paginacionDoc) return;
+    function reconstruirPaginador(pagina, total)
+    {
+        if (!paginacionDoc) {
+            return;
+        }
         var nav = paginacionDoc.querySelector('nav');
-        if (!nav) return;
+        if (!nav) {
+            return;
+        }
         nav.innerHTML = '';
 
         if (pagina > 1) {
@@ -122,7 +150,8 @@
         }
     }
 
-    function irPagina(pagina) {
+    function irPagina(pagina)
+    {
         pagina = Math.max(1, parseInt(pagina) || 1);
         mostrarPagina(pagina);
 
@@ -135,17 +164,21 @@
     }
 
     if (paginacionDoc) {
-        paginacionDoc.addEventListener('click', function(e) {
+        paginacionDoc.addEventListener('click', function (e) {
             var enlace = e.target.closest('a');
-            if (!enlace) return;
+            if (!enlace) {
+                return;
+            }
             var pagina = extraerPaginaDeEnlace(enlace);
-            if (!pagina) return;
+            if (!pagina) {
+                return;
+            }
             e.preventDefault();
             irPagina(pagina);
         });
     }
 
-    window.addEventListener('popstate', function() {
+    window.addEventListener('popstate', function () {
         var pagina = leerPaginaActual();
         mostrarPagina(pagina);
         var total = obtenerTotalPaginas();
@@ -157,9 +190,11 @@
 
     // ---- Busqueda ----
 
-    function buscar() {
+    function buscar()
+    {
         var termino = normalizar(this.value);
-        var palabras = termino.split(/\s+/).filter(function(p) { return p.length > 0; });
+        var palabras = termino.split(/\s+/).filter(function (p) {
+            return p.length > 0; });
 
         if (!termino) {
             resturarPaginacion();
@@ -168,7 +203,7 @@
 
         var encontrados = 0;
 
-        tarjetas.forEach(function(tarjeta) {
+        tarjetas.forEach(function (tarjeta) {
             var textoBusqueda = normalizar(
                 (tarjeta.getAttribute('data-titulo') || '') + ' ' +
                 (tarjeta.getAttribute('data-etiquetas') || '') + ' ' +
@@ -176,12 +211,14 @@
                 (tarjeta.getAttribute('data-contenido') || '')
             );
 
-            var coincide = palabras.every(function(palabra) {
+            var coincide = palabras.every(function (palabra) {
                 return textoBusqueda.indexOf(palabra) !== -1;
             });
 
             tarjeta.style.display = coincide ? '' : 'none';
-            if (coincide) encontrados++;
+            if (coincide) {
+                encontrados++;
+            }
         });
 
         if (sinResultados) {
@@ -195,30 +232,38 @@
 
     var modales = document.querySelectorAll('.modal-documentacion');
 
-    function abrirModal(modal) {
+    function abrirModal(modal)
+    {
         modal.hidden = false;
         document.body.style.overflow = 'hidden';
         var cuerpo = modal.querySelector('.modal-documentacion-cuerpo');
-        if (cuerpo) cuerpo.scrollTop = 0;
+        if (cuerpo) {
+            cuerpo.scrollTop = 0;
+        }
     }
 
-    function cerrarModal(modal) {
+    function cerrarModal(modal)
+    {
         modal.hidden = true;
         document.body.style.overflow = '';
     }
 
-    function cerrarTodos() {
-        modales.forEach(function(m) { cerrarModal(m); });
+    function cerrarTodos()
+    {
+        modales.forEach(function (m) {
+            cerrarModal(m); });
     }
 
-    tarjetas.forEach(function(tarjeta) {
-        tarjeta.addEventListener('click', function() {
+    tarjetas.forEach(function (tarjeta) {
+        tarjeta.addEventListener('click', function () {
             var id = this.getAttribute('data-seccion-id');
             var modal = document.getElementById('modal-' + id);
-            if (modal) abrirModal(modal);
+            if (modal) {
+                abrirModal(modal);
+            }
         });
 
-        tarjeta.addEventListener('keydown', function(e) {
+        tarjeta.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 this.click();
@@ -226,19 +271,24 @@
         });
     });
 
-    modales.forEach(function(modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) cerrarModal(modal);
+    modales.forEach(function (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                cerrarModal(modal);
+            }
         });
 
         var cerrarBtn = modal.querySelector('.modal-cerrar');
         if (cerrarBtn) {
-            cerrarBtn.addEventListener('click', function() { cerrarModal(modal); });
+            cerrarBtn.addEventListener('click', function () {
+                cerrarModal(modal); });
         }
     });
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') cerrarTodos();
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            cerrarTodos();
+        }
     });
 
 })();

@@ -13,7 +13,8 @@ import './ui/confirmaciones.js';
 
 var COLA_REINTENTOS = [];
 
-function crearBannerOffline() {
+function crearBannerOffline()
+{
     var b = document.createElement('div');
     b.id = 'banner-offline';
     b.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;z-index:999999;background:var(--color-peligro,#dc2626);color:#fff;text-align:center;padding:8px 16px;font-size:14px;';
@@ -24,32 +25,44 @@ function crearBannerOffline() {
 
 var bannerOffline = crearBannerOffline();
 
-window.addEventListener('online', function() {
+window.addEventListener('online', function () {
     bannerOffline.style.display = 'none';
     document.documentElement.classList.remove('offline');
     if (typeof COLA_REINTENTOS !== 'undefined' && COLA_REINTENTOS.length > 0) {
         var pendientes = COLA_REINTENTOS.slice();
         COLA_REINTENTOS = [];
-        pendientes.forEach(function(p) {
-            fetch(p.url, p.opts).then(function(r) { return r.json(); }).then(function(resp) {
-                if (resp.nuevo_token && typeof actualizarTokenCSRF === 'function') actualizarTokenCSRF(resp.nuevo_token);
-            }).catch(function() {});
+        pendientes.forEach(function (p) {
+            fetch(p.url, p.opts).then(function (r) {
+                return r.json(); }).then(function (resp) {
+                    if (resp.nuevo_token && typeof actualizarTokenCSRF === 'function') {
+                        actualizarTokenCSRF(resp.nuevo_token);
+                    }
+                }).catch(function () {});
         });
     }
 });
 
-window.addEventListener('offline', function() {
+window.addEventListener('offline', function () {
     bannerOffline.style.display = 'block';
     document.documentElement.classList.add('offline');
 });
 
-function aplicarClasesCliente() {
+function aplicarClasesCliente()
+{
     var dc = typeof DATOS_CLIENTE !== 'undefined' ? DATOS_CLIENTE : null;
-    if (!dc) return;
+    if (!dc) {
+        return;
+    }
     var r = document.documentElement;
-    if (dc.touch) r.classList.add('touch-device');
-    if (dc.online === false) r.classList.add('offline');
-    if (dc.conexion === '2g' || dc.conexion === 'slow-2g') r.classList.add('slow-conexion');
+    if (dc.touch) {
+        r.classList.add('touch-device');
+    }
+    if (dc.online === false) {
+        r.classList.add('offline');
+    }
+    if (dc.conexion === '2g' || dc.conexion === 'slow-2g') {
+        r.classList.add('slow-conexion');
+    }
 
 }
 
@@ -75,13 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
     var esLogin = document.getElementById('formularioInicioSesion') !== null;
 
     if (!esLogin && !window.__liteSse) {
-        var apiBase = document.querySelector('meta[name="api-base"]')?.content;
+        var apiBase = document.querySelector('meta[name="api-base"]') ? .content;
         var metaUrl = apiBase ? apiBase.replace('/api', '/src/sse.php') : 'src/sse.php';
         window.__liteSse = new LiteSse(metaUrl);
         window.liteSse = window.__liteSse;
-        window.__liteSse.subscribir('auditoria_alerta', function(datos) {
+        window.__liteSse.subscribir('auditoria_alerta', function (datos) {
             var msg = '[' + datos.nivel + '] ' + datos.modulo + ': ' + datos.accion;
-            if (datos.ip) msg += ' | IP: ' + datos.ip;
+            if (datos.ip) {
+                msg += ' | IP: ' + datos.ip;
+            }
             if (window.NotificadorHubble) {
                 window.NotificadorHubble.mostrar(msg, datos.nivel === 'SEGURIDAD' ? 'peligro' : 'advertencia', 8000);
             }
