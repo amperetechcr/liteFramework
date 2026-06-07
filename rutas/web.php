@@ -1,5 +1,15 @@
 <?php
 
+use LiteFramework\Nucleo\Enrutador;
+use LiteFramework\Controladores\AutenticacionControlador;
+use LiteFramework\Controladores\ModuloControlador;
+use LiteFramework\Controladores\SubirArchivosControlador;
+use LiteFramework\Middleware\AutenticacionInterceptor;
+use LiteFramework\Middleware\ApiAuthInterceptor;
+use LiteFramework\Migraciones\GestorMigraciones;
+use LiteFramework\Servicios\GeneradorPdf;
+use LiteFramework\Servicios\GeneradorEstadisticas;
+
 $enrutador = new Enrutador();
 
 // Pagina principal (ingreso)

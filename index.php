@@ -4,9 +4,9 @@ define('DIRECTORIO_RAIZ', __DIR__);
 define('URL_BASE', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 
 require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
-GestorEntorno::cargar();
+\LiteFramework\Config\GestorEntorno::cargar();
 
-ManejadorErrores::registrar();
+\LiteFramework\Nucleo\ManejadorErrores::registrar();
 
 $configUI = require DIRECTORIO_RAIZ . '/servidor/config/ui.php';
 
@@ -91,7 +91,7 @@ function h(string $texto): string
     return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8');
 }
 
-SeguridadServidor::establecerCabecerasSeguras();
+\LiteFramework\Seguridad\SeguridadServidor::establecerCabecerasSeguras();
 
 $uri = $_SERVER['REQUEST_URI'];
 $base = dirname($_SERVER['SCRIPT_NAME']);
@@ -122,7 +122,7 @@ $resultado = $enrutador->despachar($_SERVER['REQUEST_METHOD'], $ruta);
 
 if ($resultado === false) {
     http_response_code(404);
-    RegistroAuditoria::advertencia('Enrutador', 'Ruta no encontrada', [
+    \LiteFramework\Seguridad\RegistroAuditoria::advertencia('Enrutador', 'Ruta no encontrada', [
         'metodo' => $_SERVER['REQUEST_METHOD'],
         'ruta' => $ruta,
     ]);
