@@ -168,3 +168,112 @@ INSERT IGNORE INTO `configuracion_sistema` (`clave`, `valor`, `tipo_dato`, `vers
     ('ARCHIVO_TIEMPO_EJECUCION_SEG', '300', 'numero', 1, 'max_execution_time en segundos'),
     ('ARCHIVO_MAXIMO_SUBIDAS_SIMULTANEAS', '20', 'numero', 1, 'max_file_uploads simultaneos'),
     ('ARCHIVO_POST_MAX_SIZE_MB', '50', 'numero', 1, 'post_max_size en MB (debe ser mayor a upload_max_filesize)');
+
+-- =============================================
+-- Migración 002: Documentos PDF
+-- =============================================
+CREATE TABLE IF NOT EXISTS `documento_pdf` (
+    `id_documento` INT AUTO_INCREMENT PRIMARY KEY,
+    `titulo` VARCHAR(255) NOT NULL,
+    `contenido_html` LONGTEXT NOT NULL,
+    `id_operador` INT NULL,
+    `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `fecha_actualizacion` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_documento_operador`
+        FOREIGN KEY (`id_operador`) REFERENCES `operador` (`id_operador`)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX `idx_documento_operador` ON `documento_pdf` (`id_operador`);
+CREATE INDEX `idx_documento_fecha` ON `documento_pdf` (`fecha_creacion`);
+
+INSERT IGNORE INTO `permisos` (`clave_permiso`, `descripcion`) VALUES
+    ('documentoPdf.crear', 'Crear documentos PDF'),
+    ('documentoPdf.leer', 'Consultar documentos PDF'),
+    ('documentoPdf.actualizar', 'Modificar documentos PDF'),
+    ('documentoPdf.eliminar', 'Eliminar documentos PDF');
+
+INSERT IGNORE INTO `permisos_rol` (`id_rol`, `id_permiso`)
+SELECT 1, `id_permiso` FROM `permisos` WHERE `clave_permiso` LIKE 'documentoPdf.%';
+
+INSERT IGNORE INTO `permisos_rol` (`id_rol`, `id_permiso`)
+SELECT 2, `id_permiso` FROM `permisos`
+WHERE `clave_permiso` IN ('documentoPdf.crear', 'documentoPdf.leer');
+
+INSERT IGNORE INTO `permisos_rol` (`id_rol`, `id_permiso`)
+SELECT 3, `id_permiso` FROM `permisos`
+WHERE `clave_permiso` = 'documentoPdf.leer';
+
+-- =============================================
+-- Migración 003: Personalización de operador
+-- =============================================
+CREATE TABLE IF NOT EXISTS `operador_personalizacion` (
+    `id_operador` INT PRIMARY KEY,
+    `configuracion` JSON NOT NULL,
+    `fecha_actualizacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_pers_operador` FOREIGN KEY (`id_operador`) REFERENCES `operador` (`id_operador`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Migración 004: Estadísticas
+-- =============================================
+CREATE TABLE IF NOT EXISTS `estadistica` (
+    `id_estadistica` INT AUTO_INCREMENT PRIMARY KEY,
+    `titulo` VARCHAR(255) NOT NULL,
+    `descripcion` TEXT NULL,
+    `consulta_sql` TEXT NOT NULL,
+    `tipo_visualizacion` VARCHAR(30) DEFAULT 'tarjetas',
+    `columnas_mostrar` TEXT NULL,
+    `configuracion_visual` TEXT NULL,
+    `id_operador` INT NULL,
+    `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `fecha_actualizacion` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_estadistica_operador`
+        FOREIGN KEY (`id_operador`) REFERENCES `operador` (`id_operador`)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX `idx_estadistica_operador` ON `estadistica` (`id_operador`);
+CREATE INDEX `idx_estadistica_fecha` ON `estadistica` (`fecha_creacion`);
+
+INSERT IGNORE INTO `permisos` (`clave_permiso`, `descripcion`) VALUES
+    ('estadistica.crear', 'Crear estadisticas'),
+    ('estadistica.leer', 'Consultar estadisticas'),
+    ('estadistica.actualizar', 'Modificar estadisticas'),
+    ('estadistica.eliminar', 'Eliminar estadisticas');
+
+INSERT IGNORE INTO `permisos_rol` (`id_rol`, `id_permiso`)
+SELECT 1, `id_permiso` FROM `permisos` WHERE `clave_permiso` LIKE 'estadistica.%';
+
+INSERT IGNORE INTO `permisos_rol` (`id_rol`, `id_permiso`)
+SELECT 2, `id_permiso` FROM `permisos`
+WHERE `clave_permiso` IN ('estadistica.crear', 'estadistica.leer');
+
+INSERT IGNORE INTO `permisos_rol` (`id_rol`, `id_permiso`)
+SELECT 3, `id_permiso` FROM `permisos`
+WHERE `clave_permiso` = 'estadistica.leer';
+
+-- =============================================
+-- Migración 005: Protección fuerza bruta
+-- =============================================
+CREATE TABLE IF NOT EXISTS `intento_acceso` (
+    `id_intento` INT AUTO_INCREMENT PRIMARY KEY,
+    `correo_intentado` VARCHAR(100) NOT NULL,
+    `direccion_ip` VARCHAR(45) NOT NULL,
+    `exitoso` TINYINT NOT NULL DEFAULT 0,
+    `fecha_intento` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_intento_busqueda` (`correo_intentado`, `direccion_ip`, `fecha_intento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Migración 006: Eventos SSE
+-- =============================================
+CREATE TABLE IF NOT EXISTS `sse_evento` (
+    `id_evento` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `id_operador` INT NOT NULL,
+    `tipo` VARCHAR(100) NOT NULL,
+    `datos` JSON NOT NULL,
+    `fecha_creacion` TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
+    INDEX `idx_sse_operador_evento` (`id_operador`, `tipo`),
+    INDEX `idx_sse_creacion` (`fecha_creacion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
