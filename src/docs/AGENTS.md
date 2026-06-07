@@ -7,7 +7,7 @@
 
 ## Stack + Filosofía
 
-PHP 8.1+ **sin Composer** (autoloader manual + PSR-4 opcional). MySQL con fallback SQLite in-memory. Sin npm, JS vanilla. **Todo en español + camelCase**. Diseñado para que OpenCode + OpenClaw colaboren en el desarrollo.
+PHP 8.2+ **sin Composer** (autoloader manual + PSR-4 opcional). MySQL con fallback SQLite in-memory. Sin npm, JS vanilla. **Todo en español + camelCase**. Diseñado para que OpenCode + OpenClaw colaboren en el desarrollo.
 
 **Namespaces:** `LiteFramework\*` con PSR-4 (`composer.json`). `declare(strict_types=1)` en todos los archivos. Excepciones personalizadas: `ErrorSeguridad` (403), `ErrorAutenticacion` (401), `ErrorValidacion` (422).
 
