@@ -74,6 +74,21 @@ class GestorEntorno
         if (!defined('APP_BLOQUEO_MINUTOS')) {
             define('APP_BLOQUEO_MINUTOS', 15);
         }
+        if (!defined('OAUTH_GOOGLE_ID')) {
+            define('OAUTH_GOOGLE_ID', '');
+        }
+        if (!defined('OAUTH_GOOGLE_SECRET')) {
+            define('OAUTH_GOOGLE_SECRET', '');
+        }
+        if (!defined('OAUTH_GITHUB_ID')) {
+            define('OAUTH_GITHUB_ID', '');
+        }
+        if (!defined('OAUTH_GITHUB_SECRET')) {
+            define('OAUTH_GITHUB_SECRET', '');
+        }
+        if (!defined('OAUTH_REDIRECT_BASE')) {
+            define('OAUTH_REDIRECT_BASE', '');
+        }
     }
 
     public static function obtener(string $clave, mixed $defecto = null): mixed

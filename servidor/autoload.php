@@ -60,6 +60,7 @@ $mapaNamespaced = [
     'LiteFramework\Servicios\GeneradorProyecto'  => $baseDir . '/servicios/GeneradorProyecto.php',
     'LiteFramework\Servicios\ServicioPaginacion' => $baseDir . '/servicios/ServicioPaginacion.php',
     'LiteFramework\Servicios\AdministradorArchivos' => $baseDir . '/servicios/AdministradorArchivos.php',
+    'LiteFramework\Servicios\AutenticacionOAuth' => $baseDir . '/servicios/AutenticacionOAuth.php',
     'LiteFramework\Servicios\Correo' => $baseDir . '/servicios/Correo.php',
     'LiteFramework\Servicios\ContextoError' => $baseDir . '/servicios/ContextoError.php',
     'LiteFramework\Servicios\DiagnosticoError' => $baseDir . '/servicios/DiagnosticoError.php',

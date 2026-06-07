@@ -189,6 +189,16 @@ class ConexionBaseDatos
             fecha_aplicacion TEXT DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS oauth_vinculo (
+            id_vinculo INTEGER PRIMARY KEY AUTOINCREMENT,
+            proveedor TEXT NOT NULL,
+            id_proveedor TEXT NOT NULL,
+            id_operador INTEGER NOT NULL,
+            fecha_vinculo TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (proveedor, id_proveedor),
+            UNIQUE (id_operador, proveedor)
+        );
+
         INSERT OR IGNORE INTO rbac_rol (id_rol, nombre_rol, descripcion_rol) VALUES
             (1, 'Super Administrador', 'Acceso total al sistema'),
             (2, 'Administrador', 'Acceso administrativo'),

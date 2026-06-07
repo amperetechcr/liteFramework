@@ -9,6 +9,42 @@ $enrutador->get('/ingreso', [AutenticacionControlador::class, 'mostrarInicioSesi
 // Cerrar sesion
 $enrutador->get('/salir', [AutenticacionControlador::class, 'cerrarSesion'])->nombre('salir');
 
+// OAuth — Google
+$enrutador->get('/auth/google', function () {
+    $oauth = new \LiteFramework\Servicios\AutenticacionOAuth();
+    header('Location: ' . $oauth->urlGoogle());
+    exit;
+});
+
+$enrutador->get('/auth/google/callback', function () {
+    $oauth = new \LiteFramework\Servicios\AutenticacionOAuth();
+    $resultado = $oauth->procesarGoogle($_GET['code'] ?? '', $_GET['state'] ?? '');
+    if ($resultado['exito']) {
+        header('Location: ' . URL_BASE . $resultado['redireccion']);
+    } else {
+        header('Location: ' . URL_BASE . '/?error=' . urlencode($resultado['mensaje']));
+    }
+    exit;
+});
+
+// OAuth — GitHub
+$enrutador->get('/auth/github', function () {
+    $oauth = new \LiteFramework\Servicios\AutenticacionOAuth();
+    header('Location: ' . $oauth->urlGithub());
+    exit;
+});
+
+$enrutador->get('/auth/github/callback', function () {
+    $oauth = new \LiteFramework\Servicios\AutenticacionOAuth();
+    $resultado = $oauth->procesarGithub($_GET['code'] ?? '', $_GET['state'] ?? '');
+    if ($resultado['exito']) {
+        header('Location: ' . URL_BASE . $resultado['redireccion']);
+    } else {
+        header('Location: ' . URL_BASE . '/?error=' . urlencode($resultado['mensaje']));
+    }
+    exit;
+});
+
 // API asincrona (mantiene el sistema existente)
 $enrutador->post('/api', function () {
     require DIRECTORIO_RAIZ . '/servidor/api/procesarPeticionPost.php';

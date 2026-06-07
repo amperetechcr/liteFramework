@@ -31,6 +31,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/estilos.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/utilidades.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/personalizacion.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/oauth.css">
 
     <script type="application/ld+json">
     {
@@ -217,6 +218,14 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
                             <button type="submit" class="ancho-total">Crear cuenta</button>
                         </form>
                     </article>
+                </div>
+            </section>
+
+            <section aria-label="Inicio de sesión con redes sociales" class="margen-inferior-normal">
+                <h3 class="margen-inferior-normal alineacion-centrada">O accede con</h3>
+                <div class="rejilla-automatica" style="grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 400px; margin: 0 auto;">
+                    <a href="<?= URL_BASE ?>/auth/google" class="btn ancho-total" style="text-decoration:none;text-align:center">Google</a>
+                    <a href="<?= URL_BASE ?>/auth/github" class="btn ancho-total" style="text-decoration:none;text-align:center">GitHub</a>
                 </div>
             </section>
 
