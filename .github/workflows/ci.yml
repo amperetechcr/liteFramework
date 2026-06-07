@@ -35,14 +35,7 @@ jobs:
         run: |
           php phpcs.phar --standard=phpcs.xml.dist --extensions=php \
             --ignore=vendor,plantillas,tests \
-            . || true
-
-      - name: Auto-fix PSR-12 (if applicable)
-        run: |
-            curl -LO https://github.com/squizlabs/PHP_CodeSniffer/releases/download/3.7.2/phpcbf.phar
-            php phpcbf.phar --standard=phpcs.xml.dist --extensions=php \
-              --ignore=vendor,plantillas,tests \
-              . || true
+            .
 
       - name: Download PHPStan
         run: curl -LO https://github.com/phpstan/phpstan/releases/download/2.1.10/phpstan.phar
@@ -51,7 +44,7 @@ jobs:
         run: php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress
 
       - name: Download PHPUnit
-        run: curl -LO https://phar.phpunit.de/phpunit-10.phar
+        run: curl -LO https://phar.phpunit.de/phpunit-11.phar
 
       - name: Run tests
-        run: php phpunit-10.phar --configuration=tests/phpunit.xml --do-not-cache-result --no-coverage
+        run: php phpunit-11.phar --configuration=tests/phpunit.xml --do-not-cache-result --no-coverage

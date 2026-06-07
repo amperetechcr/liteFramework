@@ -78,6 +78,9 @@ class CrudApiControlador
         $idEntidad = $payload['id_entidad'] ?? 0;
         $camposEntidad = array_diff_key($payload, array_flip(['token_peticion', 'accion_crud', 'tabla_destino', 'id_entidad']));
         $conexion = null;
+        $paginaActual = 1;
+        $limiteRegistros = 0;
+        $totalPaginas = 1;
 
         if ($operacionCrud === 'crear') {
             if (!SeguridadServidor::tienePermiso($entidadDinamica . '.crear')) {

@@ -59,4 +59,41 @@ class ValidadorCSRFTest extends TestCase {
         ValidadorCSRF::generarToken();
         $this->assertFalse(ValidadorCSRF::validarToken($token1));
     }
+
+    public function testValidarTokenRotaElTokenActual(): void {
+        $token1 = ValidadorCSRF::generarToken();
+        $this->assertTrue(ValidadorCSRF::validarToken($token1));
+        $token2 = $_SESSION['token_seguridad_peticion'] ?? '';
+        $this->assertNotEquals($token1, $token2);
+        $this->assertEquals(64, strlen($token2));
+    }
+
+    public function testTokenValidadoPasaAPrevio(): void {
+        $token1 = ValidadorCSRF::generarToken();
+        ValidadorCSRF::validarToken($token1);
+        $this->assertEquals($token1, $_SESSION['token_seguridad_previo'] ?? '');
+    }
+
+    public function testTokenAnteriorSigueValidoDentroDeVentana(): void {
+        $token1 = ValidadorCSRF::generarToken();
+        ValidadorCSRF::generarToken();
+        $this->assertTrue(ValidadorCSRF::validarToken($token1));
+    }
+
+    public function testCadaLlamadaAGenerarRotaElToken(): void {
+        $token1 = ValidadorCSRF::generarToken();
+        $token2 = ValidadorCSRF::generarToken();
+        $token3 = ValidadorCSRF::generarToken();
+        $this->assertNotEquals($token1, $token2);
+        $this->assertNotEquals($token2, $token3);
+        $this->assertNotEquals($token1, $token3);
+    }
+
+    public function testSesionContieneLosDosTokensDespuesDeRotacion(): void {
+        ValidadorCSRF::generarToken();
+        $actual = $_SESSION['token_seguridad_peticion'] ?? '';
+        ValidadorCSRF::generarToken();
+        $this->assertEquals($actual, $_SESSION['token_seguridad_previo'] ?? '');
+        $this->assertNotEquals($actual, $_SESSION['token_seguridad_peticion'] ?? '');
+    }
 }

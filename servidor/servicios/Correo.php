@@ -255,7 +255,7 @@ class Correo
 
     private function dialogo(string $comando): void
     {
-        $this->enviar($comando);
+        $this->enviarDatos($comando);
 
         if (str_starts_with($comando, 'EHLO')) {
             $this->leer(250, true);

@@ -26,10 +26,12 @@ class ModuloControlador extends ControladorBase
      *
      * @param string $modulo Nombre del archivo PHP en src/modulos/ (sin extensión)
      */
-    public function indice(string $modulo): void
+    public function indice(string $modulo, ?string $vista = null): void
     {
         $this->verificarAutenticacion();
-        $archivo = DIRECTORIO_RAIZ . '/src/modulos/' . $modulo . '/' . $modulo . '.php';
+        $archivo = $vista
+            ? DIRECTORIO_RAIZ . '/src/modulos/' . $modulo . '/' . $vista . '.php'
+            : DIRECTORIO_RAIZ . '/src/modulos/' . $modulo . '/' . $modulo . '.php';
 
         if (!file_exists($archivo)) {
             http_response_code(404);

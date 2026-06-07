@@ -50,4 +50,76 @@ class ConsistenciaTest extends TestCase {
         $this->assertStringContainsString('window.VALORES_UI', $contenido);
         $this->assertStringNotContainsString('window.FONDOS_DISPONIBLES', $contenido);
     }
+
+    public function testLimpiarTodosErroresUsaRemoveEnVezDeTextContent(): void {
+        $contenido = file_get_contents(DIRECTORIO_RAIZ . '/src/js/seguridad.js');
+        $this->assertStringContainsString("el.remove()", $contenido);
+        $this->assertStringContainsString(
+            "function limpiarTodosErrores",
+            $contenido
+        );
+    }
+
+    public function testFormularioAutenticacionTokenSeActualizaEnCatch(): void {
+        $contenido = file_get_contents(DIRECTORIO_RAIZ . '/src/js/api/formularioAutenticacion.js');
+        $this->assertStringContainsString('e.respuesta.nuevo_token', $contenido);
+        $this->assertStringContainsString("[name=\"token_peticion\"]", $contenido);
+    }
+
+    public function testSeguridadTieneFuncionLimpiarTodosErrores(): void {
+        $contenido = file_get_contents(DIRECTORIO_RAIZ . '/src/js/seguridad.js');
+        $this->assertStringContainsString('function limpiarTodosErrores', $contenido);
+    }
+
+    public function testFormularioAutenticacionTieneVentanaDeGraciaToken(): void {
+        $contenido = file_get_contents(DIRECTORIO_RAIZ . '/src/js/api/formularioAutenticacion.js');
+        $this->assertStringContainsString("nuevo_token", $contenido);
+        $this->assertStringContainsString("forEach", $contenido);
+    }
+
+    public function testPaginaInicioCargaMismosCssQueEncabezado(): void {
+        $encabezado = file_get_contents(DIRECTORIO_RAIZ . '/src/plantillas/encabezado.php');
+        $inicio = file_get_contents(DIRECTORIO_RAIZ . '/src/modulos/inicio/inicio.php');
+
+        preg_match_all('/href="[^"]+\/src\/css\/([^"]+\.css)"/', $encabezado, $cssEncabezado);
+        preg_match_all('/href="[^"]+\/src\/css\/([^"]+\.css)"/', $inicio, $cssInicio);
+
+        $faltantes = array_diff($cssEncabezado[1], $cssInicio[1]);
+        $this->assertEmpty(
+            $faltantes,
+            'A inicio.php le faltan estos CSS: ' . implode(', ', $faltantes)
+        );
+    }
+
+    public function testPaginaInicioSesionCargaCssNecesarios(): void {
+        $contenido = file_get_contents(DIRECTORIO_RAIZ . '/src/vistas/inicio_sesion.php');
+        $this->assertStringContainsString('modales.css', $contenido);
+        $this->assertStringContainsString('paletas.css', $contenido);
+        $this->assertStringContainsString('apariencia.css', $contenido);
+    }
+
+    public function testFaviconPresenteEnTodasLasPaginas(): void {
+        $archivos = [
+            '/src/plantillas/encabezado.php',
+            '/src/vistas/inicio_sesion.php',
+            '/src/vistas/mantenimiento.php',
+            '/src/error.php',
+            '/src/modulos/inicio/inicio.php',
+        ];
+        foreach ($archivos as $ruta) {
+            $contenido = file_get_contents(DIRECTORIO_RAIZ . $ruta);
+            $this->assertStringContainsString(
+                'favicon.png',
+                $contenido,
+                "Falta favicon en $ruta"
+            );
+        }
+    }
+
+    public function testProcesarPeticionPostSiempreIncluyeNuevoToken(): void {
+        $contenido = file_get_contents(DIRECTORIO_RAIZ . '/servidor/api/procesarPeticionPost.php');
+        $this->assertStringContainsString("\$respuestaServidor['nuevo_token']", $contenido);
+        $this->assertStringContainsString("\$datos['nuevo_token']", $contenido);
+        $this->assertStringContainsString("nuevoTokenRotado", $contenido);
+    }
 }

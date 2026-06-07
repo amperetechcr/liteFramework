@@ -85,13 +85,13 @@ class Logger implements LoggerInterface
 
     private function registrar(mixed $nivel, string|Stringable $mensaje, array $context = []): void
     {
-        $nivelTexto = is_string($nivel) ? $nivel : (static::$niveles[$nivel] ?? 'error');
+        $nivelTexto = is_string($nivel) ? $nivel : (self::$niveles[$nivel] ?? 'error');
 
-        if (!isset(static::$niveles[$nivelTexto])) {
+        if (!isset(self::$niveles[$nivelTexto])) {
             $nivelTexto = 'error';
         }
 
-        if (static::$niveles[$nivelTexto] > static::$niveles[$this->nivelMinimo]) {
+        if (self::$niveles[$nivelTexto] > self::$niveles[$this->nivelMinimo]) {
             return;
         }
 

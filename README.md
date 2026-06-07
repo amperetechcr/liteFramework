@@ -1,9 +1,9 @@
 # liteFramework
 
 [![CI](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml/badge.svg)](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-364%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-377%20passing-brightgreen)](tests/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%20|%208.2%20|%208.3-777BB4?logo=php)](https://php.net)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%200-brightgreen)](https://phpstan.org)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%202-brightgreen)](https://phpstan.org)
 [![PSR-12](https://img.shields.io/badge/PSR--12-%E2%9C%85-blueviolet)](phpcs.xml.dist)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
@@ -22,7 +22,7 @@ Cero dependencias externas — sin Composer, sin npm, sin Node.
 | **API** | Endpoint único `POST /api` con 15+ controladores, CRUD genérico, contrato uniforme |
 | **Frontend** | 15 hojas CSS con 13 paletas, 8 estilos, 16 fondos; SPA nativo; ES modules sin bundler; adaptación táctil/ancho de banda |
 | **Código** | PHP 8.1+, `declare(strict_types=1)`, namespaces PSR-4, tipado fuerte, PSR-12 |
-| **Testing** | 364 tests / 768 aserciones, PHPUnit phar (sin Composer), SQLite in-memory, CI integrado |
+| **Testing** | 377 tests / 926 aserciones, PHPUnit phar (sin Composer), SQLite in-memory, CI integrado |
 | **Generación** | Generador de módulos CRUD (7 archivos por entidad), generador de proyectos completos (wizard web + CLI + API) |
 | **Auditoría** | 50+ eventos auditados con contexto enriquecido: IP, User-Agent, sesión, datos de dispositivo, rendimiento |
 
@@ -191,7 +191,7 @@ php tests/phpunit.phar -c tests/phpunit.xml
 # O via el CLI del framework
 php servidor/consola/ejecutar_pruebas.php
 
-# Resultado: 364 tests, 768 aserciones, SQLite in-memory
+# Resultado: 377 tests, 926 aserciones, SQLite in-memory
 ```
 
 El test suite usa SQLite in-memory (vía `TESTS_RUNNING`), sin necesidad de MySQL.

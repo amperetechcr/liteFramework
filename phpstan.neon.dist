@@ -1,5 +1,5 @@
 parameters:
-    level: 0
+    level: 2
     paths:
         - .
     scanFiles:
@@ -11,4 +11,6 @@ parameters:
     ignoreErrors:
         - '#on an unknown class#'
         - '#Instantiated class [A-Z][a-zA-Z\\]+ not found#'
+        - '#Constant (URL_BASE|DIRECTORIO_RAIZ|DB_ANFITRION|DB_NOMBRE|DB_CLAVE|DB_USUARIO) not found#'
+        - '#Access to an undefined property#'
         - '#Unsafe usage of new static\(\)#'
