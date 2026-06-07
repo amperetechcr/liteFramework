@@ -12,7 +12,7 @@ seguridad del framework, ver `src/docs/AGENTS.md` seccion "Seguridad".
 Si descubres una vulnerabilidad de seguridad en liteFramework, por favor:
 
 1. **No** crees un issue publico en el repositorio.
-2. Envia un correo electronico a `seguridad@liteframework.dev` con:
+2. Envia un correo electronico a `amperetechcr@gmail.com` con:
    - Descripcion detallada de la vulnerabilidad.
    - Pasos para reproducir el problema.
    - Version afectada.
@@ -146,4 +146,4 @@ por terceros son responsabilidad de sus autores.
 
 ---
 
-Para preguntas de seguridad: `seguridad@liteframework.dev`
+Para preguntas de seguridad: `amperetechcr@gmail.com`

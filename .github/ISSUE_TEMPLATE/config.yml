@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Reporte de seguridad
+    url: https://github.com/amperetechcr/liteFramework/security/policy
+    about: "Reporta vulnerabilidades a amperetechcr@gmail.com (no publiques issues públicos)"
