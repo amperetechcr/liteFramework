@@ -1,44 +1,31 @@
-# liteFramework — Integracion OpenCode + OpenClaw
+# liteFramework — AI-Native Development Manifesto
 
-Este proyecto usa **OpenCode** para desarrollo y **OpenClaw** para testing/automatizacion.
-Ambos leen este archivo como contexto de sistema.
+Este proyecto fue diseñado desde cero para que **humanos e IA trabajen juntos** en el código.
+OpenCode escribe. OpenClaw verifica. El framework se explica a sí mismo.
 
-## Flujo de trabajo
+## Stack
+
+- PHP 8.2+ con declare(strict_types=1)
+- Sin dependencias externas (no Composer, no npm)
+- MySQL con SQLite fallback
+- MVC con ORM Active Record propio
+- SPA con JS vanilla (ES modules)
+- CSS nativo con 13 paletas, 8 estilos, 16 fondos
+- RBAC, CSRF, WAF, rate limiting, auditoria dual
+- SSE en tiempo real con daemon auto-start
+- Sentry nativo (ReporteroSentry, sin dependencias)
+- Apache multi-thread (XAMPP) con compresión gzip
+- PHPUnit 11 (458 tests, 1084 aserciones)
+- PHPStan level 7, PHPCS 0 errores
+- 6 MCP servers compartidos (git, time, fetch, sentry, context7, gh_grep)
+
+## Flujo de trabajo con IA
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    TAREA RECIBIDA                            │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-              ┌───────────────────────────────┐
-              │   Analisis inicial             │
-              │   Skills: arquitectura          │
-              │   Herramienta: OpenCode         │
-              └───────────────┬───────────────┘
-                              │
-                ┌─────────────┴─────────────┐
-                ▼                           ▼
-  ┌─────────────────────────┐  ┌─────────────────────────┐
-  │  CODIFICACION            │  │  TESTING / VALIDACION    │
-  │  OpenCode + agent        │  │  OpenClaw + agent        │
-  │                          │  │                          │
-  │  - Crear modulos         │  │  - UI tests (browser)    │
-  │  - Escribir modelos      │  │  - API tests (curl)      │
-  │  - Agregar rutas         │  │  - Performance tests     │
-  │  - Migraciones           │  │  - Visual regression     │
-  │  - Controladores         │  │  - Accesibilidad         │
-  │  - JS/CSS                │  │  - Responsive testing    │
-  └────────────┬────────────┘  └────────────┬────────────┘
-               │                             │
-               └─────────────┬───────────────┘
-                             ▼
-              ┌───────────────────────────────┐
-              │  VERIFICACION                 │
-              │  - Ejecutar tests PHPUnit      │
-              │  - opencode run test-filter    │
-              │  - OpenClaw: browser test      │
-              └───────────────────────────────┘
+TAREA → OpenCode analiza (skill arquitectura) →
+  → OpenCode escribe código (modelo, ruta, controlador, vista, JS, CSS) →
+    → OpenClaw valida (tests, PHPStan, browser testing, accesibilidad) →
+      → Feedback → iteración
 ```
 
 ## Cuando usar OpenCode
@@ -48,12 +35,12 @@ Usar OpenCode para **escribir y modificar codigo**:
 - `opencode` → abrir TUI en el proyecto
 - `opencode run "mensaje"` → ejecutar tarea desde terminal
 - Skills en `.opencode/skills/lite-framework/`
-- Comandos rapidos: `/test`, `/lint`, `/stan`, `/migrar`, `/sse`
+- Comandos rapidos: `/test`, `/lint`, `/stan`, `/validate`, `/migrar`
 
 ```bash
-# Ejemplos
 opencode run "Crear modulo Producto con campos nombre, precio, stock"
 opencode run "Agregar ruta GET /productos con interceptor de autenticacion"
+opencode run validate    # PHPStan + PHPCS + PHPUnit — 1 comando
 ```
 
 ## Cuando usar OpenClaw
@@ -61,17 +48,16 @@ opencode run "Agregar ruta GET /productos con interceptor de autenticacion"
 Usar OpenClaw para **automatizar pruebas y validacion**:
 
 - `openclaw agent --agent main --message "..."` → ejecutar tarea
-- Skills en `.agents/skills/`
+- Skills en `.agents/skills/` (8 skills disponibles)
 - Browser tool para UI testing
 - Exec tool para PHPUnit, curl, benchmarks
 
 ```bash
-# Ejemplos
 openclaw agent --agent main --message "Prueba el modulo de operadores"
 openclaw agent --agent main --message "Ejecuta los tests y reporta resultados"
 ```
 
-## MCP Servers disponibles (compartidos OpenCode + OpenClaw)
+## MCP Servers (compartidos)
 
 | MCP | Que hace |
 |-----|----------|
@@ -84,7 +70,7 @@ openclaw agent --agent main --message "Ejecuta los tests y reporta resultados"
 
 Configuración en `~/.config/opencode/opencode.json` (OpenCode) y `~/.openclaw/openclaw.json` (OpenClaw).
 
-## Skills disponibles
+## Skills
 
 ### OpenCode (`.opencode/skills/`)
 | Skill | Proposito |
@@ -103,19 +89,3 @@ Configuración en `~/.config/opencode/opencode.json` (OpenCode) y `~/.openclaw/o
 | `accessibility` | Auditoria WCAG 2.2 |
 | `frontend-design` | Guia de diseno frontend |
 | `seo` | Optimizacion SEO |
-
-## Stack
-
-- PHP 8.2+ con declare(strict_types=1)
-- Sin dependencias externas (no Composer, no npm)
-- MySQL con SQLite fallback
-- MVC con ORM Active Record propio
-- SPA con JS vanilla (ES modules)
-- CSS nativo con 13 paletas, 8 estilos, 16 fondos
-- RBAC, CSRF, WAF, rate limiting, auditoria dual
-- SSE en tiempo real con daemon auto-start
-- Sentry nativo (ReporteroSentry, sin dependencias)
-- Apache multi-thread (XAMPP) con compresión gzip
-- PHPUnit 11 (458 tests, 1084 aserciones)
-- PHPStan level 7, PHPCS 0 errores
-- 6 MCP servers (git, time, fetch, sentry, context7, gh_grep)

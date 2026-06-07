@@ -7,8 +7,21 @@
 [![Sentry](https://img.shields.io/badge/Sentry-monitoring-%23362D59)](https://sentry.io)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
-**Framework PHP MVC** con autenticación RBAC, API unificada, ORM Active Record, migraciones versionadas, personalización de UI, generación de proyectos, **SSE en tiempo real** y **Sentry nativo**.  
-Cero dependencias externas — sin Composer, sin npm, sin Node.
+**El framework PHP donde humanos e IA crean juntos.**  
+Zero dependencias externas. Código 100% legible por IA. OpenCode + OpenClaw nativos.  
+MVC, ORM, RBAC, SSE, Sentry — todo desde cero, sin vendor oculto, sin magia.
+
+---
+
+## Why liteFramework?
+
+| | Laravel / Symfony | liteFramework |
+|---|---|---|
+| **Dependencias** | 50+ paquetes Composer — la IA no puede ver el código interno | Cero. La IA lee cada línea del framework |
+| **Idioma** | Inglés técnico mezclado con config | 100% español. Semántica consistente para IA y humanos |
+| **IA nativa** | No diseñado para IA colaborativa | AGENTS.md, skills, MCP, OpenCode + OpenClaw listos desde el día 1 |
+| **Curva de IA** | La IA debe conocer las convenciones del framework de memoria | La IA aprende el framework leyéndolo directamente |
+| **Código fuente** | 90% del código en vendor/ — opaco, inmodificable | 100% visible, tipado, documentado, modificable |
 
 ---
 
@@ -16,23 +29,63 @@ Cero dependencias externas — sin Composer, sin npm, sin Node.
 
 | Área | Capacidades |
 |------|------------|
+| **🤖 AI Synergy** | 8 skills para OpenClaw (arquitectura, testing, SEO, UI, API, rendimiento), 6 MCP servers (git, time, fetch, sentry, context7, gh_grep), AGENTS.md por capa del framework, código 100% en español con type hints explícitos en cada método |
+| **🔍 Zero Dependencies** | Sin Composer, sin npm, sin vendor/. Cada línea del framework fue escrita para que una IA pueda leerla, entenderla y modificarla. Sin cajas negras, sin magia |
+| **🧪 Quality Gates** | 458 tests / 1084 aserciones, PHPStan level 7, PHPCS 0 errores (PSR-12), CI en 3 versiones de PHP (8.2, 8.3, 8.4). La IA verifica que no rompe nada |
 | **Arquitectura** | MVC con interceptors, ORM Active Record, enrutador con parámetros dinámicos, helpers, namespaces PSR-4 |
 | **Seguridad** | CSRF rotativo con gracia 60s, RBAC granular, anti-secuestro (fingerprint), rate limiting DB, WAF, auditoría dual (BD + archivo), excepciones personalizadas, CSP/HTTPS/HSTS |
 | **Base de Datos** | MySQL con fallback SQLite, migraciones versionadas con backup/restore, query builder, dialecto compatible MySQL/SQLite |
 | **API** | Endpoint único `POST /api` con 15+ controladores, CRUD genérico, contrato uniforme |
 | **Frontend** | 15 hojas CSS con 13 paletas, 8 estilos, 16 fondos; SPA nativo; ES modules sin bundler; adaptación táctil/ancho de banda |
-| **Código** | PHP 8.2+, `declare(strict_types=1)`, namespaces PSR-4, tipado fuerte, PSR-12 |
-| **Testing** | 404 tests / 970 aserciones, PHPUnit phar (sin Composer), SQLite in-memory, CI integrado |
-| **Generación** | Generador de módulos CRUD (7 archivos por entidad), generador de proyectos completos (wizard web + CLI + API) |
 | **SSE en Tiempo Real** | Daemon auto-start, `Last-Event-Id`, caché de posición en archivo (`fseek`), polling optimizado (500ms DB / 1s archivo), sesión con `session_write_close()` |
 | **Rendimiento** | Apache multi-thread (XAMPP), compresión gzip (~71% reducción CSS), sin dependencias externas, mod_deflate |
 | **Auditoría** | 50+ eventos auditados con contexto enriquecido: IP, User-Agent, sesión, datos de dispositivo, rendimiento |
-| **Sentry** | Reportero nativo vía API Store (sin dependencias). Captura errores PHP, excepciones y fatales automáticamente. Stack trace completo, URL, método HTTP, sesión, release |
-| **DevOps** | Integración OpenCode + OpenClaw con 6 MCP servidores (git, time, fetch, sentry, context7, gh_grep). Skills de arquitectura, testing, SEO, UI, API, rendimiento |
 
 ---
 
-## Arquitectura
+## Arquitectura AI-First
+
+### El código se explica a sí mismo
+
+Cada capa del framework tiene documentación diseñada para que una IA la consuma:
+
+| Quién lo lee | Qué ve | Dónde |
+|---|---|---|
+| **OpenCode** | Patrones prácticos: módulos, rutas, ORM, validación | `.opencode/skills/lite-framework/` |
+| **OpenClaw** | 8 skills que describen cada capa del framework | `.agents/skills/` |
+| **Context7 MCP** | Documentación de PHP, librerías y patrones vía context7 | `~/.config/opencode/opencode.json` |
+| **gh_grep MCP** | Ejemplos de código real en GitHub | `~/.config/opencode/opencode.json` |
+
+### Flujo de trabajo con IA
+
+```
+TAREA RECIBIDA
+  │
+  ▼
+OpenCode analiza con skill arquitectura ──────────────────────┐
+  │                                                            │
+  ▼                                                            │
+OpenCode escribe código (modelo, ruta, controlador, vista)     │
+  │                                                            │
+  ▼                                                            │
+OpenClaw ejecuta tests, PHPStan, browser testing              │
+  │                                                            │
+  ▼                                                            │
+Feedback → iteración ←────────────────────────────────────────┘
+```
+
+### Pipeline de verificación (OpenCode commands)
+
+```bash
+opencode run validate      # PHPStan + PHPCS + PHPUnit — todo en 1 comando
+opencode run test          # Solo tests
+opencode run stan          # Solo PHPStan level 7
+opencode run lint          # Solo PSR-12
+```
+
+---
+
+## Arquitectura del servidor
 
 ```
 index.php
@@ -77,6 +130,7 @@ SSE Daemon (servidor/consola/sse_daemon.php):
 - Apache 2.4+ con `mod_rewrite`, `mod_headers`, `mod_deflate` + `mod_filter`
 - MySQL 5.7+ / MariaDB 10.3+ (SQLite incluido como fallback)
 - XAMPP recomendado en Windows; Apache nativo en Linux
+- OpenCode + OpenClaw (opcional, para desarrollo asistido por IA)
 
 ## Instalación
 
@@ -99,7 +153,7 @@ php servidor/migrar.php
 # El daemon SSE se auto-inicia al primer request SSE.
 
 # 6. Abrir en navegador
-# http://localhost/liteFramework/
+# https://localhost/liteFramework/
 ```
 
 > Sin Composer, sin npm, sin `vendor/`. El autoloader es manual con soporte PSR-4.
@@ -193,9 +247,9 @@ php servidor/consola/sse_daemon.php status
 
 ---
 
-## Sentry — Reporte de errores nativo
+## Sentry — Zero-dependency monitoring
 
-El framework incluye un reportero de errores para Sentry **sin dependencias externas**. Usa la API Store de Sentry vía `file_get_contents` + `stream_context_create`.
+**Sin SDK, sin Composer, sin npm.** `ReporteroSentry` envía errores directo a la API Store de Sentry usando `file_get_contents` + `stream_context_create`. Una IA puede leer las ~170 líneas de `ReporteroSentry.php` y entender exactamente cómo funciona.
 
 ### Cómo funciona
 
@@ -212,7 +266,7 @@ SENTRY_DSN=https://clave_publica@oXXXXX.ingest.us.sentry.io/XXXXX
 APP_RELEASE=1.4.0
 ```
 
-### Clase: `servidor/servicios/ReporteroSentry.php`
+### Clase
 
 | Método | Descripción |
 |--------|-------------|
@@ -220,7 +274,7 @@ APP_RELEASE=1.4.0
 | `capturar(\Throwable $e, array $contexto)` | Envía error a Sentry (llamado automáticamente por ManejadorErrores) |
 | `estaActivo(): bool` | Verifica si Sentry está configurado |
 
-> Sin librerías externas, sin Composer, sin npm. La comunicación es HTTP directa a la API de Sentry.
+> Sin librerías externas, sin Composer, sin npm. La comunicación es HTTP directa a la API de Sentry. Timeout de 3s para no afectar la respuesta del servidor.
 
 ---
 
@@ -242,10 +296,10 @@ El proyecto está configurado para desarrollo asistido con **OpenCode** (codific
 ### Comandos rápidos (OpenCode)
 
 ```bash
+opencode run validate      # PHPStan + PHPCS + PHPUnit completo
 opencode run test          # Ejecutar todos los tests
 opencode run lint          # Validar PSR-12
 opencode run stan          # PHPStan level 7
-opencode run validate      # PHPStan + PHPCS + Tests completo
 opencode run migrar        # Ejecutar migraciones
 opencode run benchmark     # Benchmarks de rendimiento
 ```
@@ -362,3 +416,7 @@ php phpstan.phar analyse && php phpcs.phar --standard=phpcs.xml.dist && php test
 ## Licencia
 
 Apache 2.0 — ver [LICENSE.md](LICENSE.md).
+
+---
+
+> **Hecho por humanos. Potenciado por IA. Construido desde cero.**
