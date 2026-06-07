@@ -23,6 +23,15 @@ try {
 
 $esSuperAdmin = ((int)($_SESSION['operador_rol'] ?? 0) === 1);
 
+if ($esSuperAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'alternar_mantenimiento') {
+    $actual = ConfiguracionSistema::obtener('MODO_MANTENIMIENTO', false);
+    $nuevoValor = $actual ? '0' : '1';
+    ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', $nuevoValor, 'booleano');
+    $mensaje = $actual ? 'Modo mantenimiento desactivado.' : 'Modo mantenimiento activado.';
+    header('Location: ' . URL_BASE . '/configuracion?mensaje=' . urlencode($mensaje));
+    exit;
+}
+
 $configArchivos = [];
 $detallesConfig = [];
 $limitesPhp = GeneradorIniServidor::limitesActualesPHP();

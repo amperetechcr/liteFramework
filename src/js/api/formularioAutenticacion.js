@@ -91,6 +91,11 @@ export function vincularFormularioAutenticacion(idFormulario, tipo, rutaApi) {
             }
 
         } catch (e) {
+            if (e.respuesta && e.respuesta.nuevo_token) {
+                document.querySelectorAll('[name="token_peticion"]').forEach(function(el) {
+                    el.value = e.respuesta.nuevo_token;
+                });
+            }
             if (window.NotificadorHubble) {
                 window.NotificadorHubble.mostrar(
                     e.message || 'Error de conexión con el servidor.',

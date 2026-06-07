@@ -19,7 +19,7 @@ function limpiarErrorCampo(campo) {
 }
 
 function limpiarTodosErrores(formulario) {
-    formulario.querySelectorAll('.campo-error').forEach(el => el.textContent = '');
+    formulario.querySelectorAll('.campo-error').forEach(el => el.remove());
     formulario.querySelectorAll('input, textarea, select').forEach(el => el.style.borderColor = '');
 }
 
