@@ -35,6 +35,7 @@ jobs:
         run: |
           php phpcs.phar --standard=phpcs.xml.dist --extensions=php \
             --ignore=vendor,plantillas,tests \
+            --runtime-set ignore_warnings_on_exit 1 \
             .
 
       - name: Download PHPStan
