@@ -45,7 +45,8 @@ class ModeloMejorasTest extends TestCase
     protected function setUp(): void
     {
         self::$pdo->exec($this->ddlTablaMejoras());
-        self::$pdo->exec("TRUNCATE TABLE test_mejoras");
+        $truncar = self::$esMySQL ? "TRUNCATE TABLE test_mejoras" : "DELETE FROM test_mejoras";
+        self::$pdo->exec($truncar);
         self::$pdo->exec("INSERT INTO test_mejoras (nombre, email, edad, salario, activo, categoria) VALUES
             ('Ana Lopez', 'ana@test.com', 30, 50000, 1, 'premium'),
             ('Luis Perez', 'luis@test.com', 25, 35000, 1, 'standard'),
@@ -136,7 +137,8 @@ class ModeloMejorasTest extends TestCase
             ? "CREATE TABLE IF NOT EXISTS test_suma (id INT AUTO_INCREMENT PRIMARY KEY, valor INT) ENGINE=InnoDB"
             : "CREATE TABLE IF NOT EXISTS test_suma (id INTEGER PRIMARY KEY AUTOINCREMENT, valor INTEGER)";
         self::$pdo->exec($ddl);
-        self::$pdo->exec("TRUNCATE TABLE test_suma");
+        $truncarSuma = self::$esMySQL ? "TRUNCATE TABLE test_suma" : "DELETE FROM test_suma";
+        self::$pdo->exec($truncarSuma);
         self::$pdo->exec("INSERT INTO test_suma (valor) VALUES (10), (20), (30), (40), (50)");
         $suma = TestSuma::sumar('valor');
         $this->assertEquals(150, $suma);
@@ -149,7 +151,8 @@ class ModeloMejorasTest extends TestCase
             ? "CREATE TABLE IF NOT EXISTS test_prom (id INT AUTO_INCREMENT PRIMARY KEY, valor DECIMAL(10,2)) ENGINE=InnoDB"
             : "CREATE TABLE IF NOT EXISTS test_prom (id INTEGER PRIMARY KEY AUTOINCREMENT, valor REAL)";
         self::$pdo->exec($ddl);
-        self::$pdo->exec("TRUNCATE TABLE test_prom");
+        $truncarProm = self::$esMySQL ? "TRUNCATE TABLE test_prom" : "DELETE FROM test_prom";
+        self::$pdo->exec($truncarProm);
         self::$pdo->exec("INSERT INTO test_prom (valor) VALUES (10.5), (20.5), (30.0)");
         $prom = TestProm::promediar('valor');
         $this->assertEqualsWithDelta(20.333, $prom, 0.01);
