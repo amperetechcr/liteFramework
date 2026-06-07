@@ -13,6 +13,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lite Framework &mdash; Framework PHP sin dependencias</title>
+    <link rel="icon" type="image/png" href="<?= URL_BASE ?>/src/img/favicon.png">
     <meta name="description" content="Framework PHP con MVC, ORM, RBAC, CSRF, migraciones y personalización de UI. Sin Composer, npm ni dependencias externas.">
     <meta name="author" content="Ampere Tech Costa Rica S.A.">
     <meta name="robots" content="index, follow">
@@ -87,7 +88,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
                         <p class="texto-pequeno">Roles de acceso (RBAC)</p>
                     </article>
                     <article class="alineacion-centrada">
-                        <p class="texto-gigante texto-color-marca">4</p>
+                        <p class="texto-gigante texto-color-marca"><?= count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR)) ?></p>
                         <p class="texto-pequeno">Módulos del sistema</p>
                     </article>
                     <article class="alineacion-centrada">

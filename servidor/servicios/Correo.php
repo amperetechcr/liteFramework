@@ -36,6 +36,21 @@ class Correo
         $this->logger = $logger ?? new NullLogger();
     }
 
+    public static function desdeEntorno(?LoggerInterface $logger = null): self
+    {
+        $correo = new self($logger);
+        $correo->configurar(
+            defined('MAIL_ANFITRION') ? MAIL_ANFITRION : 'localhost',
+            defined('MAIL_PUERTO') ? (int)MAIL_PUERTO : 25,
+            defined('MAIL_USUARIO') ? MAIL_USUARIO : '',
+            defined('MAIL_CLAVE') ? MAIL_CLAVE : '',
+            defined('MAIL_REMITENTE') ? MAIL_REMITENTE : '',
+            null,
+            defined('MAIL_TLS') ? (bool)MAIL_TLS : false,
+        );
+        return $correo;
+    }
+
     public function configurar(string $anfitrion, int $puerto, string $usuario, string $clave, string $remitente, ?string $remitenteNombre = null, bool $usarTLS = true): static
     {
         $this->anfitrion = $anfitrion;

@@ -7,6 +7,7 @@ header('Retry-After: 3600');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mantenimiento — liteFramework</title>
+    <link rel="icon" type="image/png" href="<?= URL_BASE ?>/src/img/favicon.png">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/estilos.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/errores.css">
     <style>

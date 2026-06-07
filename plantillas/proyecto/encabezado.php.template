@@ -43,6 +43,7 @@ $enlacesNav = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $tituloPagina ?> &mdash; {{APP_NOMBRE}}</title>
     <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="<?= URL_BASE ?>/src/img/favicon.png">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/tema.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/paletas.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/maquetacion.css">

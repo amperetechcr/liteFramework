@@ -62,6 +62,36 @@ $consola->registrar('auditoria:limpiar', 'Limpia eventos antiguos de auditoría'
 }, ['[--dias=90]']);
 
 // ─── inicio ───
+// ─── mantenimiento ───
+$consola->registrar('mantenimiento:on', 'Activa el modo mantenimiento (bloquea no-admins)', function (array $args): int {
+    \LiteFramework\Config\ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', '1', 'booleano');
+    echo "Modo mantenimiento ACTIVADO." . PHP_EOL;
+    return 0;
+});
+
+$consola->registrar('mantenimiento:off', 'Desactiva el modo mantenimiento', function (array $args): int {
+    \LiteFramework\Config\ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', '0', 'booleano');
+    echo "Modo mantenimiento DESACTIVADO." . PHP_EOL;
+    return 0;
+});
+
+// ─── correo ───
+$consola->registrar('correo:test', 'Envía un correo de prueba', function (array $args): int {
+    $destinatario = $args[0] ?? '';
+    if (!$destinatario) {
+        echo "Uso: consola correo:test <destinatario@correo.com>" . PHP_EOL;
+        return 1;
+    }
+    $correo = \LiteFramework\Servicios\Correo::desdeEntorno();
+    $correo->para($destinatario)
+           ->asunto('Correo de prueba — liteFramework')
+           ->cuerpo('<h1>Prueba</h1><p>Este es un correo de prueba desde liteFramework.</p>');
+    $exito = $correo->enviar();
+    echo $exito ? "Correo enviado a {$destinatario}" . PHP_EOL : "Error al enviar correo" . PHP_EOL;
+    return $exito ? 0 : 1;
+}, ['<destinatario@correo.com>']);
+
+// ─── inicio ───
 $consola->registrar('inicio', 'Información del framework', function (array $args): int {
     echo "liteFramework v1.2.1" . PHP_EOL;
     echo "PHP " . PHP_VERSION . " | " . php_sapi_name() . PHP_EOL;

@@ -89,6 +89,24 @@ class GestorEntorno
         if (!defined('OAUTH_REDIRECT_BASE')) {
             define('OAUTH_REDIRECT_BASE', '');
         }
+        if (!defined('MAIL_ANFITRION')) {
+            define('MAIL_ANFITRION', 'localhost');
+        }
+        if (!defined('MAIL_PUERTO')) {
+            define('MAIL_PUERTO', '25');
+        }
+        if (!defined('MAIL_USUARIO')) {
+            define('MAIL_USUARIO', '');
+        }
+        if (!defined('MAIL_CLAVE')) {
+            define('MAIL_CLAVE', '');
+        }
+        if (!defined('MAIL_REMITENTE')) {
+            define('MAIL_REMITENTE', '');
+        }
+        if (!defined('MAIL_TLS')) {
+            define('MAIL_TLS', false);
+        }
     }
 
     public static function obtener(string $clave, mixed $defecto = null): mixed

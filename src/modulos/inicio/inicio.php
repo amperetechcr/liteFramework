@@ -23,10 +23,18 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
+    <link rel="icon" type="image/png" href="<?= URL_BASE ?>/src/img/favicon.png">
     <meta name="csrf-token" content="<?= $tokenCSRF ?>">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/tema.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/paletas.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/maquetacion.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/componentes.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/modales.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/subirArchivos.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/generadorPdf.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/estadisticas.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/documentacion.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/apariencia.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/estilos.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/utilidades.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/personalizacion.css">

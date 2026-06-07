@@ -262,6 +262,15 @@ $enrutador->get('/ejemploPdf', function () {
     $pdf->renderizar();
 })->interceptor(AutenticacionInterceptor::class)->nombre('ejemploPdf');
 
+// Modulo generador PDF
+$enrutador->get('/generador-pdf', function () {
+    (new ModuloControlador())->indice('generadorPdf');
+})->interceptor(AutenticacionInterceptor::class)->nombre('generadorPdf');
+
+$enrutador->get('/generador-pdf/listado', function () {
+    (new ModuloControlador())->indice('generadorPdf', 'listado');
+})->interceptor(AutenticacionInterceptor::class)->nombre('generadorPdf.listado');
+
 // Ejemplo de estadisticas generadas con el framework
 $enrutador->get('/ejemploEstadisticas', function () {
     $est = new GeneradorEstadisticas("SELECT nombre_completo, estado_cuenta FROM operador ORDER BY id_operador LIMIT 8");

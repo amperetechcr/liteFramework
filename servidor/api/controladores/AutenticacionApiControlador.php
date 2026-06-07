@@ -88,6 +88,7 @@ class AutenticacionApiControlador
         $_SESSION['operador_nombre'] = $operador['nombre_completo'];
         $_SESSION['operador_rol'] = $operador['id_rol'];
         $_SESSION['operador_rol_nombre'] = $operador['nombre_rol'];
+        $_SESSION['operador_es_admin'] = (int)$operador['id_rol'] === 1;
         $_SESSION['_inicio_sesion'] = time();
 
         SeguridadServidor::cargarPermisosEnMemoria($conexion, $operador['id_rol']);
