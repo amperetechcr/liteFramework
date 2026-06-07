@@ -2,6 +2,9 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/amperetechcr/liteFramework/ci.yml?branch=master&label=PHPStan%20PHPCS%20PHPUnit&logo=github)](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml)
 [![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4?logo=php)](https://php.net)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen)](https://phpstan.org)
+[![PSR-12](https://img.shields.io/badge/PSR--12-%E2%9C%85-blueviolet)](phpcs.xml.dist)
+[![Sentry](https://img.shields.io/badge/Sentry-monitoring-%23362D59)](https://sentry.io)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
 **Framework PHP MVC** con autenticación RBAC, API unificada, ORM Active Record, migraciones versionadas, personalización de UI, generación de proyectos, **SSE en tiempo real** y **Sentry nativo**.  
