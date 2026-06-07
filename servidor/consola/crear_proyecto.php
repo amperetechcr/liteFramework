@@ -10,6 +10,9 @@
 
 declare(strict_types=1);
 
+use LiteFramework\Config\GestorEntorno;
+use LiteFramework\Servicios\GeneradorProyecto;
+
 require_once __DIR__ . '/../autoload.php';
 GestorEntorno::cargar();
 if (!defined('DIRECTORIO_RAIZ')) {

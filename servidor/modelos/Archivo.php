@@ -8,6 +8,18 @@ use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
 
+/**
+ * @property int $id_archivo
+ * @property string $nombre_original
+ * @property string $nombre_generado
+ * @property string $ruta_archivo
+ * @property string $tipo_mime
+ * @property int $tamano_bytes
+ * @property string $extension
+ * @property string $categoria
+ * @property int $id_operador
+ * @property int|null $id_carpeta
+ */
 class Archivo extends Modelo
 {
     protected static string $tabla = 'archivo';

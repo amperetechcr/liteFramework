@@ -8,6 +8,14 @@ use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
 
+/**
+ * @property int $id_documento
+ * @property string $titulo
+ * @property string $contenido_html
+ * @property int $id_operador
+ * @property string $fecha_creacion
+ * @property string|null $fecha_actualizacion
+ */
 class DocumentoPdf extends Modelo
 {
     protected static string $tabla = 'documento_pdf';

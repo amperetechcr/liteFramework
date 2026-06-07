@@ -8,6 +8,18 @@ use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
 
+/**
+ * @property int $id_estadistica
+ * @property string $titulo
+ * @property string|null $descripcion
+ * @property string $consulta_sql
+ * @property string $tipo_visualizacion
+ * @property string|null $columnas_mostrar
+ * @property string|null $configuracion_visual
+ * @property int $id_operador
+ * @property string $fecha_creacion
+ * @property string|null $fecha_actualizacion
+ */
 class Estadistica extends Modelo
 {
     protected static string $tabla = 'estadistica';

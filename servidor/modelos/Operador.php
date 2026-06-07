@@ -9,6 +9,15 @@ use LiteFramework\Seguridad\ControlAccesoRBAC;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
 
+/**
+ * @property int $id_operador
+ * @property string $nombre_completo
+ * @property string $correo_electronico
+ * @property string $clave_acceso
+ * @property int $id_rol
+ * @property int $estado_cuenta
+ * @property string|null $fecha_registro
+ */
 class Operador extends Modelo
 {
     protected static string $tabla = 'operador';

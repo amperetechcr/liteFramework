@@ -13,6 +13,8 @@
 
 declare(strict_types=1);
 
+use LiteFramework\Servicios\GeneradorModulo;
+
 require_once __DIR__ . '/../autoload.php';
 if ($argc < 2) {
     echo "Uso: php generar_modulo.php <NombreClase> [--campos=\"...\"] [--tabla=...]\n";

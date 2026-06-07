@@ -9,6 +9,12 @@ use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
 
+/**
+ * @property int $id_rol
+ * @property string $nombre_rol
+ * @property string|null $descripcion_rol
+ * @property int $estado_rol
+ */
 class Rol extends Modelo
 {
     protected static string $tabla = 'rbac_rol';

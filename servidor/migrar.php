@@ -9,6 +9,10 @@
 
 declare(strict_types=1);
 
+use LiteFramework\Config\GestorEntorno;
+use LiteFramework\Config\ConexionBaseDatos;
+use LiteFramework\Migraciones\GestorMigraciones;
+
 require_once __DIR__ . '/autoload.php';
 GestorEntorno::cargar();
 try {

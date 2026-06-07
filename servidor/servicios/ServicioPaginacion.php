@@ -21,6 +21,7 @@ class ServicioPaginacion
         ?string $urlBase = null,
         int $paginasVisibles = 5
     ): static {
+        /** @phpstan-ignore new.static */
         $instancia = new static();
 
         $instancia->totalRegistros = max(0, $totalRegistros);

@@ -9,6 +9,11 @@ use LiteFramework\Middleware\ApiAuthInterceptor;
 use LiteFramework\Migraciones\GestorMigraciones;
 use LiteFramework\Servicios\GeneradorPdf;
 use LiteFramework\Servicios\GeneradorEstadisticas;
+use LiteFramework\Config\ConexionBaseDatos;
+use LiteFramework\Seguridad\RegistroAuditoria;
+use LiteFramework\Servicios\RemediadorError;
+use LiteFramework\Modelos\Operador;
+use LiteFramework\Modelos\Rol;
 
 $enrutador = new Enrutador();
 

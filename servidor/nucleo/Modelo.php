@@ -50,6 +50,7 @@ class Modelo
         $sql = $bd->prepare("SELECT * FROM {$tabla} WHERE {$idCol} = :id LIMIT 1");
         $sql->execute([':id' => $id]);
         $fila = $sql->fetch(PDO::FETCH_ASSOC);
+        /** @phpstan-ignore new.static */
         return $fila ? new static($fila) : null;
     }
 
@@ -59,6 +60,7 @@ class Modelo
             $valor = $operador;
             $operador = '=';
         }
+        /** @phpstan-ignore new.static */
         $instancia = new static();
         self::$dondePendiente[] = [
             'tipo' => 'y',
@@ -153,6 +155,7 @@ class Modelo
 
         $resultado = [];
         foreach ($filas as $fila) {
+            /** @phpstan-ignore new.static */
             $resultado[] = new static($fila);
         }
         return $resultado;
@@ -167,6 +170,7 @@ class Modelo
 
     public static function todos(): array
     {
+        /** @phpstan-ignore new.static */
         $instancia = new static();
         return $instancia->obtener();
     }
@@ -181,6 +185,7 @@ class Modelo
 
     public static function crear(array $datos): static
     {
+        /** @phpstan-ignore new.static */
         $modelo = new static();
         $modelo->llenar($datos);
         $modelo->guardar();

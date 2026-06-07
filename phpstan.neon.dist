@@ -1,16 +1,11 @@
 parameters:
-    level: 2
+    level: 3
     paths:
         - .
     scanFiles:
         - servidor/autoload.php
+        - phpstan.php
     excludePaths:
         - plantillas/
         - tests/
         - src/
-    ignoreErrors:
-        - '#on an unknown class#'
-        - '#Instantiated class [A-Z][a-zA-Z\\]+ not found#'
-        - '#Constant (URL_BASE|DIRECTORIO_RAIZ|DB_ANFITRION|DB_NOMBRE|DB_CLAVE|DB_USUARIO) not found#'
-        - '#Access to an undefined property#'
-        - '#Unsafe usage of new static\(\)#'
