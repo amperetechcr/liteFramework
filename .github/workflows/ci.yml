@@ -52,7 +52,7 @@ jobs:
         continue-on-error: true
 
       - name: Download PHPUnit
-        run: curl -LO https://phar.phpunit.de/phpunit-11.phar
+        run: curl -LO https://phar.phpunit.de/phpunit-10.phar
 
       - name: Run tests
-        run: php phpunit-11.phar --configuration=tests/phpunit.xml --do-not-cache-result --no-coverage
+        run: php phpunit-10.phar --configuration=tests/phpunit.xml --do-not-cache-result --no-coverage
