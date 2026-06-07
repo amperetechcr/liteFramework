@@ -1,5 +1,5 @@
 parameters:
-    level: 5
+    level: 6
     paths:
         - .
     scanFiles:
@@ -9,3 +9,5 @@ parameters:
         - plantillas/
         - tests/
         - src/
+    ignoreErrors:
+        - identifier: missingType.iterableValue

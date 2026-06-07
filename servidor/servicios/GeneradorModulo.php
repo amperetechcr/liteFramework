@@ -14,9 +14,9 @@ use Exception;
 
 class GeneradorModulo
 {
-    private static $TABLA_ANZA = '    ';
-    private static $DIRS;
-    private static $RAIZ_FORZADA = null;
+    private static string $TABLA_ANZA = '    ';
+    private static ?array $DIRS = null;
+    private static ?string $RAIZ_FORZADA = null;
 
     private static function initDirs(): void
     {

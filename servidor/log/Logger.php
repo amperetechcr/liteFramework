@@ -13,7 +13,7 @@ class Logger implements LoggerInterface
     private string $rutaDirectorio;
     private string $nivelMinimo;
     private ?string $archivoActual = null;
-    private $recurso = null;
+    private mixed $recurso = null;
     private static array $niveles = [
         'emergency' => 0,
         'alert'     => 1,

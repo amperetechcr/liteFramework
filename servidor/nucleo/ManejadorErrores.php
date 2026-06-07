@@ -17,7 +17,7 @@ use ErrorException;
 
 class ManejadorErrores
 {
-    private static $registrados = false;
+    private static bool $registrados = false;
     private static ?array $ultimoDiagnostico = null;
     private static bool $diagnosticando = false;
 
@@ -49,7 +49,7 @@ class ManejadorErrores
         return true;
     }
 
-    public static function manejarExcepcion($excepcion): void
+    public static function manejarExcepcion(\Throwable $excepcion): void
     {
         if ($excepcion instanceof ErrorException) {
             self::loggear($excepcion, 'ERROR_PHP');
@@ -102,7 +102,7 @@ class ManejadorErrores
         self::responderHtml($excepcion);
     }
 
-    private static function loggear($excepcion, string $tipo): void
+    private static function loggear(\Throwable $excepcion, string $tipo): void
     {
         $idTraza = 'N/A';
         if (class_exists('TrazadorPeticiones')) {
@@ -158,7 +158,7 @@ class ManejadorErrores
         }
     }
 
-    private static function diagnosticarError($excepcion, string $tipo, string $idTraza): array
+    private static function diagnosticarError(\Throwable $excepcion, string $tipo, string $idTraza): array
     {
         try {
             $ctx = ContextoError::capturar('error_interno', $excepcion->getMessage(), $excepcion->getFile(), $excepcion->getLine(), [
@@ -185,7 +185,7 @@ class ManejadorErrores
         return false;
     }
 
-    private static function responderJsonApi($excepcion): void
+    private static function responderJsonApi(\Throwable $excepcion): void
     {
         if (!headers_sent()) {
             header('Content-Type: application/json; charset=utf-8');
@@ -232,7 +232,7 @@ class ManejadorErrores
         exit;
     }
 
-    private static function responderHtml($excepcion): void
+    private static function responderHtml(\Throwable $excepcion): void
     {
         if (headers_sent()) {
             echo '<h1>Error interno del servidor</h1>';

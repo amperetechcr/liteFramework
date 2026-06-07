@@ -12,7 +12,7 @@ use LiteFramework\Config\ConexionBaseDatos;
 
 class CrudApiControlador
 {
-    private function determinarTipoPDO($valor): int
+    private function determinarTipoPDO(mixed $valor): int
     {
         if (is_null($valor)) {
             return PDO::PARAM_NULL;
@@ -29,7 +29,7 @@ class CrudApiControlador
         return PDO::PARAM_STR;
     }
 
-    private function obtenerColumnasEntidad($conexion, string $entidad): array
+    private function obtenerColumnasEntidad(\PDO $conexion, string $entidad): array
     {
         $claveCache = 'esquema_cache_' . $entidad;
         $claveTiempo = 'esquema_cache_tiempo_' . $entidad;
