@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml/badge.svg)](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-377%20passing-brightgreen)](tests/)
-[![PHP](https://img.shields.io/badge/PHP-8.1%20|%208.2%20|%208.3-777BB4?logo=php)](https://php.net)
+[![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4?logo=php)](https://php.net)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%203-brightgreen)](https://phpstan.org)
 [![PSR-12](https://img.shields.io/badge/PSR--12-%E2%9C%85-blueviolet)](phpcs.xml.dist)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
@@ -21,7 +21,7 @@ Cero dependencias externas — sin Composer, sin npm, sin Node.
 | **Base de Datos** | MySQL con fallback SQLite, migraciones versionadas con backup/restore, query builder, dialecto compatible MySQL/SQLite |
 | **API** | Endpoint único `POST /api` con 15+ controladores, CRUD genérico, contrato uniforme |
 | **Frontend** | 15 hojas CSS con 13 paletas, 8 estilos, 16 fondos; SPA nativo; ES modules sin bundler; adaptación táctil/ancho de banda |
-| **Código** | PHP 8.1+, `declare(strict_types=1)`, namespaces PSR-4, tipado fuerte, PSR-12 |
+| **Código** | PHP 8.2+, `declare(strict_types=1)`, namespaces PSR-4, tipado fuerte, PSR-12 |
 | **Testing** | 377 tests / 926 aserciones, PHPUnit phar (sin Composer), SQLite in-memory, CI integrado |
 | **Generación** | Generador de módulos CRUD (7 archivos por entidad), generador de proyectos completos (wizard web + CLI + API) |
 | **Auditoría** | 50+ eventos auditados con contexto enriquecido: IP, User-Agent, sesión, datos de dispositivo, rendimiento |
@@ -59,7 +59,7 @@ index.php
 
 ## Requisitos
 
-- PHP 8.1+ (extensiones: `pdo`, `pdo_mysql`, `pdo_sqlite`, `json`, `mbstring`, `fileinfo`)
+- PHP 8.2+ (extensiones: `pdo`, `pdo_mysql`, `pdo_sqlite`, `json`, `mbstring`, `fileinfo`)
 - Apache 2.4+ con `mod_rewrite`, `mod_headers`
 - MySQL 5.7+ / MariaDB 10.3+ (SQLite incluido como fallback)
 
