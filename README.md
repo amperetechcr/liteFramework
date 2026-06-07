@@ -3,7 +3,7 @@
 [![CI](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml/badge.svg)](https://github.com/amperetechcr/liteFramework/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-377%20passing-brightgreen)](tests/)
 [![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777BB4?logo=php)](https://php.net)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%203-brightgreen)](https://phpstan.org)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%204-brightgreen)](https://phpstan.org)
 [![PSR-12](https://img.shields.io/badge/PSR--12-%E2%9C%85-blueviolet)](phpcs.xml.dist)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
