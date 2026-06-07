@@ -237,6 +237,13 @@ class ConexionBaseDatos
             ('ARCHIVO_TIEMPO_EJECUCION_SEG', '300', 'numero', 1, 'max_execution_time en segundos'),
             ('ARCHIVO_MAXIMO_SUBIDAS_SIMULTANEAS', '20', 'numero', 1, 'max_file_uploads simultaneos'),
             ('ARCHIVO_POST_MAX_SIZE_MB', '50', 'numero', 1, 'post_max_size en MB (debe ser mayor a upload_max_filesize)');
+
+        CREATE TABLE IF NOT EXISTS rate_limit (
+            clave_hash TEXT NOT NULL,
+            ventana_inicio INTEGER NOT NULL,
+            contador INTEGER NOT NULL DEFAULT 1,
+            UNIQUE (clave_hash, ventana_inicio)
+        );
         ";
 
         $this->conexion_pdo->exec($sql);

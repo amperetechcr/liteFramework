@@ -28,6 +28,7 @@ $mapaNamespaced = [
     'LiteFramework\Seguridad\RegistroAuditoria'  => $baseDir . '/seguridad/RegistroAuditoria.php',
     'LiteFramework\Seguridad\TrazadorPeticiones' => $baseDir . '/seguridad/TrazadorPeticiones.php',
     'LiteFramework\Seguridad\SseGestor'          => $baseDir . '/seguridad/SseGestor.php',
+    'LiteFramework\Seguridad\LimitadorPeticiones'  => $baseDir . '/seguridad/LimitadorPeticiones.php',
     'LiteFramework\Config\ConexionBaseDatos'     => $baseDir . '/config/conexion.php',
     'LiteFramework\Config\GestorEntorno'         => $baseDir . '/config/entorno.php',
     'LiteFramework\Config\ConfiguracionSistema'  => $baseDir . '/config/configuracion_sistema.php',
@@ -44,6 +45,7 @@ $mapaNamespaced = [
     'LiteFramework\Controladores\SubirArchivosControlador' => $baseDir . '/controladores/SubirArchivosControlador.php',
     'LiteFramework\Middleware\AutenticacionInterceptor' => $baseDir . '/middleware/AutenticacionInterceptor.php',
     'LiteFramework\Middleware\ApiAuthInterceptor' => $baseDir . '/middleware/ApiAuthInterceptor.php',
+    'LiteFramework\Middleware\MantenimientoInterceptor' => $baseDir . '/middleware/MantenimientoInterceptor.php',
     'LiteFramework\Api\Controladores\AutenticacionApiControlador' => $baseDir . '/api/controladores/AutenticacionApiControlador.php',
     'LiteFramework\Api\Controladores\OperadorApiControlador' => $baseDir . '/api/controladores/OperadorApiControlador.php',
     'LiteFramework\Api\Controladores\PersonalizacionApiControlador' => $baseDir . '/api/controladores/PersonalizacionApiControlador.php',
@@ -58,6 +60,7 @@ $mapaNamespaced = [
     'LiteFramework\Servicios\GeneradorProyecto'  => $baseDir . '/servicios/GeneradorProyecto.php',
     'LiteFramework\Servicios\ServicioPaginacion' => $baseDir . '/servicios/ServicioPaginacion.php',
     'LiteFramework\Servicios\AdministradorArchivos' => $baseDir . '/servicios/AdministradorArchivos.php',
+    'LiteFramework\Servicios\Correo' => $baseDir . '/servicios/Correo.php',
     'LiteFramework\Servicios\ContextoError' => $baseDir . '/servicios/ContextoError.php',
     'LiteFramework\Servicios\DiagnosticoError' => $baseDir . '/servicios/DiagnosticoError.php',
     'LiteFramework\Servicios\RemediadorError' => $baseDir . '/servicios/RemediadorError.php',
@@ -70,6 +73,11 @@ $mapaNamespaced = [
     'LiteFramework\Nucleo\Excepciones\ErrorAutenticacion' => $baseDir . '/nucleo/Excepciones/ErrorAutenticacion.php',
     'LiteFramework\Nucleo\Excepciones\ErrorValidacion' => $baseDir . '/nucleo/Excepciones/ErrorValidacion.php',
     'LiteFramework\Nucleo\DialectoBaseDatos' => $baseDir . '/nucleo/DialectoBaseDatos.php',
+    'LiteFramework\Cli\Consola' => $baseDir . '/cli/Consola.php',
+    'Psr\Log\LoggerInterface' => $baseDir . '/psr/Log/LoggerInterface.php',
+    'Psr\Log\LogLevel' => $baseDir . '/psr/Log/LogLevel.php',
+    'Psr\Log\NullLogger' => $baseDir . '/psr/Log/NullLogger.php',
+    'LiteFramework\Log\Logger' => $baseDir . '/log/Logger.php',
 ];
 
 $alias = [
@@ -144,6 +152,7 @@ $alias = [
     'ErrorAutenticacion' => 'LiteFramework\Nucleo\Excepciones\ErrorAutenticacion',
     'ErrorValidacion' => 'LiteFramework\Nucleo\Excepciones\ErrorValidacion',
     'DialectoBaseDatos' => 'LiteFramework\Nucleo\DialectoBaseDatos',
+    'Logger' => 'LiteFramework\Log\Logger',
 ];
 
 spl_autoload_register(function (string $clase) use ($mapaNamespaced, $alias): void {

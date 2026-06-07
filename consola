@@ -1,0 +1,72 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+define('DIRECTORIO_RAIZ', __DIR__);
+require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
+\LiteFramework\Config\GestorEntorno::cargar();
+
+use LiteFramework\Cli\Consola;
+
+$consola = new Consola('consola');
+
+// ─── migraciones ───
+$consola->registrar('migrar', 'Ejecuta migraciones pendientes', function (array $args): int {
+    require DIRECTORIO_RAIZ . '/servidor/migrar.php';
+    return 0;
+});
+
+$consola->registrar('migrar:list', 'Lista migraciones pendientes', function (array $args): int {
+    $_SERVER['argv'] = ['migrar.php', 'list'];
+    $_GET['accion'] = 'list';
+    require DIRECTORIO_RAIZ . '/servidor/migrar.php';
+    return 0;
+});
+
+// ─── generar módulo ───
+$consola->registrar('modulo:generar', 'Genera un módulo CRUD (7 archivos)', function (array $args): int {
+    $phpArgs = array_merge(['generar_modulo.php'], $args);
+    $GLOBALS['argc'] = count($phpArgs);
+    $GLOBALS['argv'] = $phpArgs;
+    $_SERVER['argv'] = $phpArgs;
+    require DIRECTORIO_RAIZ . '/servidor/consola/generar_modulo.php';
+    return 0;
+}, ['<NombreClase>', '[--tabla=nombre]', '[--campos=campo:tipo,...]']);
+
+// ─── crear proyecto ───
+$consola->registrar('proyecto:crear', 'Genera un proyecto completo desde definición JSON', function (array $args): int {
+    $phpArgs = array_merge(['crear_proyecto.php'], $args);
+    $GLOBALS['argc'] = count($phpArgs);
+    $GLOBALS['argv'] = $phpArgs;
+    $_SERVER['argv'] = $phpArgs;
+    require DIRECTORIO_RAIZ . '/servidor/consola/crear_proyecto.php';
+    return 0;
+}, ['[--nombre=]', '[--base-datos=]', '[--archivo=definicion.json]']);
+
+// ─── pruebas ───
+$consola->registrar('pruebas', 'Ejecuta los tests', function (array $args): int {
+    $_SERVER['argv'] = array_merge([__FILE__], $args);
+    require DIRECTORIO_RAIZ . '/servidor/consola/ejecutar_pruebas.php';
+    return 0;
+}, ['[--filtro=NombreTest]', '[--cobertura]']);
+
+// ─── auditoría ───
+$consola->registrar('auditoria:limpiar', 'Limpia eventos antiguos de auditoría', function (array $args): int {
+    $phpArgs = array_merge(['limpiar_auditoria.php'], $args);
+    $GLOBALS['argc'] = count($phpArgs);
+    $GLOBALS['argv'] = $phpArgs;
+    $_SERVER['argv'] = $phpArgs;
+    require DIRECTORIO_RAIZ . '/servidor/consola/limpiar_auditoria.php';
+    return 0;
+}, ['[--dias=90]']);
+
+// ─── inicio ───
+$consola->registrar('inicio', 'Información del framework', function (array $args): int {
+    echo "liteFramework v1.2.1" . PHP_EOL;
+    echo "PHP " . PHP_VERSION . " | " . php_sapi_name() . PHP_EOL;
+    echo "Raiz: " . DIRECTORIO_RAIZ . PHP_EOL;
+    return 0;
+});
+
+$consola->ejecutar($argv);

@@ -105,6 +105,19 @@ if ($ruta === '//') {
 }
 
 $enrutador = require DIRECTORIO_RAIZ . '/rutas/web.php';
+
+$mantenimiento = \LiteFramework\Config\ConfiguracionSistema::obtener('MODO_MANTENIMIENTO', false);
+if ($mantenimiento) {
+    $rutaRelativa = $ruta;
+    $esLogin = in_array($rutaRelativa, ['/', '/ingreso', '/salir'], true);
+    $esRecurso = (bool)preg_match('/\.(css|js|png|jpg|svg|ico|woff2?)$/', $rutaRelativa);
+    $esAdmin = !empty($_SESSION['operador_id']);
+
+    if (!$esLogin && !$esRecurso && !$esAdmin) {
+        (new \LiteFramework\Middleware\MantenimientoInterceptor())->manejar([], function () {});
+    }
+}
+
 $resultado = $enrutador->despachar($_SERVER['REQUEST_METHOD'], $ruta);
 
 if ($resultado === false) {
