@@ -352,7 +352,7 @@ class GeneradorProyecto
         if (!empty($existing)) {
             rsort($existing);
             preg_match('/^(\d+)/', basename($existing[0]), $m);
-            $num = str_pad((int)$m[1] + 1, 3, '0', STR_PAD_LEFT);
+            $num = str_pad((string)((int)$m[1] + 1), 3, '0', STR_PAD_LEFT);
         }
 
         $file = "$dirMigraciones/{$num}_semilla_{$codigo}.sql";

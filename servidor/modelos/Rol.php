@@ -23,7 +23,7 @@ class Rol extends Modelo
 
     public function operadores(): array
     {
-        return Operador::donde('id_rol', $this->id_rol)->obtener();
+        return Operador::donde('id_rol', '=', $this->id_rol)->obtener();
     }
 
     public function permisos(): array
