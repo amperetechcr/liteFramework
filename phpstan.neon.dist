@@ -11,8 +11,5 @@ parameters:
         - src/vistas/*.php
         - src/modulos/*/*.php
     ignoreErrors:
-        - '#Constant [A-Z_]+ not found#'
-        - '#Function [a-z_]+ not found#'
-        - '#Class [A-Z][a-zA-Z]+ not found#'
-        - '#on an unknown class#'
-        - '#Instantiated class [A-Z][a-zA-Z]+ not found#'
+        - '#Instantiated class [A-Z][a-zA-Z\\]+ not found#'
+        - '#Unsafe usage of new static\(\)#'

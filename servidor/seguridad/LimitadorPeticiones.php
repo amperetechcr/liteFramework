@@ -11,7 +11,6 @@ use LiteFramework\Nucleo\DialectoBaseDatos;
 class LimitadorPeticiones
 {
     private PDO $conexion;
-    private Logger $logger;
 
     public function __construct()
     {

@@ -8,6 +8,7 @@ use Exception;
 use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Seguridad\RegistroAuditoria;
+use ReflectionClass;
 
 class Modelo
 {
