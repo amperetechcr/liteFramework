@@ -16,7 +16,7 @@ var ListaFiltrable = (function (global) {
 
         this._basePath = typeof global.obtenerBasePath === 'function'
             ? global.obtenerBasePath()
-            : (window.location.pathname.replace(/\/[^/] * $ / , '') || '/');
+            : (window.location.pathname.replace(/\/[^/]+$/, '') || '/');
         this._timeout = null;
         this._paginaActual = 1;
     }

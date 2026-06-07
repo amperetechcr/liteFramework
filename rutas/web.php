@@ -86,6 +86,24 @@ $enrutador->get('/configuracion', function () {
     (new ModuloControlador())->indice('configuracion');
 })->interceptor(AutenticacionInterceptor::class)->nombre('configuracion');
 
+$enrutador->post('/configuracion', function () {
+    if (!empty($_POST['accion_crud'])) {
+        if (!\LiteFramework\Seguridad\SeguridadServidor::validarTokenAntiFalsificacion($_POST['token_peticion'] ?? '')) {
+            header('Location: ' . URL_BASE . '/configuracion?error=token_invalido');
+            exit;
+        }
+        $controlador = new \LiteFramework\Api\Controladores\ConfiguracionApiControlador();
+        [$codigo, $respuesta] = $controlador->actualizarConfiguracionArchivos($_POST);
+        $param = $respuesta['estado_operacion']
+            ? 'mensaje=configuracion_actualizada'
+            : 'error=' . urlencode($respuesta['mensaje_error']);
+        http_response_code($codigo);
+        header('Location: ' . URL_BASE . '/configuracion?' . $param);
+        exit;
+    }
+    (new ModuloControlador())->indice('configuracion');
+})->interceptor(AutenticacionInterceptor::class);
+
 $enrutador->get('/apariencia', function () {
     (new ModuloControlador())->indice('apariencia');
 })->interceptor(AutenticacionInterceptor::class)->nombre('apariencia');

@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var esLogin = document.getElementById('formularioInicioSesion') !== null;
 
     if (!esLogin && !window.__liteSse) {
-        var apiBase = document.querySelector('meta[name="api-base"]') ? .content;
+        var apiBase = document.querySelector('meta[name="api-base"]')?.content;
         var metaUrl = apiBase ? apiBase.replace('/api', '/src/sse.php') : 'src/sse.php';
         window.__liteSse = new LiteSse(metaUrl);
         window.liteSse = window.__liteSse;

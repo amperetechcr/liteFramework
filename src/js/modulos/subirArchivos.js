@@ -666,9 +666,9 @@
         totalSubidos = 0;
         colaSubida = [];
 
-        var etiquetas = form.querySelector('#etiquetas') ? .value || '';
-        var modulo = form.querySelector('#modulo_origen') ? .value || '';
-        var descripcion = form.querySelector('#descripcion') ? .value || '';
+        var etiquetas = form.querySelector('#etiquetas')?.value || '';
+        var modulo = form.querySelector('#modulo_origen')?.value || '';
+        var descripcion = form.querySelector('#descripcion')?.value || '';
 
         for (var i = 0; i < archivos.length; i++) {
             colaSubida.push({
@@ -710,7 +710,8 @@
             })
             .then(function (r) {
                 if (r.status === 204) {
-                    return  exito: true, mensaje: 'Eliminado' };
+                    return { exito: true, mensaje: 'Eliminado' };
+                }
                 return r.text().then(function (texto) {
                     try {
                         return JSON.parse(texto); } catch (e) {

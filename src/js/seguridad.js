@@ -40,7 +40,7 @@ const SeguridadSistema = {
         if (!textoEntrada) {
             return '';
         }
-        const expresionRegularGlobal = /[&<>"'/] / ig;
+        const expresionRegularGlobal = /[&<>"'/]/gi;
         return textoEntrada.replace(expresionRegularGlobal, (caracter) => this.mapaCaracteresPeligrosos[caracter]);
     },
 

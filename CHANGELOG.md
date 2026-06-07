@@ -2,6 +2,18 @@
 
 Basado en [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.3.0] - 2026-06-07
+
+**Agregado:** SSE optimizado con daemon auto-start (`SseGestor::iniciarDaemon()`, `exec()`) · soporte `Last-Event-Id` (`HTTP_LAST_EVENT_ID`) · caché de posición en archivo (`$posArchivo`) para leer solo datos nuevos con `fseek` · landing page profesional (`inicio_sesion.php`) con hero, features grid, stats cards, OAuth SVGs, login/register integrado · ruta POST `/configuracion` para fallback sin JS · compresión gzip via `mod_deflate` + `mod_filter` (CSS: 8.7KB→2.5KB, ~71%) · `ngrok-skip-browser-warning` header en wrapper fetch · header `ngrok-skip-browser-warning` en `utilidades.js:37` · compressible types en `httpd.conf`
+
+**Cambiado:** Migración a Apache (XAMPP) — de `php -S` single-thread a multi-threaded en puerto 80 · SameSite cookie `Strict`→`Lax` en `GestorSesiones.php:35` para compatibilidad con túneles · SSE timeout 120→30s, polling DB 2s→500ms, polling archivo 3s→1s · `session_write_close()` antes del loop SSE · módulo Inicio removido del panel y sidebar
+
+**Corregido:** WAF falso positivo — `scan` removido de `$botsNegros` en `GestorSesiones.php:127` (bloqueaba navegadores legítimos) · Route config POST `/configuracion` añadida con validación CSRF y redirect · JS syntax errors en 8 archivos (`?.` con espacios, regex con espacios, `return {` faltante, `}` faltante en `if`) · CSS variables: `--fondo-principal`→`--fondo-pantalla`, `--fondo-secundario`→`--fondo-alterno`, `--color-borde`→`--trazo-suave`
+
+**Optimizado:** SSE daemon auto-start verificado (PID activo) · compresión gzip con `mod_deflate` + `mod_filter` · sin caché agresiva en desarrollo (solo gzip, sin `max-age` ni version query strings) · MySQL a carga mínima (SSE usa archivo como fuente principal)
+
+**Testing:** 377 tests, 926 aserciones · PHPStan level 7 limpio (0 ignores excepto `missingType.iterableValue`) · PHPCS 0 errores (0 restantes) · CI pasa con `ignore_warnings_on_exit 1`
+
 ## [1.2.0] - 2026-06-06
 
 **Agregado:** `declare(strict_types=1)` en 60 archivos · namespaces PSR-4 `LiteFramework\*` en 55 archivos · `composer.json` con autoload PSR-4 · excepciones personalizadas (`ErrorSeguridad`, `ErrorAutenticacion`, `ErrorValidacion`) · `DialectoBaseDatos` (MySQL/SQLite cross-compat) · `GeneradorProyecto` + CLI + API + wizard web · 10 templates de proyecto (`plantillas/proyecto/`) · módulo `generadorProyecto` en panel admin · `CODE_OF_CONDUCT.md`

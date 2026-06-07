@@ -2,7 +2,7 @@
 
 ## Version actual
 
-La version actual del framework es **1.1.0**.
+La version actual del framework es **1.3.0**.
 
 Para una descripcion arquitectonica completa de las medidas de
 seguridad del framework, ver `src/docs/AGENTS.md` seccion "Seguridad".
@@ -112,7 +112,9 @@ Antes de desplegar en produccion:
 3. HTTPS obligatorio (HSTS solo se activa con HTTPS).
 4. Cookies de sesion seguras: `cookie_secure=1` se activa
    automaticamente si hay HTTPS (el framework ya pone
-   `HttpOnly` y `SameSite=Strict`).
+   `HttpOnly` y `SameSite=Lax`). SameSite=Lax permite
+   compatibilidad con túneles (ngrok, cloudflared) sin sacrificar
+   seguridad CSRF en peticiones GET.
 5. Verificar bloqueo de carpetas en `.htaccess`:
    `servidor/`, `rutas/`, `storage/`, `src/vistas/`, `.env`.
 6. Mover `.env` fuera del document root si es posible.
@@ -131,6 +133,8 @@ Antes de desplegar en produccion:
 
 | Version | Fecha | Cambios relevantes |
 |---|---|---|
+| 1.3.0 | 2026-06-07 | SSE optimizado con daemon auto-start, SameSite=Strict→Lax (túneles), WAF sin `scan`, compresión gzip Apache, migración a XAMPP Apache multi-thread, landing page rediseñada |
+| 1.2.0 | 2026-06-06 | `declare(strict_types=1)` en 60 archivos, namespaces PSR-4, excepciones personalizadas, DialectoBaseDatos, GeneradorProyecto, PHPStan level 7, PHPCS 0 errores |
 | 1.1.0 | 2026-06-02 | Refactor a partials, `ListaFiltrable`, split CSS, regenerador de `.user.ini` con confirmacion textual, navegacion por carpetas en archivos |
 | 1.0.3 | 2026-06-02 | Explorador de archivos en arbol, filtro de huerfanos |
 | 1.0.2 | 2026-06-02 | CSRF validado en `SubirArchivosControlador::eliminar()`, `ControlAccesoRBAC` en todos los metodos del controlador |

@@ -7,7 +7,7 @@
 [![PSR-12](https://img.shields.io/badge/PSR--12-%E2%9C%85-blueviolet)](phpcs.xml.dist)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
-**Framework PHP MVC** con autenticación RBAC, API unificada, ORM Active Record, migraciones versionadas, personalización de UI y generación de proyectos.  
+**Framework PHP MVC** con autenticación RBAC, API unificada, ORM Active Record, migraciones versionadas, personalización de UI, generación de proyectos y **SSE en tiempo real**.  
 Cero dependencias externas — sin Composer, sin npm, sin Node.
 
 ---
@@ -24,6 +24,8 @@ Cero dependencias externas — sin Composer, sin npm, sin Node.
 | **Código** | PHP 8.2+, `declare(strict_types=1)`, namespaces PSR-4, tipado fuerte, PSR-12 |
 | **Testing** | 377 tests / 926 aserciones, PHPUnit phar (sin Composer), SQLite in-memory, CI integrado |
 | **Generación** | Generador de módulos CRUD (7 archivos por entidad), generador de proyectos completos (wizard web + CLI + API) |
+| **SSE en Tiempo Real** | Daemon auto-start, `Last-Event-Id`, caché de posición en archivo (`fseek`), polling optimizado (500ms DB / 1s archivo), sesión con `session_write_close()` |
+| **Rendimiento** | Apache multi-thread (XAMPP), compresión gzip (~71% reducción CSS), sin dependencias externas, mod_deflate |
 | **Auditoría** | 50+ eventos auditados con contexto enriquecido: IP, User-Agent, sesión, datos de dispositivo, rendimiento |
 
 ---
@@ -39,7 +41,16 @@ index.php
   │     └── Enrutador::despachar(GET|POST|PUT|PATCH|DELETE, /ruta)
   │           ├── Interceptor (autenticación, permisos)
   │           └── Controlador → Modelo → Vista/JSON
+  ├── src/sse.php (SSE endpoint con Last-Event-Id)
   └── src/error.php (códigos 400|401|403|404|500|503)
+
+SSE Daemon (servidor/consola/sse_daemon.php):
+  servidor/seguridad/SseGestor.php
+    ├── iniciarDaemon() — auto-start via exec() si no corre
+    ├── conectar(ultimoId) — timeout 30s, acepta Last-Event-Id
+    ├── conectarModoArchivo() — polling 1s, caché de posición con fseek
+    ├── conectarModoDB() — polling 500ms, cleanup cada 5 ciclos
+    └── leerEventosDelArchivo(ultimoId, &posArchivo) — solo datos nuevos
 ```
 
 ### Namespaces
@@ -59,9 +70,10 @@ index.php
 
 ## Requisitos
 
-- PHP 8.2+ (extensiones: `pdo`, `pdo_mysql`, `pdo_sqlite`, `json`, `mbstring`, `fileinfo`)
-- Apache 2.4+ con `mod_rewrite`, `mod_headers`
+- PHP 8.2+ (extensiones: `pdo`, `pdo_mysql`, `pdo_sqlite`, `json`, `mbstring`, `fileinfo`, `exec()` para daemon SSE)
+- Apache 2.4+ con `mod_rewrite`, `mod_headers`, `mod_deflate` + `mod_filter`
 - MySQL 5.7+ / MariaDB 10.3+ (SQLite incluido como fallback)
+- XAMPP recomendado en Windows; Apache nativo en Linux
 
 ## Instalación
 
@@ -72,7 +84,7 @@ cd liteFramework
 
 # 2. Configurar entorno
 cp .env.example .env
-# Editar DB_NOMBRE, DB_USUARIO, DB_CLAVE en .env
+# Editar DB_NOMBRE, DB_USUARIO, DB_CLAVE y OAUTH_REDIRECT_BASE en .env
 
 # 3. Crear BD
 mysql -u root -e "CREATE DATABASE lite CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -80,7 +92,10 @@ mysql -u root -e "CREATE DATABASE lite CHARACTER SET utf8mb4 COLLATE utf8mb4_uni
 # 4. Ejecutar migraciones
 php servidor/migrar.php
 
-# 5. Abrir en navegador
+# 5. Servir con Apache (XAMPP recomendado en Windows)
+# El daemon SSE se auto-inicia al primer request SSE.
+
+# 6. Abrir en navegador
 # http://localhost/liteFramework/
 ```
 
@@ -142,14 +157,46 @@ $producto->guardar();
 ## Seguridad
 
 - **CSRF**: tokens de 64 hex, rotación automática por petición, gracia de 60s para peticiones concurrentes
-- **Sesiones**: HttpOnly + SameSite=Strict + fingerprint SHA-256(subred + User-Agent)
+- **Sesiones**: HttpOnly + SameSite=Lax + fingerprint SHA-256(subred + User-Agent) — Lax para compatibilidad con túneles (ngrok, cloudflared)
 - **Contraseñas**: `password_hash(PASSWORD_DEFAULT)` con política de 8+ chars, mayúscula, número, símbolo
 - **SQL**: 100% prepared statements, identificadores sanitizados contra whitelist
 - **Headers**: CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, HSTS, Referrer-Policy, Permissions-Policy
 - **Auditoría**: dual (BD `bitacora_sistema` + `storage/logs/trazabilidad.log`) con Trace ID único por petición
-- **WAF**: bloqueo automático de herramientas maliciosas (curl, python, wget, sqlmap, nmap, burp suite, escáneres)
+- **WAF**: bloqueo automático de herramientas maliciosas (curl, python, wget, sqlmap, nmap, burp suite) — `scan` excluido para no bloquear navegadores legítimos
 - **Rate limiting**: 5 intentos de login por IP/correo en ventana de 15 minutos (persistido en BD)
 - **Excepciones**: jerarquía propia (`ErrorSeguridad`, `ErrorAutenticacion`, `ErrorValidacion`) con códigos HTTP
+
+---
+
+## SSE en Tiempo Real
+
+`sse.php` expone eventos Server-Sent Events con daemon persistente:
+
+| Componente | Característica |
+|---|---|
+| `SseGestor::iniciarDaemon()` | Auto-start via `exec()` del daemon PHP si no está corriendo |
+| `SseGestor::conectar($ultimoId)` | Timeout 30s, acepta `HTTP_LAST_EVENT_ID` para reanudar |
+| `conectarModoArchivo()` | Polling 1s, caché de posición con `fseek`, filtra por ID |
+| `conectarModoDB()` | Polling 500ms, cleanup cada 5 ciclos |
+| `leerEventosDelArchivo()` | `fseek($posArchivo)` — solo lee datos nuevos |
+| Sesión | `session_write_close()` antes del loop para no bloquear |
+
+```bash
+# El daemon arranca automáticamente. Para verificar:
+php servidor/consola/sse_daemon.php status
+```
+
+---
+
+## Rendimiento y Servidor
+
+| Aspecto | Detalle |
+|---|---|
+| **Servidor** | Apache 2.4 (XAMPP) multi-thread, reemplaza `php -S` single-thread |
+| **Compresión** | gzip via `mod_deflate` + `mod_filter` — CSS 8.7KB→2.5KB (~71%) |
+| **SSE Daemon** | Proceso PHP persistente, auto-arranque, consumo mínimo |
+| **Base de Datos** | MySQL nativo, SSE prioriza archivo sobre DB polling |
+| **Túneles** | Compatible ngrok (header `ngrok-skip-browser-warning`) y cloudflared |
 
 ---
 
@@ -214,6 +261,13 @@ php servidor/consola/generar_modulo.php       # Generar módulo CRUD vía CLI
 php servidor/consola/crear_proyecto.php       # Generar proyecto completo vía CLI
 php servidor/consola/ejecutar_pruebas.php     # Ejecutar tests
 php tests/phpunit.phar -c tests/phpunit.xml   # Ejecutar tests (directo)
+php servidor/consola/sse_daemon.php status    # Verificar estado del daemon SSE
+
+# PHPStan
+php phpstan.phar analyse
+
+# PHPCS
+php phpcs.phar --standard=phpcs.xml.dist
 ```
 
 ---

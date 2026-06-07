@@ -7,9 +7,42 @@
     ]
   },
   "command": {
+    "test": {
+      "template": "php tests/phpunit.phar -c tests/phpunit.xml",
+      "description": "Ejecutar todos los tests"
+    },
+    "test-unit": {
+      "template": "php tests/phpunit.phar -c tests/phpunit.xml --testsuite liteframework-casos",
+      "description": "Ejecutar tests unitarios"
+    },
+    "test-integration": {
+      "template": "php tests/phpunit.phar -c tests/phpunit.xml --testsuite liteframework-integracion",
+      "description": "Ejecutar tests de integracion"
+    },
+    "test-filter": {
+      "template": "php tests/phpunit.phar -c tests/phpunit.xml --filter {filtro}",
+      "description": "Ejecutar tests por filtro (ej: test-filter --filter=ModeloTest)",
+      "args": ["filtro"]
+    },
     "migrar": {
-      "template": "Ejecuta las migraciones pendientes con: php servidor/migrar.php",
+      "template": "php servidor/migrar.php",
       "description": "Ejecutar migraciones pendientes"
+    },
+    "server": {
+      "template": "php -S localhost:8000 -t .",
+      "description": "Iniciar servidor PHP de desarrollo"
+    },
+    "lint": {
+      "template": "php phpcs.phar --standard=phpcs.xml.dist",
+      "description": "Validar codigo con PHPCS (PSR-12)"
+    },
+    "stan": {
+      "template": "php phpstan.phar analyse --configuration=phpstan.neon.dist",
+      "description": "Analisis estatico con PHPStan nivel 7"
+    },
+    "validate": {
+      "template": "php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress && php phpcs.phar --standard=phpcs.xml.dist --extensions=php --ignore=vendor,plantillas,tests --runtime-set ignore_warnings_on_exit 1 . && php tests/phpunit.phar -c tests/phpunit.xml",
+      "description": "Validacion completa: PHPStan + PHPCS + Tests"
     }
   },
   "agent": {
@@ -19,5 +52,26 @@
     }
   },
   "default_agent": "default",
-  "instructions": ["src/docs/AGENTS.md", "SECURITY.md"]
+  "instructions": [
+    "AGENTS.md",
+    "src/docs/AGENTS.md",
+    "src/docs/API.md",
+    "src/docs/DISENO_FRONTEND.md",
+    ".github/CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
+  "mcpServers": {
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git"]
+    },
+    "time": {
+      "command": "uvx",
+      "args": ["mcp-server-time"]
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"]
+    }
+  }
 }

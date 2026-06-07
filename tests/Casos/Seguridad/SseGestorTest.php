@@ -10,6 +10,8 @@ class SseGestorTest extends TestCase {
         $this->sseDir = DIRECTORIO_RAIZ . '/storage/sse';
         $this->logFile = $this->sseDir . '/eventos.log';
         $this->ultimoIdFile = $this->sseDir . '/_ultimo_id';
+        @unlink($this->logFile);
+        @unlink($this->ultimoIdFile);
         @mkdir($this->sseDir, 0755, true);
     }
 
@@ -31,6 +33,8 @@ class SseGestorTest extends TestCase {
     // ─── daemonCorriendo ───
 
     public function testDaemonCorriendoSinArchivoRetornaFalse(): void {
+        @unlink($this->ultimoIdFile);
+        clearstatcache(true, $this->ultimoIdFile);
         $this->assertFalse(SseGestor::daemonCorriendo());
     }
 

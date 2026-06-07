@@ -5,9 +5,10 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Forzar uso de HTTPS
+    # Forzar uso de HTTPS (solo si no viene de tunnel)
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{HTTP:X-Forwarded-Scheme} !https
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
     # === REGLAS DE SEGURIDAD (bloquear carpetas internas) ===

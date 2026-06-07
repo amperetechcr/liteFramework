@@ -21,6 +21,7 @@ class DocumentoPdf extends Modelo
     protected static string $tabla = 'documento_pdf';
     protected static string $idColumna = 'id_documento';
     protected static array $rellenable = ['titulo', 'contenido_html', 'id_operador'];
+    protected static bool $timestamps = true;
 
     public function operador(): ?Operador
     {
@@ -37,52 +38,29 @@ class DocumentoPdf extends Modelo
         int $pagina = 1,
         int $porPagina = 10
     ): array {
-        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-
-        $condiciones = [];
-        $parametros = [];
-
+        $where = [];
         if ($busqueda !== '') {
-            $condiciones[] = "d.titulo LIKE :buscar";
-            $parametros[':buscar'] = '%' . $busqueda . '%';
+            $where['titulo LIKE'] = '%' . $busqueda . '%';
         }
 
-        $clausulaWhere = !empty($condiciones) ? 'WHERE ' . implode(' AND ', $condiciones) : '';
+        $resultado = self::paginar(
+            $pagina,
+            $porPagina,
+            $where,
+            'd.id_documento, d.titulo, d.contenido_html, d.id_operador, d.fecha_creacion, d.fecha_actualizacion, o.nombre_completo',
+            'LEFT JOIN operador o ON d.id_operador = o.id_operador'
+        );
 
-        $stmtTotal = $bd->prepare("SELECT COUNT(*) FROM documento_pdf {$clausulaWhere}");
-        \assert($stmtTotal !== false);
-        $stmtTotal->execute($parametros);
-        $totalDocumentos = (int)$stmtTotal->fetchColumn();
-
-        $totalPaginas = max(1, (int)ceil($totalDocumentos / $porPagina));
-        if ($pagina > $totalPaginas) {
-            $pagina = $totalPaginas;
+        $documentos = [];
+        foreach ($resultado['datos'] as $modelo) {
+            $documentos[] = $modelo->aArreglo();
         }
-        $inicio = ($pagina - 1) * $porPagina;
-
-        $sql = "
-            SELECT d.id_documento, d.titulo, d.contenido_html, d.id_operador,
-                   d.fecha_creacion, d.fecha_actualizacion, o.nombre_completo
-            FROM documento_pdf d
-            LEFT JOIN operador o ON d.id_operador = o.id_operador
-            {$clausulaWhere}
-            ORDER BY d.fecha_creacion DESC
-            LIMIT :limite OFFSET :inicio
-        ";
-        $consulta = $bd->prepare($sql);
-        \assert($consulta !== false);
-        foreach ($parametros as $clave => $valor) {
-            $consulta->bindValue($clave, $valor);
-        }
-        $consulta->bindValue(':limite', $porPagina, PDO::PARAM_INT);
-        $consulta->bindValue(':inicio', $inicio, PDO::PARAM_INT);
-        $consulta->execute();
 
         return [
-            'documentos' => $consulta->fetchAll(PDO::FETCH_ASSOC),
-            'total' => $totalDocumentos,
-            'pagina' => $pagina,
-            'total_paginas' => $totalPaginas,
+            'documentos' => $documentos,
+            'total' => $resultado['total'],
+            'pagina' => $resultado['pagina'],
+            'total_paginas' => $resultado['total_paginas'],
         ];
     }
 

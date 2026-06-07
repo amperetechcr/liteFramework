@@ -25,6 +25,7 @@ class Estadistica extends Modelo
     protected static string $tabla = 'estadistica';
     protected static string $idColumna = 'id_estadistica';
     protected static array $rellenable = ['titulo', 'descripcion', 'consulta_sql', 'tipo_visualizacion', 'columnas_mostrar', 'configuracion_visual', 'id_operador'];
+    protected static bool $timestamps = true;
 
     public function operador(): ?Operador
     {
@@ -50,54 +51,29 @@ class Estadistica extends Modelo
         int $pagina = 1,
         int $porPagina = 10
     ): array {
-        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-
-        $condiciones = [];
-        $parametros = [];
-
+        $where = [];
         if ($busqueda !== '') {
-            $condiciones[] = "e.titulo LIKE :buscar";
-            $parametros[':buscar'] = '%' . $busqueda . '%';
+            $where['titulo LIKE'] = '%' . $busqueda . '%';
         }
 
-        $clausulaWhere = !empty($condiciones) ? 'WHERE ' . implode(' AND ', $condiciones) : '';
+        $resultado = self::paginar(
+            $pagina,
+            $porPagina,
+            $where,
+            'e.id_estadistica, e.titulo, e.descripcion, e.consulta_sql, e.tipo_visualizacion, e.columnas_mostrar, e.configuracion_visual, e.id_operador, e.fecha_creacion, e.fecha_actualizacion, o.nombre_completo',
+            'LEFT JOIN operador o ON e.id_operador = o.id_operador'
+        );
 
-        $stmtTotal = $bd->prepare("SELECT COUNT(*) FROM estadistica e {$clausulaWhere}");
-        \assert($stmtTotal !== false);
-        $stmtTotal->execute($parametros);
-        $total = (int)$stmtTotal->fetchColumn();
-
-        $totalPaginas = max(1, (int)ceil($total / $porPagina));
-        if ($pagina > $totalPaginas) {
-            $pagina = $totalPaginas;
+        $estadisticas = [];
+        foreach ($resultado['datos'] as $modelo) {
+            $estadisticas[] = $modelo->aArreglo();
         }
-        $inicio = ($pagina - 1) * $porPagina;
-
-        $sql = "
-            SELECT e.id_estadistica, e.titulo, e.descripcion, e.consulta_sql,
-                   e.tipo_visualizacion, e.columnas_mostrar, e.configuracion_visual,
-                   e.id_operador, e.fecha_creacion, e.fecha_actualizacion,
-                   o.nombre_completo
-            FROM estadistica e
-            LEFT JOIN operador o ON e.id_operador = o.id_operador
-            {$clausulaWhere}
-            ORDER BY e.fecha_creacion DESC
-            LIMIT :limite OFFSET :inicio
-        ";
-        $consulta = $bd->prepare($sql);
-        \assert($consulta !== false);
-        foreach ($parametros as $clave => $valor) {
-            $consulta->bindValue($clave, $valor);
-        }
-        $consulta->bindValue(':limite', $porPagina, PDO::PARAM_INT);
-        $consulta->bindValue(':inicio', $inicio, PDO::PARAM_INT);
-        $consulta->execute();
 
         return [
-            'estadisticas' => $consulta->fetchAll(PDO::FETCH_ASSOC),
-            'total' => $total,
-            'pagina' => $pagina,
-            'total_paginas' => $totalPaginas,
+            'estadisticas' => $estadisticas,
+            'total' => $resultado['total'],
+            'pagina' => $resultado['pagina'],
+            'total_paginas' => $resultado['total_paginas'],
         ];
     }
 }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LiteFramework\Modelos;
 
-use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
+use PDO;
 
 /**
  * @property int $id_archivo
@@ -78,10 +78,7 @@ class Archivo extends Modelo
 
     public static function sumaTamanoBytes(): int
     {
-        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        $stmt = $bd->query("SELECT COALESCE(SUM(tamano_bytes), 0) FROM archivo");
-        \assert($stmt !== false);
-        return (int)$stmt->fetchColumn();
+        return (int)self::sumar('tamano_bytes');
     }
 
     public static function sumaTamanoPorOperador(int $idOperador): int

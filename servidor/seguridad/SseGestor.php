@@ -50,8 +50,28 @@ class SseGestor
         return (time() - $mtime) < 15;
     }
 
-    public static function conectar(int $idOperador, int $tiempoLimite = 120): never
+    public static function iniciarDaemon(): bool
     {
+        if (self::daemonCorriendo()) {
+            return true;
+        }
+        $phpBin = PHP_BINARY;
+        if ($phpBin === '') { /** @phpstan-ignore identical.alwaysFalse */
+            $phpBin = PHP_SAPI === 'cli' ? $_SERVER['_'] ?? 'php' : 'php';
+        }
+        $daemonPath = DIRECTORIO_RAIZ . '/servidor/consola/sse_daemon.php';
+        if (PHP_OS_FAMILY === 'Windows') {
+            exec('start /B "SSE" ' . escapeshellarg($phpBin) . ' ' . escapeshellarg($daemonPath) . ' > NUL 2>&1');
+        } else {
+            exec(escapeshellarg($phpBin) . ' ' . escapeshellarg($daemonPath) . ' > /dev/null 2>&1 &');
+        }
+        sleep(1);
+        return self::daemonCorriendo();
+    }
+
+    public static function conectar(int $idOperador, int $ultimoId = 0): never
+    {
+        $tiempoLimite = 30;
         set_time_limit($tiempoLimite + 10);
 
         header('Content-Type: text/event-stream');
@@ -63,15 +83,19 @@ class SseGestor
             ob_end_clean();
         }
 
+        if (!self::daemonCorriendo()) {
+            self::iniciarDaemon();
+        }
+
         if (self::daemonCorriendo()) {
-            self::conectarModoArchivo($idOperador, $tiempoLimite);
+            self::conectarModoArchivo($idOperador, $tiempoLimite, $ultimoId);
         } else {
-            self::conectarModoDB($idOperador, $tiempoLimite);
+            self::conectarModoDB($idOperador, $tiempoLimite, $ultimoId);
         }
         exit;
     }
 
-    private static function conectarModoArchivo(int $idOperador, int $tiempoLimite): void
+    private static function conectarModoArchivo(int $idOperador, int $tiempoLimite, int $ultimoId): void
     {
         echo "event: sse.conectado\n";
         echo "data: {\"id_operador\":{$idOperador},\"modo\":\"archivo\"}\n\n";
@@ -84,6 +108,8 @@ class SseGestor
 
         $inicio = time();
         $maxEventosPorCiclo = 50;
+        $posArchivo = null;
+        $ultimoIdVisto = $ultimoId;
 
         while (true) {
             if (connection_aborted()) {
@@ -94,8 +120,9 @@ class SseGestor
             }
 
             try {
-                $eventos = self::leerEventosDelArchivo($idOperador, $maxEventosPorCiclo);
+                $eventos = self::leerEventosDelArchivo($idOperador, $maxEventosPorCiclo, $ultimoIdVisto, $posArchivo);
                 foreach ($eventos as $ev) {
+                    $ultimoIdVisto = max($ultimoIdVisto, (int)$ev['id']);
                     echo "id: {$ev['id']}\n";
                     echo "event: {$ev['tipo']}\n";
                     echo "data: {$ev['datos']}\n\n";
@@ -108,18 +135,18 @@ class SseGestor
             ob_flush();
             flush();
 
-            usleep(3000000);
+            usleep(1000000);
         }
     }
 
-    public static function leerEventosDelArchivo(int $idOperador, int $maxEventos = 50): array
+    public static function leerEventosDelArchivo(int $idOperador, int $maxEventos = 50, int $ultimoId = 0, ?int &$posArchivo = null): array
     {
         $archivo = self::LOG_FILE;
         if (!file_exists($archivo)) {
             return [];
         }
         $tamano = filesize($archivo);
-        if ($tamano === 0) {
+        if ($tamano === 0 || $tamano === false) {
             return [];
         }
 
@@ -128,67 +155,78 @@ class SseGestor
             return [];
         }
 
-        $ultimasLineas = [];
-        $buffer = 4096;
-        $pos = max(0, $tamano - $buffer);
-        $visto = 0;
-
-        while ($pos > 0 && $visto < 50) {
-            fseek($handle, $pos);
-            $contenido = fread($handle, $buffer);
-            $lineas = explode("\n", $contenido ?: '');
-            foreach (array_reverse($lineas) as $l) {
-                $l = trim($l);
-                if ($l === '') {
-                    continue;
-                }
-                array_unshift($ultimasLineas, $l);
-                $visto++;
-                if ($visto >= 50) {
-                    break;
-                }
+        $posInicial = $posArchivo;
+        if ($posInicial !== null && $posInicial > 0) {
+            if ($tamano < $posInicial) {
+                $posInicial = 0;
+            } else {
+                fseek($handle, $posInicial);
             }
-            $pos = max(0, $pos - $buffer);
         }
 
+        if ($posInicial === null || $posInicial === 0) {
+            $buffer = 4096;
+            $pos = max(0, $tamano - $buffer);
+            $visto = 0;
+            $ultimasLineas = [];
+
+            while ($pos > 0 && $visto < 50) {
+                fseek($handle, $pos);
+                $contenido = fread($handle, $buffer);
+                $lineas = explode("\n", $contenido ?: '');
+                foreach (array_reverse($lineas) as $l) {
+                    $l = trim($l);
+                    if ($l === '') {
+                        continue;
+                    }
+                    array_unshift($ultimasLineas, $l);
+                    $visto++;
+                    if ($visto >= 50) {
+                        break;
+                    }
+                }
+                $pos = max(0, $pos - $buffer);
+            }
+
+            if ($pos === 0) {
+                fseek($handle, 0);
+                $contenido = fread($handle, max(1, (int)$tamano));
+                \assert($contenido !== false);
+                $lineas = explode("\n", trim($contenido));
+                $ultimasLineas = array_slice($lineas, -50);
+            }
+
+            $lineas = $ultimasLineas;
+        } else {
+            $contenido = stream_get_contents($handle);
+            $lineas = $contenido !== false ? explode("\n", trim($contenido)) : [];
+        }
+
+        $posArchivo = ftell($handle); /** @phpstan-ignore parameterByRef.type */
         fclose($handle);
 
-        if ($pos === 0) {
-            $handle = fopen($archivo, 'rb');
-            \assert($handle !== false);
-            fseek($handle, 0);
-            $contenido = fread($handle, max(1, (int)$tamano));
-            \assert($contenido !== false);
-            fclose($handle);
-            $lineas = explode("\n", trim($contenido));
-            $ultimasLineas = array_slice($lineas, -50);
-        }
-
         $eventos = [];
-        $idsVistos = [];
-        foreach ($ultimasLineas as $linea) {
+        foreach ($lineas as $linea) {
             $ev = json_decode($linea, true);
             if (!$ev || !isset($ev['id'])) {
                 continue;
             }
-
-            if (isset($idsVistos[$ev['id']])) {
+            if ((int)$ev['id'] <= $ultimoId) {
                 continue;
             }
-            $idsVistos[$ev['id']] = true;
-
-            if ((int)($ev['id_operador'] ?? -1) === 0 || (int)($ev['id_operador'] ?? -1) === $idOperador) {
-                $eventos[] = $ev;
-                if (count($eventos) >= $maxEventos) {
-                    break;
-                }
+            if ((int)($ev['id_operador'] ?? -1) !== 0 && (int)($ev['id_operador'] ?? -1) !== $idOperador) {
+                continue;
+            }
+            $eventos[] = $ev;
+            if (count($eventos) >= $maxEventos) {
+                break;
             }
         }
 
         return $eventos;
     }
 
-    private static function conectarModoDB(int $idOperador, int $tiempoLimite): void
+    private static function conectarModoDB(int $idOperador, int $tiempoLimite, int $ultimoId): void
     {
         echo "event: sse.conectado\n";
         echo "data: {\"id_operador\":{$idOperador},\"modo\":\"db\"}\n\n";
@@ -199,7 +237,6 @@ class SseGestor
         ob_flush();
         flush();
 
-        $ultimoId = 0;
         $inicio = time();
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
         $idleCycles = 0;
@@ -242,10 +279,12 @@ class SseGestor
                     $idleCycles++;
                 }
 
-                $sql = "DELETE FROM sse_evento WHERE fecha_creacion < " . DialectoBaseDatos::fechaRestar($bd, 'MINUTE', 5);
-                $stmtCleanup = $bd->prepare($sql);
-                \assert($stmtCleanup !== false);
-                $stmtCleanup->execute();
+                if ($idleCycles % 5 === 0) {
+                    $sql = "DELETE FROM sse_evento WHERE fecha_creacion < " . DialectoBaseDatos::fechaRestar($bd, 'MINUTE', 5);
+                    $stmtCleanup = $bd->prepare($sql);
+                    \assert($stmtCleanup !== false);
+                    $stmtCleanup->execute();
+                }
             } catch (Exception $e) {
                 error_log('[SseGestor] Error en modo DB: ' . $e->getMessage());
             }
@@ -254,7 +293,7 @@ class SseGestor
             ob_flush();
             flush();
 
-            usleep($idleCycles > 3 ? 5000000 : 2000000);
+            usleep(500000);
         }
     }
 }

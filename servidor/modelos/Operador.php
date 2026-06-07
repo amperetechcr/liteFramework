@@ -51,28 +51,14 @@ class Operador extends Modelo
         return $this->guardar();
     }
 
-    public static function contar(): int
-    {
-        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        $stmt = $bd->query("SELECT COUNT(*) FROM operador");
-        \assert($stmt !== false);
-        return (int)$stmt->fetchColumn();
-    }
-
     public static function contarActivos(): int
     {
-        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        $stmt = $bd->query("SELECT COUNT(*) FROM operador WHERE estado_cuenta = 1");
-        \assert($stmt !== false);
-        return (int)$stmt->fetchColumn();
+        return self::donde('estado_cuenta', 1)->contarDonde();
     }
 
     public static function contarSuspendidos(): int
     {
-        $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        $stmt = $bd->query("SELECT COUNT(*) FROM operador WHERE estado_cuenta = 0");
-        \assert($stmt !== false);
-        return (int)$stmt->fetchColumn();
+        return self::donde('estado_cuenta', 0)->contarDonde();
     }
 
     public static function obtenerPerfil(int $idOperador): ?array

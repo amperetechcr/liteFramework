@@ -61,7 +61,6 @@ $seguridadActiva = [
 $puntajeSeguridad = (int)((array_sum($seguridadActiva) / count($seguridadActiva)) * 100);
 
 $modulos = [
-    'inicio' => ['ruta' => '/inicio', 'titulo' => 'Inicio', 'icono' => '🏠', 'desc' => 'Dashboard principal con resumen del sistema y actividad reciente.', 'stats' => 'Vista general'],
     'archivos' => ['ruta' => '/archivos', 'titulo' => 'Archivos', 'icono' => '📁', 'desc' => 'Subida y almacenamiento seguro con explorador, cuota y descargas.', 'stats' => $stats['total_archivos'] . ' archivos · ' . $stats['espacio_usado_mb'] . ' MB'],
     'operadores' => ['ruta' => '/operadores', 'titulo' => 'Operadores', 'icono' => '👥', 'desc' => 'Gestion de cuentas, roles RBAC, permisos y estados de cuenta.', 'stats' => $stats['usuarios_activos'] . '/' . $stats['total_usuarios'] . ' activos'],
     'auditoria' => ['ruta' => '/auditoria', 'titulo' => 'Auditoria', 'icono' => '📋', 'desc' => 'Bitacora de eventos con filtros y busqueda. Trazabilidad completa.', 'stats' => $stats['eventos_hoy'] . ' eventos hoy'],

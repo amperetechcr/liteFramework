@@ -83,7 +83,7 @@
         var datos = {
             id_entidad: parseInt(accionEstadoPendiente.id),
             accion_crud: accionEstadoPendiente.accion,
-            token_peticion: document.querySelector('[name="token_peticion"]') ? .value || ''
+            token_peticion: document.querySelector('[name="token_peticion"]')?.value || ''
         };
 
         if (typeof window.alternarEstadoCarga === 'function') {

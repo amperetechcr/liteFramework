@@ -3,7 +3,7 @@ window.rutaApi = metaRuta ? metaRuta.getAttribute('content') : '/api';
 
 export function obtenerBasePath()
 {
-    return window.location.pathname.replace(/\/[^/] * $ / , '') || '';
+    return window.location.pathname.replace(/\/[^/]+$/, '') || '';
 }
 
 export function obtenerTokenCSRF()
@@ -31,6 +31,13 @@ export function enriquecerPayload(payload)
 
 var fetchOriginal = window.fetch;
 window.fetch = function (url, opts) {
+    if (!opts) {
+        opts = {};
+    }
+    if (!opts.headers) {
+        opts.headers = {};
+    }
+    opts.headers['ngrok-skip-browser-warning'] = 'true';
     if (opts && opts.body && typeof opts.body === 'string') {
         try {
             var payload = JSON.parse(opts.body);

@@ -1,8 +1,25 @@
-# liteFramework - Patrones Prácticos
+# liteFramework — Patrones Prácticos
 
 > Para contexto completo (arquitectura, ORM, validación, seguridad, helpers): ver `src/docs/AGENTS.md`
 > Para documentación de endpoints API: ver `src/docs/API.md`
 > Para problema conocido de paginación ORM: ver `PAGINACION_PDO.md`
+
+## ⚠️ Regla de Validación Obligatoria
+
+**Antes de entregar cualquier código nuevo o modificado, DEBES ejecutar:**
+
+```bash
+# 1. PHPStan nivel 7
+php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress
+
+# 2. PHPCS PSR-12
+php phpcs.phar --standard=phpcs.xml.dist --extensions=php --ignore=vendor,plantillas,tests --runtime-set ignore_warnings_on_exit 1 .
+
+# 3. Tests
+php tests/phpunit.phar -c tests/phpunit.xml
+```
+
+**No entregues código si alguna de estas 3 falla.**
 
 ## 1. Crear Módulo (5 pasos)
 
@@ -78,6 +95,7 @@ $ruta = $subida->guardar(DIRECTORIO_RAIZ.'/storage/archivos');
 5. `session_regenerate_id(true)` post-login
 6. Sin secrets en código (usar `.env`)
 7. Auditar ops importantes (`RegistroAuditoria`)
+8. **Validar antes de entregar**: PHPStan + PHPCS + Tests
 
 ## 9. Estructura Módulos
 

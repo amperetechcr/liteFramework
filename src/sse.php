@@ -36,4 +36,5 @@ if ($idOperador === 0) {
 
 session_write_close();
 
-SseGestor::conectar($idOperador);
+$ultimoId = (int)($_SERVER['HTTP_LAST_EVENT_ID'] ?? 0);
+SseGestor::conectar($idOperador, $ultimoId);

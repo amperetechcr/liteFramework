@@ -4,7 +4,9 @@
 
 # --- Entorno ---
 .env
-.env.*
+.env.local
+.env.production
+.env.development
 
 # --- Dependencias ---
 vendor/

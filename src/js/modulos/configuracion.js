@@ -55,7 +55,7 @@
         var datos = serializarFormulario(form);
         delete datos['versiones'];
 
-        var modoRepositorio = document.getElementById('cfg-modo-repositorio') ? .checked || false;
+        var modoRepositorio = document.getElementById('cfg-modo-repositorio')?.checked || false;
 
         var payload = {
             token_peticion: csrfToken(),
