@@ -68,7 +68,7 @@ class GestorSesiones
             if (ini_get("session.use_cookies")) {
                 $parametros = session_get_cookie_params();
                 setcookie(
-                    session_name(),
+                    session_name() ?: '',
                     '',
                     time() - 42000,
                     $parametros["path"],
@@ -85,7 +85,8 @@ class GestorSesiones
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '';
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            return substr($ip, 0, strrpos($ip, '.'));
+            $pos = strrpos($ip, '.');
+            return $pos !== false ? substr($ip, 0, $pos) : $ip;
         } elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             $bloques = explode(':', $ip);
             return implode(':', array_slice($bloques, 0, 4));

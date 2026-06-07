@@ -176,6 +176,7 @@ class GeneradorPdf
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $stmt = $conexion->prepare("SELECT titulo, contenido_html FROM documento_pdf WHERE id_documento = :id LIMIT 1");
+            \assert($stmt !== false);
             $stmt->execute([':id' => $idPlantilla]);
             $plantilla = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -406,6 +407,7 @@ class GeneradorPdf
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $stmt = $conexion->query("SELECT id_documento, titulo, fecha_creacion FROM documento_pdf ORDER BY fecha_creacion DESC");
+            \assert($stmt !== false);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];

@@ -26,27 +26,27 @@ class Enrutador
         return self::$instancia;
     }
 
-    public function get(string $patron, callable|array $accion): object
+    public function get(string $patron, callable|array $accion): RutaBuilder
     {
         return $this->registrarRuta('GET', $patron, $accion);
     }
 
-    public function post(string $patron, callable|array $accion): object
+    public function post(string $patron, callable|array $accion): RutaBuilder
     {
         return $this->registrarRuta('POST', $patron, $accion);
     }
 
-    public function put(string $patron, callable|array $accion): object
+    public function put(string $patron, callable|array $accion): RutaBuilder
     {
         return $this->registrarRuta('PUT', $patron, $accion);
     }
 
-    public function patch(string $patron, callable|array $accion): object
+    public function patch(string $patron, callable|array $accion): RutaBuilder
     {
         return $this->registrarRuta('PATCH', $patron, $accion);
     }
 
-    public function delete(string $patron, callable|array $accion): object
+    public function delete(string $patron, callable|array $accion): RutaBuilder
     {
         return $this->registrarRuta('DELETE', $patron, $accion);
     }
@@ -72,7 +72,7 @@ class Enrutador
         $this->grupoInterceptores = $interceptorAnterior;
     }
 
-    private function registrarRuta(string $metodo, string $patron, callable|array $accion): object
+    private function registrarRuta(string $metodo, string $patron, callable|array $accion): RutaBuilder
     {
         $patronCompleto = $this->grupoPrefijo . '/' . trim($patron, '/');
         $patronCompleto = '/' . trim($patronCompleto, '/');
@@ -90,25 +90,7 @@ class Enrutador
 
         $indice = count($this->rutas);
         $this->rutas[] = $ruta;
-        return new class ($this, $indice) {
-            private Enrutador $enrutador;
-            private int $indice;
-            public function __construct(Enrutador $enrutador, int $indice)
-            {
-                $this->enrutador = $enrutador;
-                $this->indice = $indice;
-            }
-            public function nombre(string $nombre): self
-            {
-                $this->enrutador->asignarNombre($this->indice, $nombre);
-                return $this;
-            }
-            public function interceptor(string|array $interceptor): self
-            {
-                $this->enrutador->asignarInterceptor($this->indice, (array)$interceptor);
-                return $this;
-            }
-        };
+        return new RutaBuilder($this, $indice);
     }
 
     public function asignarNombre(int $indice, string $nombre): void
@@ -126,7 +108,7 @@ class Enrutador
 
     public function despachar(string $metodo, string $uri): mixed
     {
-        $uri = '/' . trim(parse_url($uri, PHP_URL_PATH), '/');
+        $uri = '/' . trim((string)(parse_url($uri, PHP_URL_PATH) ?? ''), '/');
         if ($uri === '//') {
             $uri = '/';
         }
@@ -172,6 +154,7 @@ class Enrutador
         $accion = array_shift($cadena);
 
         if (is_string($accion) && class_exists($accion)) {
+            /** @var Interceptor $instancia */
             $instancia = new $accion();
             return $instancia->manejar($params, function ($p) use ($cadena) {
                 return $this->ejecutarCadena($cadena, $p);
@@ -210,6 +193,7 @@ class Enrutador
         }
 
         if (is_callable($accion)) {
+            /** @var \Closure $accion */
             $rf = new ReflectionFunction($accion);
             return $rf->invoke($params);
         }

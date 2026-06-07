@@ -136,7 +136,7 @@ class GeneradorModulo
         if (!empty($existing)) {
             rsort($existing);
             preg_match('/^(\d+)/', basename($existing[0]), $m);
-            $nextNum = (int)$m[1] + 1;
+            $nextNum = isset($m[1]) ? (int)$m[1] + 1 : 1;
         }
         return str_pad((string)$nextNum, 3, '0', STR_PAD_LEFT);
     }
@@ -676,7 +676,7 @@ RUTAS;
         $linea = "        '{$clase}'               => __DIR__ . '/modelos/{$clase}.php',\n";
         $linea .= "        '{$controlador}'      => __DIR__ . '/api/controladores/{$controlador}.php',\n";
 
-        $contenido = file_get_contents($D['autoload']);
+        $contenido = file_get_contents($D['autoload']) ?: '';
         $contenido = str_replace("    ];", $linea . "    ];", $contenido);
         file_put_contents($D['autoload'], $contenido);
         return ['tipo' => 'Autoload', 'ruta' => 'servidor/autoload.php', 'exito' => true, 'mensaje' => null];

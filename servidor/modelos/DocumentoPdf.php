@@ -29,7 +29,7 @@ class DocumentoPdf extends Modelo
 
     public function fechaFormateada(): string
     {
-        return date('d/m/Y H:i', strtotime($this->fecha_creacion));
+        return date('d/m/Y H:i', (int)strtotime($this->fecha_creacion));
     }
 
     public static function listarConFiltros(
@@ -50,6 +50,7 @@ class DocumentoPdf extends Modelo
         $clausulaWhere = !empty($condiciones) ? 'WHERE ' . implode(' AND ', $condiciones) : '';
 
         $stmtTotal = $bd->prepare("SELECT COUNT(*) FROM documento_pdf {$clausulaWhere}");
+        \assert($stmtTotal !== false);
         $stmtTotal->execute($parametros);
         $totalDocumentos = (int)$stmtTotal->fetchColumn();
 
@@ -69,6 +70,7 @@ class DocumentoPdf extends Modelo
             LIMIT :limite OFFSET :inicio
         ";
         $consulta = $bd->prepare($sql);
+        \assert($consulta !== false);
         foreach ($parametros as $clave => $valor) {
             $consulta->bindValue($clave, $valor);
         }

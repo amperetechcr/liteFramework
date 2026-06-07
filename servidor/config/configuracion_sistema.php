@@ -49,6 +49,7 @@ class ConfiguracionSistema
                     SET valor = ?, tipo_dato = ?, version = version + 1, actualizado_por = ?
                     WHERE clave = ? AND version = ?";
             $stmt = $conexion->prepare($sql);
+            \assert($stmt !== false);
             $stmt->execute([$valorSerializado, $tipoDato, $idOperador, $clave, $versionEsperada]);
         } catch (PDOException $e) {
             return [
@@ -86,6 +87,7 @@ class ConfiguracionSistema
                     SET valor = ?, tipo_dato = ?, version = version + 1, actualizado_por = ?
                     WHERE clave = ?";
             $stmt = $conexion->prepare($sql);
+            \assert($stmt !== false);
             $stmt->execute([$valorSerializado, $tipoDato, $idOperador, $clave]);
         } catch (PDOException $e) {
             return ['estado' => 'error', 'mensaje' => $e->getMessage()];
@@ -111,8 +113,9 @@ class ConfiguracionSistema
         self::$cache = [];
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-            $filas = $conexion->query("SELECT clave, valor, tipo_dato, version, actualizado_por FROM configuracion_sistema")
-                ->fetchAll(PDO::FETCH_ASSOC);
+            $stmtConfig = $conexion->query("SELECT clave, valor, tipo_dato, version, actualizado_por FROM configuracion_sistema");
+            \assert($stmtConfig !== false);
+            $filas = $stmtConfig->fetchAll(PDO::FETCH_ASSOC);
             foreach ($filas as $fila) {
                 self::$cache[$fila['clave']] = $fila;
             }
@@ -149,7 +152,7 @@ class ConfiguracionSistema
     private static function serializar(mixed $valor, string $tipoDato): string
     {
         if ($tipoDato === 'json') {
-            return json_encode($valor, JSON_UNESCAPED_UNICODE);
+            return json_encode($valor, JSON_UNESCAPED_UNICODE) ?: '';
         }
         if ($tipoDato === 'booleano') {
             return $valor ? '1' : '0';

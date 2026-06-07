@@ -74,7 +74,7 @@ class GeneradorIniServidor
     {
         $rutaHtaccess = self::RUTA_HTACCESS;
 
-        $contenidoActual = file_exists($rutaHtaccess) ? file_get_contents($rutaHtaccess) : '';
+        $contenidoActual = file_exists($rutaHtaccess) ? (file_get_contents($rutaHtaccess) ?: '') : '';
 
         $bloqueNuevo = self::generarBloqueHtaccess($valores);
 
@@ -112,7 +112,7 @@ class GeneradorIniServidor
             return '';
         }
 
-        $contenido = file_get_contents($rutaHtaccess);
+        $contenido = file_get_contents($rutaHtaccess) ?: '';
         $posInicio = strpos($contenido, self::MARCA_INICIO);
         $posFin = strpos($contenido, self::MARCA_FIN);
 
@@ -130,7 +130,7 @@ class GeneradorIniServidor
         if (!file_exists(self::RUTA_BACKUP)) {
             return ['estado' => 'error', 'mensaje' => 'No hay backup disponible para revertir.'];
         }
-        $contenidoBackup = file_get_contents(self::RUTA_BACKUP);
+        $contenidoBackup = file_get_contents(self::RUTA_BACKUP) ?: '';
         $rutaTemporal = self::RUTA_USER_INI . '.tmp.' . bin2hex(random_bytes(4));
         if (@file_put_contents($rutaTemporal, $contenidoBackup) === false) {
             return ['estado' => 'error', 'mensaje' => 'No se pudo escribir el archivo temporal.'];
@@ -145,10 +145,10 @@ class GeneradorIniServidor
     public static function limitesActualesPHP(): array
     {
         return [
-            'upload_max_filesize' => self::iniToMB(ini_get('upload_max_filesize')),
-            'post_max_size' => self::iniToMB(ini_get('post_max_size')),
-            'memory_limit' => self::iniToMB(ini_get('memory_limit')),
-            'max_execution_time' => (int)ini_get('max_execution_time'),
+            'upload_max_filesize' => self::iniToMB(ini_get('upload_max_filesize') ?: ''),
+            'post_max_size' => self::iniToMB(ini_get('post_max_size') ?: ''),
+            'memory_limit' => self::iniToMB(ini_get('memory_limit') ?: ''),
+            'max_execution_time' => (int)(ini_get('max_execution_time') ?: '0'),
             'max_file_uploads' => (int)ini_get('max_file_uploads'),
             'file_uploads' => ini_get('file_uploads') ? 'habilitado' : 'deshabilitado',
         ];

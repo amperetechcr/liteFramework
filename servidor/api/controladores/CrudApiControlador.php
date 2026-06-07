@@ -157,7 +157,7 @@ class CrudApiControlador
                 $filtros = $payload['filtros'] ?? [];
                 $condicionesFiltro = [];
                 foreach ($filtros as $columna => $valor) {
-                    $columnaLimpia = preg_replace('/[^a-zA-Z_\x80-\xff]/', '', $columna);
+                    $columnaLimpia = preg_replace('/[^a-zA-Z_\x80-\xff]/', '', (string)$columna);
                     if ($columnaLimpia !== '' && in_array($columnaLimpia, $columnasValidas, true)) {
                         $claveParam = 'filtro_' . str_replace('.', '_', $columnaLimpia);
                         $condicionesFiltro[] = "{$columnaLimpia} = :{$claveParam}";

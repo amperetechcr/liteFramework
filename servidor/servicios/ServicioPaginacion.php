@@ -43,7 +43,7 @@ class ServicioPaginacion
 
     private static function generarUrlBase(): string
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $uri = (string)(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '');
 
         $query = $_GET;
         unset($query['pagina'], $query['ajax'], $query['partial']);
@@ -129,7 +129,7 @@ class ServicioPaginacion
         unset($query['pagina'], $query['ajax'], $query['partial']);
         $query[$this->parametroPagina] = $pagina;
 
-        $url = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+        $url = (string)(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '');
         $queryString = http_build_query($query);
         $url = rtrim($url, '/');
         if ($url === '') {

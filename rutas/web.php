@@ -296,7 +296,7 @@ $enrutador->get('/api/refrescar-token', function () {
 
 $enrutador->post('/api/diagnostico/reparar', function () {
     header('Content-Type: application/json');
-    $payload = json_decode(file_get_contents('php://input'), true);
+    $payload = json_decode(file_get_contents('php://input') ?: '', true);
     $tipo = $payload['tipo'] ?? '';
     $params = $payload['params'] ?? [];
     $resultado = RemediadorError::ejecutarReparacion($tipo, $params);

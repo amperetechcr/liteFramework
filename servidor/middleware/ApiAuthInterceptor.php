@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LiteFramework\Middleware;
 
+use LiteFramework\Nucleo\Interceptor;
 use LiteFramework\Seguridad\SeguridadServidor;
 
 /**
@@ -17,7 +18,7 @@ use LiteFramework\Seguridad\SeguridadServidor;
  *   $enrutador->get('/api/ejemplo', fn() => ...)
  *       ->interceptor(ApiAuthInterceptor::class);
  */
-class ApiAuthInterceptor
+class ApiAuthInterceptor implements Interceptor
 {
     public function manejar(array $params, callable $siguiente): mixed
     {

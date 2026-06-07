@@ -244,7 +244,7 @@ class AyudanteCadena extends Helper
         if (empty(trim($texto))) {
             return 0;
         }
-        return count(preg_split('/\s+/', trim($texto)));
+        return count(preg_split('/\s+/', trim($texto)) ?: []);
     }
 
     /**

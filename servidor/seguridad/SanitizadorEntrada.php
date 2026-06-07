@@ -42,7 +42,7 @@ class SanitizadorEntrada
     {
         $correoLimpio = filter_var(trim($correoCrudo), FILTER_SANITIZE_EMAIL);
         if (filter_var($correoLimpio, FILTER_VALIDATE_EMAIL)) {
-            return strtolower($correoLimpio);
+            return strtolower($correoLimpio ?: '');
         }
         return false;
     }

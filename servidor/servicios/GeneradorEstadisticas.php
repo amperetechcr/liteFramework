@@ -98,6 +98,7 @@ class GeneradorEstadisticas
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $consulta = $conexion->prepare($this->consultaSql);
+            \assert($consulta !== false);
             $consulta->execute();
             $this->resultados = $consulta->fetchAll(PDO::FETCH_ASSOC);
             if (!empty($this->resultados)) {
@@ -118,6 +119,7 @@ class GeneradorEstadisticas
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $stmt = $conexion->prepare("SELECT titulo, descripcion, consulta_sql, tipo_visualizacion, columnas_mostrar, configuracion_visual FROM estadistica WHERE id_estadistica = :id LIMIT 1");
+            \assert($stmt !== false);
             $stmt->execute([':id' => $id]);
             $plantilla = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -376,6 +378,7 @@ class GeneradorEstadisticas
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $stmt = $conexion->query("SELECT id_estadistica, titulo, tipo_visualizacion, fecha_creacion FROM estadistica ORDER BY fecha_creacion DESC");
+            \assert($stmt !== false);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];

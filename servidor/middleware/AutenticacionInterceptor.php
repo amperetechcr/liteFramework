@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace LiteFramework\Middleware;
 
+use LiteFramework\Nucleo\Interceptor;
 use LiteFramework\Seguridad\SeguridadServidor;
 
-class AutenticacionInterceptor
+class AutenticacionInterceptor implements Interceptor
 {
     public function manejar(array $params, callable $siguiente): mixed
     {

@@ -37,17 +37,18 @@ class GestorMigraciones
 
     public function obtenerPendientes(): array
     {
-        $aplicadas = $this->conexion->query("SELECT archivo, hash_contenido FROM _migraciones")
-            ->fetchAll(PDO::FETCH_KEY_PAIR);
+        $stmtAplicadas = $this->conexion->query("SELECT archivo, hash_contenido FROM _migraciones");
+        \assert($stmtAplicadas !== false);
+        $aplicadas = $stmtAplicadas->fetchAll(PDO::FETCH_KEY_PAIR);
 
-        $archivos = glob($this->directorio . '/*.sql');
+        $archivos = glob($this->directorio . '/*.sql') ?: [];
         sort($archivos);
 
         $pendientes = [];
         $advertencias = [];
         foreach ($archivos as $ruta) {
             $archivo = basename($ruta);
-            $contenido = file_get_contents($ruta);
+            $contenido = file_get_contents($ruta) ?: '';
             $hash = hash('sha256', $contenido);
 
             if (!isset($aplicadas[$archivo])) {
@@ -81,7 +82,7 @@ class GestorMigraciones
         $this->limpiarEntradasHuerfanas();
 
         foreach ($info['pendientes'] as $item) {
-            $sql = file_get_contents($item['ruta']);
+            $sql = file_get_contents($item['ruta']) ?: '';
             if (empty(trim($sql))) {
                 $resultados[] = ['archivo' => $item['archivo'], 'estado' => 'saltada', 'mensaje' => 'Archivo vacio'];
                 continue;
@@ -118,10 +119,12 @@ class GestorMigraciones
                     $this->conexion->commit();
                 }
 
-                $this->conexion->prepare("
+                $stmt = $this->conexion->prepare("
                     INSERT INTO _migraciones (archivo, hash_contenido)
                     VALUES (:archivo, :hash)
-                ")->execute([
+                ");
+                \assert($stmt !== false);
+                $stmt->execute([
                     ':archivo' => $item['archivo'],
                     ':hash' => $item['hash'],
                 ]);
@@ -145,14 +148,16 @@ class GestorMigraciones
 
     private function limpiarEntradasHuerfanas(): void
     {
-        $aplicadas = $this->conexion->query("SELECT archivo FROM _migraciones")
-            ->fetchAll(PDO::FETCH_COLUMN);
+        $stmtAplicadas = $this->conexion->query("SELECT archivo FROM _migraciones");
+        \assert($stmtAplicadas !== false);
+        $aplicadas = $stmtAplicadas->fetchAll(PDO::FETCH_COLUMN);
 
         foreach ($aplicadas as $archivo) {
             $ruta = $this->directorio . '/' . $archivo;
             if (!file_exists($ruta)) {
-                $this->conexion->prepare("DELETE FROM _migraciones WHERE archivo = :archivo")
-                    ->execute([':archivo' => $archivo]);
+                $stmt = $this->conexion->prepare("DELETE FROM _migraciones WHERE archivo = :archivo");
+                \assert($stmt !== false);
+                $stmt->execute([':archivo' => $archivo]);
             }
         }
     }
@@ -167,16 +172,18 @@ class GestorMigraciones
 
     public function listarTodas(): array
     {
-        $aplicadas = $this->conexion->query("
+        $stmtAplicadas = $this->conexion->query("
             SELECT archivo, hash_contenido, fecha_aplicacion FROM _migraciones ORDER BY archivo
-        ")->fetchAll(PDO::FETCH_ASSOC);
+        ");
+        \assert($stmtAplicadas !== false);
+        $aplicadas = $stmtAplicadas->fetchAll(PDO::FETCH_ASSOC);
 
         $mapaAplicadas = [];
         foreach ($aplicadas as $a) {
             $mapaAplicadas[$a['archivo']] = $a;
         }
 
-        $archivos = glob($this->directorio . '/*.sql');
+        $archivos = glob($this->directorio . '/*.sql') ?: [];
         sort($archivos);
 
         $todas = [];
@@ -207,13 +214,14 @@ class GestorMigraciones
             return ['archivo' => $archivo, 'estado' => 'error', 'mensaje' => 'Archivo no encontrado'];
         }
 
-        $aplicadas = $this->conexion->query("SELECT archivo FROM _migraciones")
-            ->fetchAll(PDO::FETCH_COLUMN);
+        $stmtAplicadas = $this->conexion->query("SELECT archivo FROM _migraciones");
+        \assert($stmtAplicadas !== false);
+        $aplicadas = $stmtAplicadas->fetchAll(PDO::FETCH_COLUMN);
         if (in_array($archivo, $aplicadas, true)) {
             return ['archivo' => $archivo, 'estado' => 'error', 'mensaje' => 'Ya esta aplicada'];
         }
 
-        $sql = file_get_contents($ruta);
+        $sql = file_get_contents($ruta) ?: '';
         if (empty(trim($sql))) {
             return ['archivo' => $archivo, 'estado' => 'saltada', 'mensaje' => 'Archivo vacio'];
         }
@@ -250,10 +258,12 @@ class GestorMigraciones
             }
 
             $hash = hash('sha256', $sql);
-            $this->conexion->prepare("
+            $stmt = $this->conexion->prepare("
                 INSERT INTO _migraciones (archivo, hash_contenido)
                 VALUES (:archivo, :hash)
-            ")->execute([':archivo' => $archivo, ':hash' => $hash]);
+            ");
+            \assert($stmt !== false);
+            $stmt->execute([':archivo' => $archivo, ':hash' => $hash]);
 
             return ['archivo' => $archivo, 'estado' => 'aplicada'];
         } else {
@@ -267,15 +277,17 @@ class GestorMigraciones
 
     public function resetear(string $archivo): array
     {
-        $aplicadas = $this->conexion->query("SELECT archivo FROM _migraciones")
-            ->fetchAll(PDO::FETCH_COLUMN);
+        $stmtAplicadas = $this->conexion->query("SELECT archivo FROM _migraciones");
+        \assert($stmtAplicadas !== false);
+        $aplicadas = $stmtAplicadas->fetchAll(PDO::FETCH_COLUMN);
 
         if (!in_array($archivo, $aplicadas, true)) {
             return ['archivo' => $archivo, 'estado' => 'error', 'mensaje' => 'No esta aplicada'];
         }
 
-        $this->conexion->prepare("DELETE FROM _migraciones WHERE archivo = :archivo")
-            ->execute([':archivo' => $archivo]);
+        $stmt = $this->conexion->prepare("DELETE FROM _migraciones WHERE archivo = :archivo");
+        \assert($stmt !== false);
+        $stmt->execute([':archivo' => $archivo]);
 
         return ['archivo' => $archivo, 'estado' => 'reseteada'];
     }
@@ -286,7 +298,7 @@ class GestorMigraciones
         if (!file_exists($ruta)) {
             return null;
         }
-        return file_get_contents($ruta);
+        return file_get_contents($ruta) ?: '';
     }
 
     public function crearRespaldo(): array
@@ -299,7 +311,9 @@ class GestorMigraciones
         $nombreArchivo = 'respaldo_' . date('Ymd_His') . '.sql';
         $rutaCompleta = $dirBackups . '/' . $nombreArchivo;
 
-        $tablas = $this->conexion->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+        $stmtTablas = $this->conexion->query("SHOW TABLES");
+        \assert($stmtTablas !== false);
+        $tablas = $stmtTablas->fetchAll(PDO::FETCH_COLUMN);
         $contenido = '';
 
         foreach ($tablas as $tabla) {
@@ -307,11 +321,15 @@ class GestorMigraciones
                 continue;
             }
 
-            $estructura = $this->conexion->query("SHOW CREATE TABLE `$tabla`")->fetch(PDO::FETCH_ASSOC);
+            $stmtEstructura = $this->conexion->query("SHOW CREATE TABLE `$tabla`");
+            \assert($stmtEstructura !== false);
+            $estructura = $stmtEstructura->fetch(PDO::FETCH_ASSOC);
             $contenido .= "DROP TABLE IF EXISTS `$tabla`;\n";
             $contenido .= $estructura['Create Table'] . ";\n\n";
 
-            $filas = $this->conexion->query("SELECT * FROM `$tabla`")->fetchAll(PDO::FETCH_ASSOC);
+            $stmtFilas = $this->conexion->query("SELECT * FROM `$tabla`");
+            \assert($stmtFilas !== false);
+            $filas = $stmtFilas->fetchAll(PDO::FETCH_ASSOC);
             if (!empty($filas)) {
                 foreach ($filas as $fila) {
                     $valores = array_map(function ($v) {
@@ -334,17 +352,17 @@ class GestorMigraciones
         if (!is_dir($dirBackups)) {
             return [];
         }
-        $archivos = glob($dirBackups . '/respaldo_*.sql');
+        $archivos = glob($dirBackups . '/respaldo_*.sql') ?: [];
         rsort($archivos);
         $respaldos = [];
         foreach ($archivos as $ruta) {
             $archivo = basename($ruta);
-            $tamano = filesize($ruta);
+            $tamano = (int)filesize($ruta);
             $respaldos[] = [
                 'archivo' => $archivo,
                 'tamano' => $tamano,
                 'tamano_formato' => $this->formatoTamano($tamano),
-                'fecha' => date('Y-m-d H:i:s', filemtime($ruta)),
+                'fecha' => date('Y-m-d H:i:s', (int)filemtime($ruta)),
             ];
         }
         return $respaldos;
@@ -361,7 +379,9 @@ class GestorMigraciones
         $this->crearRespaldo();
 
         $this->conexion->exec("SET FOREIGN_KEY_CHECKS = 0");
-        $tablas = $this->conexion->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+        $stmtTablas = $this->conexion->query("SHOW TABLES");
+        \assert($stmtTablas !== false);
+        $tablas = $stmtTablas->fetchAll(PDO::FETCH_COLUMN);
         foreach ($tablas as $tabla) {
             if ($tabla === '_migraciones') {
                 continue;
@@ -369,7 +389,7 @@ class GestorMigraciones
             $this->conexion->exec("DROP TABLE IF EXISTS `{$tabla}`");
         }
 
-        $sql = file_get_contents($rutaBackup);
+        $sql = file_get_contents($rutaBackup) ?: '';
         $sentencias = $this->separarSentencias($sql);
         $errores = [];
         foreach ($sentencias as $sentencia) {
@@ -394,8 +414,10 @@ class GestorMigraciones
     public function obtenerUltimaMigracion(): ?string
     {
         try {
-            $archivo = $this->conexion->query("SELECT archivo FROM _migraciones ORDER BY id_migracion DESC LIMIT 1")->fetchColumn();
-            return $archivo ?: null;
+            $stmtUltimo = $this->conexion->query("SELECT archivo FROM _migraciones ORDER BY id_migracion DESC LIMIT 1");
+            \assert($stmtUltimo !== false);
+            $archivo = $stmtUltimo->fetchColumn();
+            return $archivo !== false && $archivo !== null ? (string)$archivo : null;
         } catch (Exception $e) {
             return null;
         }

@@ -85,6 +85,7 @@ class RemediadorError
         return ['exito' => false, 'mensaje' => 'No se encontró un verificador para este problema.'];
     }
 
+    /** @return \LiteFramework\Servicios\Verificadores\VerificadorError|null */
     private static function encontrarVerificador(string $tipo): ?object
     {
         foreach (self::$verificadores as $v) {

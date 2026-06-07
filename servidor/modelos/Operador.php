@@ -54,19 +54,25 @@ class Operador extends Modelo
     public static function contar(): int
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        return (int)$bd->query("SELECT COUNT(*) FROM operador")->fetchColumn();
+        $stmt = $bd->query("SELECT COUNT(*) FROM operador");
+        \assert($stmt !== false);
+        return (int)$stmt->fetchColumn();
     }
 
     public static function contarActivos(): int
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        return (int)$bd->query("SELECT COUNT(*) FROM operador WHERE estado_cuenta = 1")->fetchColumn();
+        $stmt = $bd->query("SELECT COUNT(*) FROM operador WHERE estado_cuenta = 1");
+        \assert($stmt !== false);
+        return (int)$stmt->fetchColumn();
     }
 
     public static function contarSuspendidos(): int
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        return (int)$bd->query("SELECT COUNT(*) FROM operador WHERE estado_cuenta = 0")->fetchColumn();
+        $stmt = $bd->query("SELECT COUNT(*) FROM operador WHERE estado_cuenta = 0");
+        \assert($stmt !== false);
+        return (int)$stmt->fetchColumn();
     }
 
     public static function obtenerPerfil(int $idOperador): ?array
@@ -80,6 +86,7 @@ class Operador extends Modelo
             WHERE o.id_operador = :id
             LIMIT 1
         ");
+        \assert($stmt !== false);
         $stmt->execute([':id' => $idOperador]);
         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
         return $resultado ?: null;
@@ -114,6 +121,7 @@ class Operador extends Modelo
 
         $sqlTotal = "SELECT COUNT(*) FROM operador o {$clausulaWhere}";
         $stmtTotal = $bd->prepare($sqlTotal);
+        \assert($stmtTotal !== false);
         foreach ($parametros as $clave => $valor) {
             $stmtTotal->bindValue($clave, $valor, is_int($valor) ? PDO::PARAM_INT : PDO::PARAM_STR);
         }
@@ -136,6 +144,7 @@ class Operador extends Modelo
             LIMIT :limite OFFSET :inicio
         ";
         $consulta = $bd->prepare($sql);
+        \assert($consulta !== false);
         foreach ($parametros as $clave => $valor) {
             $consulta->bindValue($clave, $valor, is_int($valor) ? PDO::PARAM_INT : PDO::PARAM_STR);
         }

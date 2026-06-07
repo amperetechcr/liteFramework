@@ -48,6 +48,7 @@ class Modelo
         $tabla = self::sanitizarIdentificadorSql(static::$tabla);
         $idCol = self::sanitizarIdentificadorSql(static::$idColumna);
         $sql = $bd->prepare("SELECT * FROM {$tabla} WHERE {$idCol} = :id LIMIT 1");
+        \assert($sql !== false);
         $sql->execute([':id' => $id]);
         $fila = $sql->fetch(PDO::FETCH_ASSOC);
         /** @phpstan-ignore new.static */
@@ -150,6 +151,7 @@ class Modelo
         }
 
         $consulta = $bd->prepare($sql);
+        \assert($consulta !== false);
         $consulta->execute($parametros);
         $filas = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
@@ -180,6 +182,7 @@ class Modelo
         $bd = self::conectar();
         $tabla = self::sanitizarIdentificadorSql(static::$tabla);
         $sql = $bd->query("SELECT COUNT(*) FROM {$tabla}");
+        \assert($sql !== false);
         return (int)$sql->fetchColumn();
     }
 
@@ -221,7 +224,9 @@ class Modelo
             $parametros[':id_valor'] = $idValor;
 
             $sql = "UPDATE {$tabla} SET " . implode(', ', $partes) . " WHERE {$idCol} = :id_valor";
-            $bd->prepare($sql)->execute($parametros);
+            $stmt = $bd->prepare($sql);
+            \assert($stmt !== false);
+            $stmt->execute($parametros);
         } else {
             if (in_array('fecha_creacion', $this->columnasTabla())) {
                 $datos['fecha_creacion'] = date('Y-m-d H:i:s');
@@ -237,7 +242,9 @@ class Modelo
                 $parametros[$alias] = $val;
             }
             $sql = "INSERT INTO {$tabla} (" . implode(', ', $columnas) . ") VALUES (" . implode(', ', $aliases) . ")";
-            $bd->prepare($sql)->execute($parametros);
+            $stmt = $bd->prepare($sql);
+            \assert($stmt !== false);
+            $stmt->execute($parametros);
             $this->atributos[$idCol] = (int)$bd->lastInsertId();
             $this->existe = true;
         }
@@ -256,6 +263,7 @@ class Modelo
         $idCol = self::sanitizarIdentificadorSql(static::$idColumna);
         $idValor = $this->atributos[$idCol];
         $sql = $bd->prepare("DELETE FROM {$tabla} WHERE {$idCol} = :id");
+        \assert($sql !== false);
         return $sql->execute([':id' => $idValor]);
     }
 
@@ -311,6 +319,7 @@ class Modelo
             $bd = self::conectar();
             $tabla = self::sanitizarIdentificadorSql(static::$tabla);
             $desc = $bd->query("DESCRIBE {$tabla}");
+            \assert($desc !== false);
             return $desc->fetchAll(PDO::FETCH_COLUMN, 0);
         } catch (Exception $e) {
             return [];

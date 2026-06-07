@@ -38,7 +38,7 @@ class GeneradorProyecto
         if (!file_exists($ruta)) {
             return ['exito' => false, 'error' => "Archivo no encontrado: $ruta"];
         }
-        $contenido = file_get_contents($ruta);
+        $contenido = file_get_contents($ruta) ?: '';
         $def = json_decode($contenido, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             return ['exito' => false, 'error' => 'JSON invalido: ' . json_last_error_msg()];
@@ -259,7 +259,7 @@ class GeneradorProyecto
             return ['exito' => false, 'tipo' => 'Template', 'ruta' => basename($destinoFile), 'mensaje' => 'Template no encontrado: ' . basename($templateFile)];
         }
         try {
-            $contenido = file_get_contents($templateFile);
+            $contenido = file_get_contents($templateFile) ?: '';
             $contenido = str_replace(array_keys($placeholders), array_values($placeholders), $contenido);
             file_put_contents($destinoFile, $contenido);
             return ['exito' => true, 'tipo' => 'Template', 'ruta' => basename($destinoFile), 'mensaje' => 'Personalizado'];
@@ -352,7 +352,7 @@ class GeneradorProyecto
         if (!empty($existing)) {
             rsort($existing);
             preg_match('/^(\d+)/', basename($existing[0]), $m);
-            $num = str_pad((string)((int)$m[1] + 1), 3, '0', STR_PAD_LEFT);
+            $num = str_pad((string)((isset($m[1]) ? (int)$m[1] + 1 : 1)), 3, '0', STR_PAD_LEFT);
         }
 
         $file = "$dirMigraciones/{$num}_semilla_{$codigo}.sql";

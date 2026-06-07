@@ -74,7 +74,7 @@ class RegistroAuditoria
         if (!empty($_REQUEST)) {
             $params = $_REQUEST;
             unset($params['clave'], $params['clave_acceso'], $params['clave_registro'], $params['clave_nueva'], $params['clave_actual'], $params['clave_confirmar']);
-            $parametrosRequest = mb_substr(json_encode($params, JSON_UNESCAPED_UNICODE), 0, 500);
+            $parametrosRequest = mb_substr(json_encode($params, JSON_UNESCAPED_UNICODE) ?: '', 0, 500);
         }
 
         $contexto = [
@@ -86,7 +86,7 @@ class RegistroAuditoria
             'metodo' => $_SERVER['REQUEST_METHOD'] ?? 'CLI',
             'ruta' => $_SERVER['REQUEST_URI'] ?? 'CLI',
             'host' => $_SERVER['HTTP_HOST'] ?? gethostname(),
-            'session_id' => session_status() === PHP_SESSION_ACTIVE ? hash('sha256', session_id()) : null,
+            'session_id' => session_status() === PHP_SESSION_ACTIVE ? hash('sha256', session_id() ?: '') : null,
             'http_referer' => $_SERVER['HTTP_REFERER'] ?? null,
             'codigo_respuesta' => http_response_code() ?: 0,
             'tamano_bytes' => (int)($_SERVER['CONTENT_LENGTH'] ?? 0),
@@ -109,7 +109,7 @@ class RegistroAuditoria
             $contexto['detalle'] = $detalle;
         }
 
-        $jsonDetalles = json_encode($contexto, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $jsonDetalles = json_encode($contexto, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '';
 
         /** @phpstan-ignore-next-line $_SERVER puede no tener REMOTE_ADDR en CLI */
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'desconocida';
@@ -140,6 +140,7 @@ class RegistroAuditoria
                 INSERT INTO bitacora_sistema (id_operador, modulo, accion_realizada, nivel, ip_direccion, detalles_json)
                 VALUES (:id_operador, :modulo, :accion, :nivel, :ip, :detalles)
             ");
+            \assert($stmt !== false);
             $stmt->execute([
                 ':id_operador' => $idOperador,
                 ':modulo' => mb_substr($modulo, 0, 50),
@@ -184,6 +185,7 @@ class RegistroAuditoria
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $limite = DialectoBaseDatos::fechaRestar($conexion, 'DAY', $dias);
             $stmt = $conexion->prepare("DELETE FROM bitacora_sistema WHERE fecha_registro < {$limite}");
+            \assert($stmt !== false);
             $stmt->execute();
             return $stmt->rowCount();
         } catch (PDOException $e) {
@@ -262,6 +264,7 @@ class RegistroAuditoria
                 ORDER BY b.fecha_registro DESC
                 LIMIT :limite OFFSET :inicio
             ");
+            \assert($stmt !== false);
 
             foreach ($parametros as $clave => $valor) {
                 $stmt->bindValue($clave, $valor);
@@ -326,6 +329,7 @@ class RegistroAuditoria
             }
 
             $stmt = $conexion->prepare("SELECT COUNT(*) FROM bitacora_sistema {$where}");
+            \assert($stmt !== false);
             foreach ($parametros as $clave => $valor) {
                 $stmt->bindValue($clave, $valor);
             }
@@ -367,10 +371,11 @@ class RegistroAuditoria
                     'detalles' => $detalle,
                 ];
             }
-            return json_encode(['eventos' => $salida, 'total' => count($salida), 'exportado' => date('Y-m-d\TH:i:sP')], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+            return json_encode(['eventos' => $salida, 'total' => count($salida), 'exportado' => date('Y-m-d\TH:i:sP')], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?: '';
         }
 
         $csv = fopen('php://memory', 'r+');
+        \assert($csv !== false);
         $cabeceras = ['ID', 'Operador', 'Modulo', 'Accion', 'Nivel', 'IP', 'Fecha', 'Trace ID', 'Host', 'Duracion ms', 'Codigo Respuesta'];
         fputcsv($csv, $cabeceras, ';');
         foreach ($eventos as $ev) {
@@ -391,7 +396,7 @@ class RegistroAuditoria
             fputcsv($csv, $fila, ';');
         }
         rewind($csv);
-        $contenido = stream_get_contents($csv);
+        $contenido = stream_get_contents($csv) ?: '';
         fclose($csv);
         return $contenido;
     }
@@ -401,6 +406,7 @@ class RegistroAuditoria
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $stmt = $conexion->query("SELECT DISTINCT modulo FROM bitacora_sistema ORDER BY modulo");
+            \assert($stmt !== false);
             return $stmt->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
             error_log("[RegistroAuditoria] Error al obtener modulos: " . $e->getMessage());
@@ -412,21 +418,29 @@ class RegistroAuditoria
     {
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-            $total = (int)$conexion->query("SELECT COUNT(*) FROM bitacora_sistema")->fetchColumn();
+            $stmtTotal = $conexion->query("SELECT COUNT(*) FROM bitacora_sistema");
+            \assert($stmtTotal !== false);
+            $total = (int)$stmtTotal->fetchColumn();
 
-            $porModulo = $conexion->query("
+            $stmtModulos = $conexion->query("
                 SELECT modulo, COUNT(*) as total
                 FROM bitacora_sistema
                 GROUP BY modulo
                 ORDER BY total DESC
                 LIMIT 10
-            ")->fetchAll(PDO::FETCH_ASSOC);
+            ");
+            \assert($stmtModulos !== false);
+            $porModulo = $stmtModulos->fetchAll(PDO::FETCH_ASSOC);
 
             $sqlSemana = "SELECT COUNT(*) FROM bitacora_sistema WHERE fecha_registro >= " . DialectoBaseDatos::fechaRestar($conexion, 'DAY', 7);
-            $ultimaSemana = (int)$conexion->query($sqlSemana)->fetchColumn();
+            $stmtSemana = $conexion->query($sqlSemana);
+            \assert($stmtSemana !== false);
+            $ultimaSemana = (int)$stmtSemana->fetchColumn();
 
             $sqlHoy = "SELECT COUNT(*) FROM bitacora_sistema WHERE " . DialectoBaseDatos::extraerFecha($conexion, 'fecha_registro') . " = " . DialectoBaseDatos::fechaHoy($conexion);
-            $hoy = (int)$conexion->query($sqlHoy)->fetchColumn();
+            $stmtHoy = $conexion->query($sqlHoy);
+            \assert($stmtHoy !== false);
+            $hoy = (int)$stmtHoy->fetchColumn();
 
             return [
                 'total' => $total,

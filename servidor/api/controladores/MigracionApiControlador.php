@@ -47,6 +47,7 @@ class MigracionApiControlador
         }
         $archivoLock = $dirLock . '/migraciones.lock';
         $lock = fopen($archivoLock, 'c');
+        \assert($lock !== false);
         if (!flock($lock, LOCK_EX | LOCK_NB)) {
             $respuesta['mensaje_error'] = 'Ya hay una ejecucion de migraciones en curso. Espere e intente de nuevo.';
             $respuesta['codigo_error'] = 'bloqueo_activo';
@@ -65,15 +66,21 @@ class MigracionApiControlador
             $lineasBackup[] = '-- Respaldo automatico generado el ' . date('Y-m-d H:i:s');
             $lineasBackup[] = '-- Origen: Migraciones web' . "\n";
 
-            $tablas = $conexion->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+            $stmtTablas = $conexion->query("SHOW TABLES");
+            \assert($stmtTablas !== false);
+            $tablas = $stmtTablas->fetchAll(PDO::FETCH_COLUMN);
             foreach ($tablas as $tabla) {
                 if ($tabla === '_migraciones') {
                     continue;
                 }
-                $crear = $conexion->query("SHOW CREATE TABLE `{$tabla}`")->fetch(PDO::FETCH_ASSOC);
+                $stmtCrear = $conexion->query("SHOW CREATE TABLE `{$tabla}`");
+                \assert($stmtCrear !== false);
+                $crear = $stmtCrear->fetch(PDO::FETCH_ASSOC);
                 $lineasBackup[] = $crear ? array_values($crear)[1] . ';' . "\n" : '';
 
-                $filas = $conexion->query("SELECT * FROM `{$tabla}`")->fetchAll(PDO::FETCH_ASSOC);
+                $stmtFilas = $conexion->query("SELECT * FROM `{$tabla}`");
+                \assert($stmtFilas !== false);
+                $filas = $stmtFilas->fetchAll(PDO::FETCH_ASSOC);
                 if (!empty($filas)) {
                     $columnas = array_keys($filas[0]);
                     $colList = '`' . implode('`, `', $columnas) . '`';

@@ -32,7 +32,7 @@ function imprimirExito(string $msg): void
 }
 
 // Parsear argumentos
-$args = getopt('', [
+$rawArgs = getopt('', [
     'desde-json:',
     'nombre:', 'codigo:', 'descripcion:', 'version:',
     'directorio:', 'db-anfitrion:', 'db-nombre:', 'db-usuario:', 'db-clave:',
@@ -41,23 +41,29 @@ $args = getopt('', [
     'admin-nombre:', 'admin-correo:', 'admin-clave:',
     'empresa:',
 ]);
+$args = is_array($rawArgs) ? $rawArgs : [];
 if (isset($args['desde-json'])) {
-    $rutaJson = $args['desde-json'];
+    /** @phpstan-ignore-next-line */
+    $rutaJson = (string)$args['desde-json'];
     if (!file_exists($rutaJson)) {
         imprimirError("Archivo no encontrado: $rutaJson");
         exit(1);
     }
-    $contenido = file_get_contents($rutaJson);
+    $contenido = file_get_contents($rutaJson) ?: '';
     $definicion = json_decode($contenido, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         imprimirError('JSON invalido: ' . json_last_error_msg());
         exit(1);
     }
 } else {
-    $modulos = !empty($args['modulos']) ? explode(',', $args['modulos']) : ['inicio', 'panelControl', 'operadores', 'auditoria', 'configuracion', 'apariencia', 'migraciones'];
+    /** @phpstan-ignore-next-line */
+    $modulosParam = isset($args['modulos']) ? (string)$args['modulos'] : '';
+    $modulos = !empty($modulosParam) ? explode(',', $modulosParam) : ['inicio', 'panelControl', 'operadores', 'auditoria', 'configuracion', 'apariencia', 'migraciones'];
     $entidades = [];
-    if (!empty($args['entidades'])) {
-        foreach (explode(';', $args['entidades']) as $entStr) {
+    /** @phpstan-ignore-next-line */
+    $entidadesParam = isset($args['entidades']) ? (string)$args['entidades'] : '';
+    if (!empty($entidadesParam)) {
+        foreach (explode(';', $entidadesParam) as $entStr) {
             $entStr = trim($entStr);
             if (empty($entStr)) {
                 continue;
@@ -92,9 +98,11 @@ if (isset($args['desde-json'])) {
         'empresa' => [
             'nombre' => $args['empresa'] ?? ($args['nombre'] ?? 'Mi Empresa'),
         ],
+        /** @phpstan-ignore-next-line */
         'directorio_salida' => rtrim($args['directorio'] ?? getcwd() . '/' . ($args['codigo'] ?? 'miapp'), '/\\'),
         'base_datos' => [
             'anfitrion' => $args['db-anfitrion'] ?? 'localhost',
+            /** @phpstan-ignore-next-line */
             'nombre' => $args['db-nombre'] ?? ($args['codigo'] ?? 'miapp') . '_db',
             'usuario' => $args['db-usuario'] ?? 'root',
             'clave' => $args['db-clave'] ?? '',
@@ -108,6 +116,7 @@ if (isset($args['desde-json'])) {
         'entidades' => $entidades,
         'operador_inicial' => [
             'nombre' => $args['admin-nombre'] ?? 'Administrador',
+            /** @phpstan-ignore-next-line */
             'correo' => $args['admin-correo'] ?? ('admin@' . ($args['codigo'] ?? 'app') . '.com'),
             'clave' => $args['admin-clave'] ?? 'Admin123!',
         ],

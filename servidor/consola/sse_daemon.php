@@ -75,7 +75,7 @@ while (true) {
         }
 
         if (file_exists($archivoLog) && filesize($archivoLog) > $maxBytes) {
-            $lineas = file($archivoLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $lineas = file($archivoLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
             $total = count($lineas);
             if ($total > 1000) {
                 $nuevas = array_slice($lineas, -1000);

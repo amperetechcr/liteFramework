@@ -272,7 +272,7 @@ class AutenticacionOAuth
             return [];
         }
 
-        $datos = json_decode($respuesta, true);
+        $datos = json_decode(is_string($respuesta) ? $respuesta : '', true);
         return is_array($datos) ? $datos : [];
     }
 
@@ -297,7 +297,7 @@ class AutenticacionOAuth
             return [];
         }
 
-        $datos = json_decode($respuesta, true);
+        $datos = json_decode(is_string($respuesta) ? $respuesta : '', true);
         return is_array($datos) ? $datos : [];
     }
 

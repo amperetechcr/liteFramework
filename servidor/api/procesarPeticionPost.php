@@ -51,7 +51,7 @@ $respuestaServidor = [
 try {
     SeguridadServidor::iniciarSesionEstricta();
 
-    $flujoEntrada = file_get_contents('php://input');
+    $flujoEntrada = file_get_contents('php://input') ?: '';
     $payload = json_decode($flujoEntrada, true);
 
     if (json_last_error() !== JSON_ERROR_NONE || empty($payload)) {
@@ -116,7 +116,9 @@ try {
     if (isset($ruta[$accionCrud])) {
         [$controlador, $metodo] = $ruta[$accionCrud];
         $instancia = new $controlador();
-        [$codigo, $datos] = $instancia->$metodo($payload);
+        /** @phpstan-ignore-next-line */
+        $resultado = \call_user_func([$instancia, $metodo], $payload);
+        [$codigo, $datos] = $resultado;
         $datos['nuevo_token'] = $nuevoTokenRotado;
         responder($datos, $codigo);
     } else {

@@ -48,7 +48,7 @@ abstract class Helper
             return $valor ? '1' : '0';
         }
         if (is_array($valor)) {
-            return json_encode($valor);
+            return json_encode($valor) ?: '';
         }
         if (is_object($valor)) {
             if (method_exists($valor, '__toString')) {

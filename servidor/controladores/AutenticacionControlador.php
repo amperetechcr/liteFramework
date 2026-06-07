@@ -17,8 +17,12 @@ class AutenticacionControlador extends ControladorBase
         $codigoMensaje = $_GET['mensaje'] ?? '';
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-            $totalUsuarios = (int)$conexion->query("SELECT COUNT(*) FROM operador")->fetchColumn();
-            $totalRoles = (int)$conexion->query("SELECT COUNT(*) FROM rbac_rol")->fetchColumn();
+            $stmtUsuarios = $conexion->query("SELECT COUNT(*) FROM operador");
+            \assert($stmtUsuarios !== false);
+            $totalUsuarios = (int)$stmtUsuarios->fetchColumn();
+            $stmtRoles = $conexion->query("SELECT COUNT(*) FROM rbac_rol");
+            \assert($stmtRoles !== false);
+            $totalRoles = (int)$stmtRoles->fetchColumn();
         } catch (Exception $e) {
             $totalUsuarios = 0;
             $totalRoles = 0;

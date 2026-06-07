@@ -95,7 +95,7 @@ function h(string $texto): string
 
 $uri = $_SERVER['REQUEST_URI'];
 $base = dirname($_SERVER['SCRIPT_NAME']);
-$path = parse_url($uri, PHP_URL_PATH) ?? '';
+$path = parse_url($uri, PHP_URL_PATH) ?: '';
 $ruta = substr($path, strlen($base));
 if ($ruta === '') {
     $ruta = '/';

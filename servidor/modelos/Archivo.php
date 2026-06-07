@@ -79,13 +79,16 @@ class Archivo extends Modelo
     public static function sumaTamanoBytes(): int
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        return (int)$bd->query("SELECT COALESCE(SUM(tamano_bytes), 0) FROM archivo")->fetchColumn();
+        $stmt = $bd->query("SELECT COALESCE(SUM(tamano_bytes), 0) FROM archivo");
+        \assert($stmt !== false);
+        return (int)$stmt->fetchColumn();
     }
 
     public static function sumaTamanoPorOperador(int $idOperador): int
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
         $stmt = $bd->prepare("SELECT ruta_archivo, tamano_bytes FROM archivo WHERE id_operador = :id");
+        \assert($stmt !== false);
         $stmt->execute([':id' => $idOperador]);
         $total = 0;
         while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {

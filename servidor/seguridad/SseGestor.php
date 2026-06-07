@@ -19,6 +19,7 @@ class SseGestor
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
         $stmt = $bd->prepare("INSERT INTO sse_evento (id_operador, tipo, datos) VALUES (:id, :tipo, :datos)");
+        \assert($stmt !== false);
         $stmt->execute([
             ':id' => $idOperador,
             ':tipo' => $tipo,
@@ -30,6 +31,7 @@ class SseGestor
     {
         $bd = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
         $stmt = $bd->prepare("INSERT INTO sse_evento (id_operador, tipo, datos) VALUES (0, :tipo, :datos)");
+        \assert($stmt !== false);
         $stmt->execute([
             ':tipo' => $tipo,
             ':datos' => json_encode($datos, JSON_UNESCAPED_UNICODE),
@@ -134,7 +136,7 @@ class SseGestor
         while ($pos > 0 && $visto < 50) {
             fseek($handle, $pos);
             $contenido = fread($handle, $buffer);
-            $lineas = explode("\n", $contenido);
+            $lineas = explode("\n", $contenido ?: '');
             foreach (array_reverse($lineas) as $l) {
                 $l = trim($l);
                 if ($l === '') {
@@ -153,8 +155,10 @@ class SseGestor
 
         if ($pos === 0) {
             $handle = fopen($archivo, 'rb');
+            \assert($handle !== false);
             fseek($handle, 0);
-            $contenido = fread($handle, $tamano);
+            $contenido = fread($handle, max(1, (int)$tamano));
+            \assert($contenido !== false);
             fclose($handle);
             $lineas = explode("\n", trim($contenido));
             $ultimasLineas = array_slice($lineas, -50);
@@ -216,6 +220,7 @@ class SseGestor
                     ORDER BY id_evento ASC
                     LIMIT 50
                 ");
+                \assert($stmt !== false);
                 $stmt->execute([
                     ':ultimo' => $ultimoId,
                     ':operador' => $idOperador,
@@ -229,15 +234,18 @@ class SseGestor
                         echo "event: {$ev['tipo']}\n";
                         echo "data: {$ev['datos']}\n\n";
                     }
-                    $bd->prepare("DELETE FROM sse_evento WHERE id_evento <= :ultimo")
-                        ->execute([':ultimo' => $ultimoId]);
+                    $stmtDelete = $bd->prepare("DELETE FROM sse_evento WHERE id_evento <= :ultimo");
+                    \assert($stmtDelete !== false);
+                    $stmtDelete->execute([':ultimo' => $ultimoId]);
                     $idleCycles = 0;
                 } else {
                     $idleCycles++;
                 }
 
                 $sql = "DELETE FROM sse_evento WHERE fecha_creacion < " . DialectoBaseDatos::fechaRestar($bd, 'MINUTE', 5);
-                $bd->prepare($sql)->execute();
+                $stmtCleanup = $bd->prepare($sql);
+                \assert($stmtCleanup !== false);
+                $stmtCleanup->execute();
             } catch (Exception $e) {
                 error_log('[SseGestor] Error en modo DB: ' . $e->getMessage());
             }

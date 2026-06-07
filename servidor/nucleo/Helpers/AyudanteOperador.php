@@ -30,7 +30,7 @@ class AyudanteOperador extends Helper
             $sql = $bd->prepare("SELECT nombre_rol FROM rbac_rol WHERE id_rol = :id LIMIT 1");
             $sql->execute([':id' => $idRol]);
             $nombre = $sql->fetchColumn();
-            return $nombre !== false ? $nombre : '—';
+            return $nombre !== false && $nombre !== null ? (string)$nombre : '—';
         } catch (Exception $e) {
             return '—';
         }

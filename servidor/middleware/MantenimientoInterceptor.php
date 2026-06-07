@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace LiteFramework\Middleware;
 
+use LiteFramework\Nucleo\Interceptor;
 use LiteFramework\Config\ConfiguracionSistema;
 
-class MantenimientoInterceptor
+class MantenimientoInterceptor implements Interceptor
 {
     public function manejar(array $params, callable $siguiente): mixed
     {

@@ -74,7 +74,7 @@ class AyudanteGeneral extends Helper
             return '';
         }
 
-        $bytes = random_bytes((int) ceil($longitud / 2));
+        $bytes = random_bytes(max(1, (int) ceil($longitud / 2)));
         $token = bin2hex($bytes);
 
         return substr($token, 0, $longitud);
@@ -206,7 +206,7 @@ class AyudanteGeneral extends Helper
             return (string) $valor;
         }
         if (is_array($valor)) {
-            return json_encode($valor);
+            return json_encode($valor) ?: '';
         }
         if (is_object($valor)) {
             if (method_exists($valor, '__toString')) {
@@ -223,9 +223,9 @@ class AyudanteGeneral extends Helper
     public static function aJson(mixed $valor, bool $pretty = false): string
     {
         if ($pretty) {
-            return json_encode($valor, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            return json_encode($valor, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '';
         }
-        return json_encode($valor);
+        return json_encode($valor) ?: '';
     }
 
     /**
