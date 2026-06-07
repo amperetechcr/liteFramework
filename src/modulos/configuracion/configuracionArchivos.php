@@ -159,7 +159,6 @@
         <div id="mensaje-config-archivos" role="status" aria-live="polite"></div>
     </form>
 
-    <?php if (true): /* Siempre visible para super admin */ ?>
     <hr class="margen-superior-normal margen-inferior-normal">
     <div class="agrupador-flexible-filas distribucion-espaciada flex-columna-sm">
         <div>
