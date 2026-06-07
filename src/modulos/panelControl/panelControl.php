@@ -61,6 +61,7 @@ $seguridadActiva = [
 $puntajeSeguridad = (int)((array_sum($seguridadActiva) / count($seguridadActiva)) * 100);
 
 $modulos = [
+    'inicio' => ['ruta' => '/inicio', 'titulo' => 'Inicio', 'icono' => '🏠', 'desc' => 'Dashboard principal con resumen del sistema y actividad reciente.', 'stats' => 'Vista general'],
     'archivos' => ['ruta' => '/archivos', 'titulo' => 'Archivos', 'icono' => '📁', 'desc' => 'Subida y almacenamiento seguro con explorador, cuota y descargas.', 'stats' => $stats['total_archivos'] . ' archivos · ' . $stats['espacio_usado_mb'] . ' MB'],
     'operadores' => ['ruta' => '/operadores', 'titulo' => 'Operadores', 'icono' => '👥', 'desc' => 'Gestion de cuentas, roles RBAC, permisos y estados de cuenta.', 'stats' => $stats['usuarios_activos'] . '/' . $stats['total_usuarios'] . ' activos'],
     'auditoria' => ['ruta' => '/auditoria', 'titulo' => 'Auditoria', 'icono' => '📋', 'desc' => 'Bitacora de eventos con filtros y busqueda. Trazabilidad completa.', 'stats' => $stats['eventos_hoy'] . ' eventos hoy'],
@@ -68,6 +69,10 @@ $modulos = [
     'apariencia' => ['ruta' => '/apariencia', 'titulo' => 'Apariencia', 'icono' => '🎨', 'desc' => 'Personaliza paletas de color, estilos, fuentes, espaciado y presets visuales.', 'stats' => 'Cambios en vivo'],
     'configuracion' => ['ruta' => '/configuracion', 'titulo' => 'Configuracion', 'icono' => '⚙', 'desc' => 'Perfil de usuario, limites de subida de archivos y directivas PHP del servidor.', 'stats' => 'Perfil · Limites · PHP'],
     'documentacion' => ['ruta' => '/documentacion', 'titulo' => 'Documentacion', 'icono' => '📖', 'desc' => 'Casos de uso, snippets y ejemplos practicos para cada modulo.', 'stats' => '20 secciones'],
+    'generadorModulo' => ['ruta' => '/generador-modulo', 'titulo' => 'Generador CRUD', 'icono' => '🧩', 'desc' => 'Genera un modulo completo con modelo, controlador, vistas y rutas.', 'stats' => 'PHP + JS + SQL'],
+    'generadorProyecto' => ['ruta' => '/generador-proyecto', 'titulo' => 'Generar Proyecto', 'icono' => '🚀', 'desc' => 'Crea un proyecto completo desde cero con wizard guiado.', 'stats' => 'Full stack'],
+    'generadorPdf' => ['ruta' => '/generador-pdf', 'titulo' => 'PDF', 'icono' => '📄', 'desc' => 'Genera documentos PDF desde HTML con estilos y diseno profesional.', 'stats' => 'Documentos'],
+    'estadisticas' => ['ruta' => '/estadisticas', 'titulo' => 'Estadisticas', 'icono' => '📊', 'desc' => 'Visualiza graficos y reportes generados desde consultas SQL.', 'stats' => 'Graficos'],
 ];
 
 $indicadores = [

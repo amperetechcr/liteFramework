@@ -8,6 +8,7 @@ use LiteFramework\Modelos\Operador;
 use LiteFramework\Seguridad\SeguridadServidor;
 use LiteFramework\Seguridad\PoliticaContrasena;
 use LiteFramework\Seguridad\RegistroAuditoria;
+use LiteFramework\Seguridad\LimitadorPeticiones;
 use LiteFramework\Seguridad\SseGestor;
 
 class OperadorApiControlador
@@ -34,10 +35,10 @@ class OperadorApiControlador
             return [400, $respuesta];
         }
 
-        $intentosFallidos = $_SESSION['registro_intentos_fallidos'] ?? 0;
-        $ultimoIntento = $_SESSION['registro_ultimo_intento'] ?? 0;
+        $limitador = new LimitadorPeticiones();
+        $claveRate = 'registro:' . $_SERVER['REMOTE_ADDR'] ?? '';
 
-        if ($intentosFallidos >= 3 && (time() - $ultimoIntento) < 900) {
+        if ($limitador->haExcedido($claveRate, 3, 900)) {
             RegistroAuditoria::seguridad('Registro bloqueado por tasa', [
                 'correo_intentado' => $correoElectronico,
                 'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
@@ -63,7 +64,7 @@ class OperadorApiControlador
             'estado_cuenta' => 1,
         ]);
 
-        unset($_SESSION['registro_intentos_fallidos'], $_SESSION['registro_ultimo_intento']);
+        $limitador->reiniciar($claveRate);
 
         RegistroAuditoria::auditoria('Operadores', 'Registro de operador', [
             'id_nuevo_operador' => $nuevoOperador->id_operador,

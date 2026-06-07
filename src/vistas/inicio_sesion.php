@@ -27,11 +27,14 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
     <meta name="twitter:card" content="summary">
 
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/tema.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/paletas.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/maquetacion.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/componentes.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/modales.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/estilos.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/utilidades.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/personalizacion.css">
+    <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/apariencia.css">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/oauth.css">
 
     <script type="application/ld+json">

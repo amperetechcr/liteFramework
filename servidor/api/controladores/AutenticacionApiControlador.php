@@ -7,6 +7,7 @@ namespace LiteFramework\Api\Controladores;
 use PDO;
 use LiteFramework\Seguridad\SeguridadServidor;
 use LiteFramework\Seguridad\RegistroAuditoria;
+use LiteFramework\Seguridad\LimitadorPeticiones;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Config\GestorEntorno;
 
@@ -31,10 +32,14 @@ class AutenticacionApiControlador
         }
 
         $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+        $limitador = new LimitadorPeticiones();
 
-        if (SeguridadServidor::verificarBloqueoAcceso($conexion, $correo)) {
-            $minutos = (int)GestorEntorno::obtener('APP_BLOQUEO_MINUTOS', 15);
-            $maxIntentos = (int)GestorEntorno::obtener('APP_MAX_INTENTOS_ACCESO', 5);
+        $claveRateLimit = 'login:' . $correo;
+        $maxIntentos = (int)GestorEntorno::obtener('APP_MAX_INTENTOS_ACCESO', 5);
+        $ventana = (int)GestorEntorno::obtener('APP_BLOQUEO_MINUTOS', 15) * 60;
+
+        if ($limitador->haExcedido($claveRateLimit, $maxIntentos, $ventana)) {
+            $minutos = (int)($ventana / 60);
             RegistroAuditoria::seguridad('Inicio de sesion bloqueado por tasa', [
                 'correo_intentado' => $correo,
                 'max_intentos' => $maxIntentos,
@@ -56,9 +61,8 @@ class AutenticacionApiControlador
         $operador = $consulta->fetch(PDO::FETCH_ASSOC);
 
         if (!$operador || !SeguridadServidor::verificarClaveOperador($clave, $operador['clave_acceso'])) {
-            SeguridadServidor::registrarIntentoAccesoFallido($conexion, $correo);
+            $intentosActuales = $limitador->contar($claveRateLimit, $ventana);
             $maxIntentos = (int)GestorEntorno::obtener('APP_MAX_INTENTOS_ACCESO', 5);
-            $intentosActuales = SeguridadServidor::contarIntentosAcceso($conexion, $correo);
             RegistroAuditoria::seguridad('Inicio de sesion fallido', [
                 'correo_intentado' => $correo,
                 'motivo' => !$operador ? 'usuario_no_encontrado' : 'clave_incorrecta',
@@ -93,7 +97,7 @@ class AutenticacionApiControlador
 
         SeguridadServidor::cargarPermisosEnMemoria($conexion, $operador['id_rol']);
 
-        SeguridadServidor::limpiarIntentosAcceso($conexion, $correo);
+        $limitador->reiniciar($claveRateLimit);
 
         RegistroAuditoria::auditoria('Acceso', 'Inicio de sesion exitoso', [
             'id_operador' => $operador['id_operador'],
