@@ -1,26 +1,20 @@
-# Normalizar a LF en repositorio, mantener comportamiento nativo en checkout
-* text=auto
+# Force LF line endings for PHP files (PSR-12 / PHPCS requirement)
+*.php text eol=lf
 
-# Archivos PHP
-*.php text
-
-# Archivos SQL
-*.sql text
-
-# Archivos JS, CSS, HTML
-*.js text
-*.css text
-*.html text
-
-# Archivos de configuracion
-*.json text
-*.md text
-*.yml text
-
-# Archivos binarios
+# Binary files
+*.phar binary
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
-*.pdf binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.gz binary
+
+# Auto-detect for everything else
+* text=auto
