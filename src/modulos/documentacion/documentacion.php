@@ -56,7 +56,7 @@ if (!$esAjax) {
             <h2 id="titulo-modal-<?= $sec['id'] ?>" class="margen-inferior-0"><?= h($sec['titulo']) ?></h2>
             <button type="button" class="modal-cerrar" aria-label="Cerrar modal">&times;</button>
         </div>
-        <div class="modal-cuerpo modal-documentacion-cuerpo">
+        <div class="modal-documentacion-cuerpo">
             <?= $sec['contenido'] ?>
         </div>
     </div>

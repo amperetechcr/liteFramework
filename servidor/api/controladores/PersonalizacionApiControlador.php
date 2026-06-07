@@ -6,6 +6,7 @@ namespace LiteFramework\Api\Controladores;
 
 use PDO;
 use LiteFramework\Config\ConexionBaseDatos;
+use LiteFramework\Nucleo\DialectoBaseDatos;
 use Exception;
 
 class PersonalizacionApiControlador
@@ -40,8 +41,15 @@ class PersonalizacionApiControlador
 
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-            $stmt = $conexion->prepare("INSERT INTO operador_personalizacion (id_operador, configuracion) VALUES (:id, :conf) ON DUPLICATE KEY UPDATE configuracion = VALUES(configuracion)");
-            $stmt->execute([':id' => $idOperador, ':conf' => $configuracionJson]);
+
+            if (DialectoBaseDatos::esSQLite($conexion)) {
+                $sql = "INSERT INTO operador_personalizacion (id_operador, configuracion) VALUES (:id, :conf) ON CONFLICT(id_operador) DO UPDATE SET configuracion = :conf2";
+                $stmt = $conexion->prepare($sql);
+                $stmt->execute([':id' => $idOperador, ':conf' => $configuracionJson, ':conf2' => $configuracionJson]);
+            } else {
+                $stmt = $conexion->prepare("INSERT INTO operador_personalizacion (id_operador, configuracion) VALUES (:id, :conf) ON DUPLICATE KEY UPDATE configuracion = VALUES(configuracion)");
+                $stmt->execute([':id' => $idOperador, ':conf' => $configuracionJson]);
+            }
 
             $_SESSION['personalizacion_ui'] = $personalizacion;
 

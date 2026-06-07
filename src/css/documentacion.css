@@ -38,16 +38,11 @@
     max-width: 850px;
     width: 100%;
     max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    overflow: hidden;
+    display: block;
+    overflow-y: auto;
 }
 
 .modal-documentacion-cuerpo {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
     padding: var(--espacio-normal) var(--espacio-mediano);
 }
 
@@ -90,7 +85,6 @@
         width: 100%;
         max-height: 92vh;
         border-radius: var(--radio-redondeado);
-        margin: auto;
     }
 }
 
@@ -108,6 +102,5 @@
         max-height: 85vh;
         max-height: 85dvh;
         border-radius: var(--radio-redondeado);
-        margin: auto;
     }
 }
