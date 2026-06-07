@@ -16,8 +16,6 @@ use LiteFramework\Modelos\Archivo;
 use LiteFramework\Servicios\AdministradorArchivos;
 use Exception;
 
-require_once __DIR__ . '/ControladorBase.php';
-
 class SubirArchivosControlador extends ControladorBase
 {
     private AdministradorArchivos $adminArchivos;
@@ -108,7 +106,6 @@ class SubirArchivosControlador extends ControladorBase
                 ]);
                 exit;
             }
-
             http_response_code(400);
             echo json_encode(['error' => $resultado['mensaje_error'], 'codigo' => $resultado['codigo_error']]);
             exit;

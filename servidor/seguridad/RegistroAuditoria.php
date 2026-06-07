@@ -11,11 +11,11 @@ use PDO;
 
 class RegistroAuditoria
 {
-    const NIVEL_INFO       = 'INFO';
-    const NIVEL_ADVERTENCIA = 'ADVERTENCIA';
-    const NIVEL_ERROR      = 'ERROR';
-    const NIVEL_SEGURIDAD  = 'SEGURIDAD';
-    const NIVEL_AUDITORIA  = 'AUDITORIA';
+    public const NIVEL_INFO       = 'INFO';
+    public const NIVEL_ADVERTENCIA = 'ADVERTENCIA';
+    public const NIVEL_ERROR      = 'ERROR';
+    public const NIVEL_SEGURIDAD  = 'SEGURIDAD';
+    public const NIVEL_AUDITORIA  = 'AUDITORIA';
 
     private static bool $bitacoraHabilitada = true;
     private static ?string $archivoRuta = null;

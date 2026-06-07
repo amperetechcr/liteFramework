@@ -3,38 +3,6 @@
 define('DIRECTORIO_RAIZ', __DIR__);
 define('URL_BASE', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 
-require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
-\LiteFramework\Config\GestorEntorno::cargar();
-
-\LiteFramework\Nucleo\ManejadorErrores::registrar();
-
-$configUI = require DIRECTORIO_RAIZ . '/servidor/config/ui.php';
-
-if (!empty($_GET['paleta']) && in_array($_GET['paleta'], $configUI['paletas_validas'], true)) {
-    $configUI['paleta'] = $_GET['paleta'];
-}
-if (!empty($_GET['estilo']) && in_array($_GET['estilo'], $configUI['estilos_validos'], true)) {
-    $configUI['estilo'] = $_GET['estilo'];
-}
-if (!empty($_GET['fondo']) && in_array($_GET['fondo'], $configUI['fondos_validos'], true)) {
-    $configUI['fondo'] = $_GET['fondo'];
-}
-if (!empty($_GET['fuente']) && in_array($_GET['fuente'], $configUI['fuentes_validas'], true)) {
-    $configUI['fuente'] = $_GET['fuente'];
-}
-if (!empty($_GET['espaciado']) && in_array($_GET['espaciado'], $configUI['espaciados_validos'], true)) {
-    $configUI['espaciado'] = $_GET['espaciado'];
-}
-if (!empty($_GET['tamano']) && in_array($_GET['tamano'], $configUI['tamanos_validos'], true)) {
-    $configUI['tamano'] = $_GET['tamano'];
-}
-
-if (!empty($_SESSION['personalizacion_ui'])) {
-    $configUI = array_merge($configUI, $_SESSION['personalizacion_ui']);
-}
-
-$GLOBALS['configUI'] = $configUI;
-
 function configUI(?string $clave = null): mixed
 {
     $config = $GLOBALS['configUI'];
@@ -90,6 +58,38 @@ function h(string $texto): string
 {
     return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8');
 }
+
+require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
+\LiteFramework\Config\GestorEntorno::cargar();
+
+\LiteFramework\Nucleo\ManejadorErrores::registrar();
+
+$configUI = require DIRECTORIO_RAIZ . '/servidor/config/ui.php';
+
+if (!empty($_GET['paleta']) && in_array($_GET['paleta'], $configUI['paletas_validas'], true)) {
+    $configUI['paleta'] = $_GET['paleta'];
+}
+if (!empty($_GET['estilo']) && in_array($_GET['estilo'], $configUI['estilos_validos'], true)) {
+    $configUI['estilo'] = $_GET['estilo'];
+}
+if (!empty($_GET['fondo']) && in_array($_GET['fondo'], $configUI['fondos_validos'], true)) {
+    $configUI['fondo'] = $_GET['fondo'];
+}
+if (!empty($_GET['fuente']) && in_array($_GET['fuente'], $configUI['fuentes_validas'], true)) {
+    $configUI['fuente'] = $_GET['fuente'];
+}
+if (!empty($_GET['espaciado']) && in_array($_GET['espaciado'], $configUI['espaciados_validos'], true)) {
+    $configUI['espaciado'] = $_GET['espaciado'];
+}
+if (!empty($_GET['tamano']) && in_array($_GET['tamano'], $configUI['tamanos_validos'], true)) {
+    $configUI['tamano'] = $_GET['tamano'];
+}
+
+if (!empty($_SESSION['personalizacion_ui'])) {
+    $configUI = array_merge($configUI, $_SESSION['personalizacion_ui']);
+}
+
+$GLOBALS['configUI'] = $configUI;
 
 \LiteFramework\Seguridad\SeguridadServidor::establecerCabecerasSeguras();
 

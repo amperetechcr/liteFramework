@@ -6,8 +6,6 @@ namespace LiteFramework\Controladores;
 
 use LiteFramework\Middleware\AutenticacionInterceptor;
 
-require_once __DIR__ . '/ControladorBase.php';
-
 /**
  * ModuloControlador — Controlador genérico para cualquier módulo del panel.
  *

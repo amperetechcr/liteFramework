@@ -19,6 +19,16 @@ use LiteFramework\Api\Controladores\GeneradorModuloApiControlador;
 use LiteFramework\Api\Controladores\GeneradorProyectoApiControlador;
 use Exception;
 
+function responder(array $datos, ?int $codigoHttp = null): void
+{
+    if ($codigoHttp !== null) {
+        http_response_code($codigoHttp);
+    }
+    TrazadorPeticiones::finalizar();
+    echo json_encode($datos);
+    exit();
+}
+
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
@@ -30,16 +40,6 @@ if (!defined('URL_BASE')) {
 }
 TrazadorPeticiones::iniciar();
 RegistroAuditoria::habilitarArchivo();
-
-function responder(array $datos, ?int $codigoHttp = null): void
-{
-    if ($codigoHttp !== null) {
-        http_response_code($codigoHttp);
-    }
-    TrazadorPeticiones::finalizar();
-    echo json_encode($datos);
-    exit();
-}
 
 $respuestaServidor = [
     'estado_operacion' => false,

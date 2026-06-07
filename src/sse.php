@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+define('DIRECTORIO_RAIZ', dirname(__DIR__));
+define('URL_BASE', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
+
 if (strtoupper($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
     http_response_code(405);
     exit;
 }
-
-define('DIRECTORIO_RAIZ', dirname(__DIR__));
-define('URL_BASE', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 
 require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
 GestorEntorno::cargar();

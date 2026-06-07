@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+function color(string $txt, string $c): string
+{
+    global $colores;
+    return $colores[$c] . $txt . $colores['reset'];
+}
+
 $dirRaiz = dirname(__DIR__, 2);
 $testsDir = $dirRaiz . '/tests';
 $phpunitPhar = $testsDir . '/phpunit.phar';
@@ -14,12 +20,6 @@ $colores = [
     'cyan' => "\033[36m",
     'reset' => "\033[0m",
 ];
-
-function color(string $txt, string $c): string
-{
-    global $colores;
-    return $colores[$c] . $txt . $colores['reset'];
-}
 
 echo color("=== liteFramework - Ejecutor de Pruebas ===\n", 'cyan');
 

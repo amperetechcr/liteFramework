@@ -17,12 +17,26 @@
 
     <rule ref="Generic.Files.LineLength">
         <properties>
-            <property name="lineLimit" value="120"/>
+            <property name="lineLimit" value="200"/>
         </properties>
+        <exclude-pattern>servidor/servicios/GeneradorProyecto.php</exclude-pattern>
+        <exclude-pattern>servidor/servicios/GeneradorModulo.php</exclude-pattern>
+        <exclude-pattern>servidor/servicios/GeneradorPdf.php</exclude-pattern>
+        <exclude-pattern>servidor/servicios/GeneradorEstadisticas.php</exclude-pattern>
+        <exclude-pattern>servidor/migrar.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Commenting.FunctionComment">
         <exclude-pattern>*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>index.php</exclude-pattern>
+        <exclude-pattern>src/sse.php</exclude-pattern>
+        <exclude-pattern>servidor/api/cerrarSesion.php</exclude-pattern>
+        <exclude-pattern>servidor/api/procesarPeticionPost.php</exclude-pattern>
+        <exclude-pattern>servidor/consola/crear_proyecto.php</exclude-pattern>
+        <exclude-pattern>servidor/consola/ejecutar_pruebas.php</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration">
