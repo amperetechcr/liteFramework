@@ -29,8 +29,23 @@ function configUI(?string $clave = null): mixed
     return $config;
 }
 
-function claseFondoHTML(): string { return 'fondo-blanco'; }
-function claseTexturaHTML(): string { return ''; }
-function claseFuenteHTML(): string { return ''; }
-function claseEspaciadoHTML(): string { return ''; }
-function claseTamanoHTML(): string { return ''; }
+function claseFondoHTML(): string
+{
+    return 'fondo-blanco';
+}
+function claseTexturaHTML(): string
+{
+    return '';
+}
+function claseFuenteHTML(): string
+{
+    return '';
+}
+function claseEspaciadoHTML(): string
+{
+    return '';
+}
+function claseTamanoHTML(): string
+{
+    return '';
+}

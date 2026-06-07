@@ -218,7 +218,9 @@ class Correo
 
             foreach ($this->adjuntos as $adjunto) {
                 $contenido = file_get_contents($adjunto['ruta']);
-                if ($contenido === false) continue;
+                if ($contenido === false) {
+                    continue;
+                }
                 $cabeceras[] = '';
                 $cabeceras[] = '--' . $separador;
                 $cabeceras[] = 'Content-Type: application/octet-stream; name="' . $adjunto['nombre'] . '"';

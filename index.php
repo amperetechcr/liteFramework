@@ -114,7 +114,8 @@ if ($mantenimiento) {
     $esAdmin = !empty($_SESSION['operador_id']);
 
     if (!$esLogin && !$esRecurso && !$esAdmin) {
-        (new \LiteFramework\Middleware\MantenimientoInterceptor())->manejar([], function () {});
+        (new \LiteFramework\Middleware\MantenimientoInterceptor())->manejar([], function (): void {
+        });
     }
 }
 
