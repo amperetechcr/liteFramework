@@ -1,7 +1,7 @@
 <?php
 
 // ═══════════════════════════════════════════════════════════════
-// liteFramework — AI-First PHP MVC Framework
+// liteFramework — PHP MVC Framework
 // Pipeline de una peticion HTTP:
 // 1 CONSTANTES → 2 HELPERS → 3 BOOTSTRAP → 4 UI CONFIG →
 // 5 SEGURIDAD → 6 RUTEO → 7 DISPATCH

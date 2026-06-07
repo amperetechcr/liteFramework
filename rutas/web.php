@@ -112,7 +112,7 @@ $enrutador->get('/estadisticas', function () {
     (new ModuloControlador())->indice('estadisticas');
 })->interceptor(AutenticacionInterceptor::class)->nombre('estadisticas');
 
-$enrutador->get('/estadisticas/ver/{id}', function ($id) {
+$enrutador->get('/estadisticas/ver/{id}', function (int $id) {
     $datosVista = (int)$id;
     require DIRECTORIO_RAIZ . '/src/modulos/estadisticas/vistaEstadistica.php';
 })->interceptor(AutenticacionInterceptor::class)->nombre('estadisticas.ver');
@@ -133,7 +133,7 @@ $enrutador->get('/migraciones', function () {
     (new ModuloControlador())->indice('migraciones');
 })->interceptor(AutenticacionInterceptor::class)->nombre('migraciones');
 
-$enrutador->get('/migraciones/respaldos/descargar/{archivo}', function ($archivo) {
+$enrutador->get('/migraciones/respaldos/descargar/{archivo}', function (string $archivo) {
     $archivoSeguro = basename($archivo);
     if (!preg_match('/^respaldo_\d{8}_\d{6}\.sql$/', $archivoSeguro)) {
         http_response_code(404);
@@ -208,7 +208,7 @@ $enrutador->post('/archivos/eliminar-carpeta', function () {
     (new SubirArchivosControlador())->eliminarCarpeta();
 })->interceptor(AutenticacionInterceptor::class)->nombre('archivos.eliminar_carpeta');
 
-$enrutador->get('/archivos/descargar/{id}', function ($id) {
+$enrutador->get('/archivos/descargar/{id}', function (int $id) {
     (new SubirArchivosControlador())->descargar((int)$id);
 })->interceptor(AutenticacionInterceptor::class)->nombre('archivos.descargar');
 
@@ -344,6 +344,12 @@ $enrutador->get('/api/roles', function () {
         return $r->aArreglo();
     }, $roles));
 })->interceptor(ApiAuthInterceptor::class)->nombre('api.roles');
+
+$enrutador->get('/api/rendimiento', function () {
+    header('Content-Type: application/json');
+    $stats = \LiteFramework\Nucleo\Helpers\AyudanteMonitor::obtenerEstadisticas();
+    echo json_encode($stats);
+})->nombre('api.rendimiento');
 
 // Rutas de errores (redirigen a la pagina publica)
 foreach ([400, 401, 403, 404, 500, 503] as $codigo) {

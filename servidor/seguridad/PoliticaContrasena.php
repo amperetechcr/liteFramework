@@ -20,7 +20,7 @@ class PoliticaContrasena
      * @param string $clave Contraseña en texto plano
      * @return true|string true si es válida, o mensaje de error
      */
-    public static function validar(string $clave)
+    public static function validar(string $clave): true|string
     {
         if (strlen($clave) < 8) {
             return 'La contraseña debe tener al menos 8 caracteres.';

@@ -1,13 +1,13 @@
 # liteFramework — Guía para IA
 
-> **Cada línea de este framework fue escrita para que una IA pueda leerla, entenderla y modificarla.**
-> Nombres en español, type hints en cada método, sin dependencias externas, sin magia.
+> `declare(strict_types=1)` en 94/94 archivos del servidor. Type hints en cada método y parámetro.
+> Sin `eval()`, sin `extract()`, sin `${$var}`. Sin `vendor/` ni dependencias externas.
 >
 > Patrones prácticos → `.opencode/skills/lite-framework/instructions.md` | Endpoints → `API.md` | Frontend → `DISENO_FRONTEND.md`
 
 ## Stack + Filosofía
 
-PHP 8.2+ **sin Composer** (autoloader manual + PSR-4 opcional). MySQL con fallback SQLite in-memory. Sin npm, JS vanilla. **Todo en español + camelCase**. Diseñado para que OpenCode + OpenClaw colaboren en el desarrollo.
+PHP 8.2+ **sin Composer** (autoloader manual + PSR-4 opcional). MySQL con fallback SQLite in-memory. Sin npm, JS vanilla. **Todo en español + camelCase**.
 
 **Namespaces:** `LiteFramework\*` con PSR-4 (`composer.json`). `declare(strict_types=1)` en todos los archivos. Excepciones personalizadas: `ErrorSeguridad` (403), `ErrorAutenticacion` (401), `ErrorValidacion` (422).
 

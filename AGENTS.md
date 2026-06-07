@@ -1,7 +1,8 @@
-# liteFramework — AI-Native Development Manifesto
+# liteFramework — Guía de arquitectura y flujo de trabajo
 
-Este proyecto fue diseñado desde cero para que **humanos e IA trabajen juntos** en el código.
-OpenCode escribe. OpenClaw verifica. El framework se explica a sí mismo.
+PHP 8.2+ con declare(strict_types=1). Sin dependencias externas (no Composer, no npm).
+Código 100% en español con type hints en cada método.
+OpenCode escribe. OpenClaw verifica.
 
 ## Stack
 
