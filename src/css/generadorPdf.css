@@ -1,4 +1,4 @@
-/* =========================================
+﻿/* =========================================
    GENERADOR PDF: Estilos de impresion y previsualizacion
    Ubicacion: src/css/generadorPdf.css
    Proposito: Panel de personalizacion y @media print.
@@ -168,8 +168,8 @@
     box-shadow: var(--sombra-flotante);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   MEDIA PRINT â€” Colores fijos optimizados
+/* 
+   MEDIA PRINT  Colores fijos optimizados
    ========================================= */
 
 @media print {

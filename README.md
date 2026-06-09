@@ -7,9 +7,9 @@
 [![Sentry](https://img.shields.io/badge/Sentry-monitoring-%23362D59)](https://sentry.io)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE.md)
 
-**El framework PHP donde humanos e IA crean juntos.**  
-Zero dependencias externas. Código 100% legible por IA. OpenCode + OpenClaw nativos.  
-MVC, ORM, RBAC, SSE, Sentry — todo desde cero, sin vendor oculto, sin magia.
+**El framework PHP hecho para que la IA lo use, no para que el humano lo toque.**  
+El humano usa la IA. La IA controla el framework. Cero alucinaciones. Cero código desperdiciado.  
+OpenCode + OpenClaw nativos. 8 skills. 6 MCP servers. 458 tests de verificación.
 
 ---
 
@@ -17,11 +17,13 @@ MVC, ORM, RBAC, SSE, Sentry — todo desde cero, sin vendor oculto, sin magia.
 
 | | Laravel / Symfony | liteFramework |
 |---|---|---|
+| **¿Quién escribe código?** | El humano escribe → errores humanos, contexto parcial | **La IA escribe.** El humano solo supervisa y da instrucciones |
+| **Alucinaciones** | Constantes. La IA inventa APIs que no existen en vendor/ | **Cero.** La IA lee el código completo del framework y sabe exactamente lo que hay |
+| **Código desperdiciado** | La IA genera código que no sigue las convenciones internas | **Cero.** Skills + AGENTS.md + validación automática |
 | **Dependencias** | 50+ paquetes Composer — la IA no puede ver el código interno | Cero. La IA lee cada línea del framework |
-| **Idioma** | Inglés técnico mezclado con config | 100% español. Semántica consistente para IA y humanos |
-| **IA nativa** | No diseñado para IA colaborativa | AGENTS.md, skills, MCP, OpenCode + OpenClaw listos desde el día 1 |
-| **Curva de IA** | La IA debe conocer las convenciones del framework de memoria | La IA aprende el framework leyéndolo directamente |
-| **Código fuente** | 90% del código en vendor/ — opaco, inmodificable | 100% visible, tipado, documentado, modificable |
+| **Idioma** | Inglés técnico mezclado con config | 100% español. Semántica consistente |
+| **Curva de IA** | La IA debe conocer las convenciones de memoria | La IA aprende el framework leyéndolo directamente |
+| **Código fuente** | 90% en vendor/ — opaco, inmodificable | 100% visible, tipado, documentado, modificable |
 
 ---
 
@@ -43,7 +45,11 @@ MVC, ORM, RBAC, SSE, Sentry — todo desde cero, sin vendor oculto, sin magia.
 
 ---
 
-## Arquitectura AI-First
+## El único framework PHP diseñado para que la IA lo use, no el humano
+
+**Problema de los frameworks tradicionales:** El humano escribe código → el humano comete errores → la IA alucina porque no conoce las tripas del framework → código desperdiciado.
+
+**Solución liteFramework:** El humano da instrucciones → la IA escribe el código → la IA conoce el framework al 100% porque no hay vendor oculto → validación automática → cero alucinaciones, cero desperdicio.
 
 ### El código se explica a sí mismo
 
@@ -56,23 +62,25 @@ Cada capa del framework tiene documentación diseñada para que una IA la consum
 | **Context7 MCP** | Documentación de PHP, librerías y patrones vía context7 | `~/.config/opencode/opencode.json` |
 | **gh_grep MCP** | Ejemplos de código real en GitHub | `~/.config/opencode/opencode.json` |
 
-### Flujo de trabajo con IA
+### Flujo de trabajo: humano → IA → framework
 
 ```
-TAREA RECIBIDA
+HUMANO da instrucción en lenguaje natural
   │
   ▼
-OpenCode analiza con skill arquitectura ──────────────────────┐
-  │                                                            │
-  ▼                                                            │
-OpenCode escribe código (modelo, ruta, controlador, vista)     │
-  │                                                            │
-  ▼                                                            │
-OpenClaw ejecuta tests, PHPStan, browser testing              │
-  │                                                            │
-  ▼                                                            │
-Feedback → iteración ←────────────────────────────────────────┘
+IA analiza con skill arquitectura ───────────────────────────┐
+  │                                                           │
+  ▼                                                           │
+IA escribe código (modelo, ruta, controlador, vista, JS)     │
+  │                                                           │
+  ▼                                                           │
+IA ejecuta validación: PHPStan + PHPCS + PHPUnit             │
+  │                                                           │
+  ▼                                                           │
+Resultado → humano verifica o itera ←───────────────────────┘
 ```
+
+**El humano nunca toca el código directamente. La IA lo escribe, la IA lo verifica, el humano solo supervisa.**
 
 ### Pipeline de verificación (OpenCode commands)
 
@@ -419,4 +427,4 @@ Apache 2.0 — ver [LICENSE.md](LICENSE.md).
 
 ---
 
-> **Hecho por humanos. Potenciado por IA. Construido desde cero.**
+> **El humano da las instrucciones. La IA escribe el código. El framework ejecuta. Cero alucinaciones. Cero desperdicio.**

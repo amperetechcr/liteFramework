@@ -1,19 +1,19 @@
-<?php
+﻿<?php
 
-// ═══════════════════════════════════════════════════════════════
-// liteFramework — PHP MVC Framework
+// 
+// liteFramework  PHP MVC Framework
 // Pipeline de una peticion HTTP:
-// 1 CONSTANTES → 2 HELPERS → 3 BOOTSTRAP → 4 UI CONFIG →
-// 5 SEGURIDAD → 6 RUTEO → 7 DISPATCH
-// ═══════════════════════════════════════════════════════════════
+// 1 CONSTANTES  2 HELPERS  3 BOOTSTRAP  4 UI CONFIG 
+// 5 SEGURIDAD  6 RUTEO  7 DISPATCH
+// 
 
-// ─── 1. CONSTANTES GLOBALES ──────────────────────────────────
+//  1. CONSTANTES GLOBALES 
 // Raiz del proyecto y base URL. Disponibles en todo el sistema.
 
 define('DIRECTORIO_RAIZ', __DIR__);
 define('URL_BASE', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
 
-// ─── 2. HELPERS DE VISTA ─────────────────────────────────────
+//  2. HELPERS DE VISTA 
 // Funciones globales de UI: sanitizacion, clases CSS de personalizacion.
 
 function configUI(?string $clave = null): mixed
@@ -72,8 +72,8 @@ function h(string $texto): string
     return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8');
 }
 
-// ─── 3. BOOTSTRAP ────────────────────────────────────────────
-// Orden estricto: autoloader → .env → Sentry → ManejadorErrores.
+//  3. BOOTSTRAP 
+// Orden estricto: autoloader  .env  Sentry  ManejadorErrores.
 // Sentry se inicia antes del handler: si algo falla en bootstrap se captura.
 
 require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
@@ -85,7 +85,7 @@ require_once DIRECTORIO_RAIZ . '/servidor/autoload.php';
 
 \LiteFramework\Nucleo\ManejadorErrores::registrar();
 
-// ─── 4. CONFIGURACION UI (3 capas) ───────────────────────────
+//  4. CONFIGURACION UI (3 capas) 
 // 1. defaults del archivo ui.php
 // 2. override via GET params (previsualizacion sin guardar)
 // 3. override via sesion (preferencias del operador)
@@ -117,13 +117,13 @@ if (!empty($_SESSION['personalizacion_ui'])) {
 
 $GLOBALS['configUI'] = $configUI;
 
-// ─── 5. SEGURIDAD ────────────────────────────────────────────
+//  5. SEGURIDAD 
 // Cabeceras CSP, HSTS, X-Frame-Options antes de cualquier salida.
 
 \LiteFramework\Seguridad\SeguridadServidor::establecerCabecerasSeguras();
 
-// ─── 6. PARSEO DE RUTA ───────────────────────────────────────
-// URI → path relativo → chequeo modo mantenimiento.
+//  6. PARSEO DE RUTA 
+// URI  path relativo  chequeo modo mantenimiento.
 
 $uri = $_SERVER['REQUEST_URI'];
 $base = dirname($_SERVER['SCRIPT_NAME']);
@@ -152,8 +152,8 @@ if ($mantenimiento) {
     }
 }
 
-// ─── 7. DISPATCH ─────────────────────────────────────────────
-// Enrutador ejecuta interceptors → controlador → vista/JSON.
+//  7. DISPATCH 
+// Enrutador ejecuta interceptors  controlador  vista/JSON.
 // Si no hay ruta: 404 con auditoria.
 
 $resultado = $enrutador->despachar($_SERVER['REQUEST_METHOD'], $ruta);

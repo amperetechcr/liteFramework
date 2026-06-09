@@ -1,12 +1,12 @@
-/* =========================================
-   TEMA: Variables de diseÃ±o + NormalizaciÃ³n + TipografÃ­a
-   UbicaciÃ³n: src/css/tema.css
-   PropÃ³sito: Tokens de diseÃ±o (CSS custom properties), reset universal,
-   estilos base de elementos HTML y tipografÃ­a semÃ¡ntica.
+﻿/* =========================================
+   TEMA: Variables de diseo + Normalizacin + Tipografa
+   Ubicacin: src/css/tema.css
+   Propsito: Tokens de diseo (CSS custom properties), reset universal,
+   estilos base de elementos HTML y tipografa semntica.
    Fusiona: tema.css + base.css originales
    ========================================= */
 
-/* CAPA 1 â€” TOKENS DE DISEÃ‘O (CSS Custom Properties) */
+/* CAPA 1  TOKENS DE DISEO (CSS Custom Properties) */
 
 :root {
     --fondo-pantalla: #f8fafc;
@@ -53,9 +53,9 @@
     --tamano-4xl: 2.5rem;
 
     --radio-redondeado: 0.5rem;
-    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
-    --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-    --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08);
+    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 1px 3px 0 rgb(0 0 0 / 0.08);
+    --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+    --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.14), 0 4px 8px -4px rgb(0 0 0 / 0.10);
 
     --fuente-base: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --fuente-titulos: var(--fuente-base);
@@ -67,33 +67,33 @@
     --transicion-lenta: 0.4s ease;
 }
 
-/* CAPA 2 â€” TEMA OSCURO (prefers-color-scheme) */
+/* CAPA 2  TEMA OSCURO (prefers-color-scheme) */
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --texto-fuerte: #f1f5f9;
-        --texto-base: #cbd5e1;
-        --texto-suave: #64748b;
-        --texto-invertido: #0f172a;
+        --texto-fuerte: #e8e8e8;
+        --texto-base: #b0b0b0;
+        --texto-suave: #808080;
+        --texto-invertido: #121212;
 
-        --trazo-suave: #1e3a5f;
-        --trazo-fuerte: #2d4a6f;
-        --trazo-enfoque: #4f46e5;
+        --trazo-suave: #2a2a2a;
+        --trazo-fuerte: #404040;
+        --trazo-enfoque: #818cf8;
 
-        --color-marca: #6366f1;
-        --color-marca-hover: #818cf8;
+        --color-marca: #818cf8;
+        --color-marca-hover: #a5b4fc;
         --color-marca-claro: #1e1b4b;
 
-        --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.2), 0 1px 3px 0 rgb(0 0 0 / 0.3);
-        --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-        --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.5), 0 4px 8px -4px rgb(0 0 0 / 0.3);
+        --sombra-suave: 0 2px 8px rgb(255 255 255 / 0.03), 0 1px 2px rgb(255 255 255 / 0.02);
+        --sombra-flotante: 0 8px 24px rgb(255 255 255 / 0.04), 0 4px 8px rgb(255 255 255 / 0.02);
+        --sombra-elevada: 0 16px 48px rgb(255 255 255 / 0.05), 0 8px 16px rgb(255 255 255 / 0.03);
     }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    PALETA INDIGO POR DEFECTO (sobreescribe marca)
    Nota: forzar-iluminacion-* se define en personalizacion.css
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 :root.paleta-indigo,
 .paleta-indigo {
@@ -104,10 +104,10 @@
 }
 @media (prefers-color-scheme: dark) {
     :root.paleta-indigo, .paleta-indigo {
-        --color-marca: #6366f1;
-        --color-marca-hover: #818cf8;
+        --color-marca: #818cf8;
+        --color-marca-hover: #a5b4fc;
         --color-marca-claro: #1e1b4b;
-        --trazo-enfoque: #4f46e5;
+        --trazo-enfoque: #6366f1;
     }
 }
 :root.paleta-indigo.forzar-iluminacion-oscura,
@@ -125,7 +125,7 @@
     --trazo-enfoque: #a5b4fc;
 }
 
-/* CAPA 4 â€” RESET UNIVERSAL */
+/* CAPA 4  RESET UNIVERSAL */
 
 *,
 *::before,
@@ -145,6 +145,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100dvh;
+    overflow-x: hidden;
     background-color: var(--fondo-pantalla);
     background-image: var(--fondo-textura, none);
     background-attachment: fixed;
@@ -179,7 +180,7 @@ textarea {
     border: none;
 }
 
-/* CAPA 5 â€” TIPOGRAFÃA SEMÃNTICA */
+/* CAPA 5  TIPOGRAFA SEMNTICA */
 
 h1,
 h2,
@@ -237,7 +238,7 @@ hr {
     margin: var(--espacio-grande) 0;
 }
 
-/* CÃ³digo */
+/* Cdigo */
 code,
 kbd,
 samp {
@@ -279,7 +280,7 @@ ol {
 ul { list-style-type: disc; }
 ol { list-style-type: decimal; }
 
-/* NavegaciÃ³n â€” quitar estilos de lista por defecto */
+/* Navegacin  quitar estilos de lista por defecto */
 nav ul,
 nav ol {
     list-style: none;
@@ -302,7 +303,7 @@ blockquote {
     color: var(--texto-fuerte);
 }
 
-/* CAPA 6 â€” UTILIDADES TIPOGRÃFICAS (clases) */
+/* CAPA 6  UTILIDADES TIPOGRFICAS (clases) */
 
 .texto-gigante {
     font-size: var(--tamano-4xl);

@@ -11,6 +11,7 @@ $fuenteActual    = configUI('fuente') ?? 'sistema';
 $espaciadoActual = configUI('espaciado') ?? 'normal';
 $tamanoActual    = configUI('tamano') ?? 'normal';
 $grosorActual    = configUI('grosor') ?? 'normal';
+$trazoActual     = configUI('trazo') ?? 'normal';
 $sombraActual    = configUI('sombra') ?? 'normal';
 $fondoActual     = configUI('fondo') ?? 'blanco';
 $texturaActual    = configUI('textura') ?? 'ninguna';
@@ -65,14 +66,17 @@ if ($esAjax) {
         </article>
     </section>
 
-    <section aria-label="Forma">
+    <section aria-label="Disenos">
         <article>
-            <h3 class="margen-inferior-normal">Forma</h3>
+            <h3 class="margen-inferior-normal">Dise&ntilde;os</h3>
             <div class="apariencia-pills" id="selector-estilo">
                 <?php
-                $estilos = ['moderno' => 'Moderno', 'minimalista' => 'Minimalista', 'elegante' => 'Elegante',
-                    'redondeado' => 'Redondeado', 'contraste' => 'Contraste', 'jugueton' => 'Jugueton',
-                    'corporativo' => 'Corporativo', '3d-moderno' => 'Profundidad'];
+                $estilos = ['moderno' => 'Moderno',
+                    'glass' => 'Vidrio', 'neo' => 'Relieve', 'neon' => 'Neon',
+                    'cyber' => 'Ciberpunk', 'brutal' => 'Brutalista', 'vapor' => 'Vaporwave',
+                    'cosmic' => 'Cosmico', 'organic' => 'Organico', 'material' => 'Material',
+                    'liquid' => 'Liquido', 'pixel' => 'Pixelado', 'mesh' => 'Degradado',
+                    'clay' => 'Arcilla', 'academia' => 'Academia Oscura', 'minimal' => 'Ultra Minimal'];
                 foreach ($estilos as $id => $nombre):
                 ?>
                 <button type="button" class="apariencia-pill <?= $id === $estiloActual ? 'activo' : '' ?>" data-estilo="<?= $id ?>"><?= $nombre ?></button>
@@ -147,6 +151,17 @@ if ($esAjax) {
             <div class="apariencia-pills" id="selector-grosor">
                 <?php foreach (['delgado' => 'Delgado', 'ligero' => 'Ligero', 'normal' => 'Normal', 'seminegrita' => 'Seminegrita', 'negrita' => 'Negrita'] as $id => $nombre): ?>
                 <button type="button" class="apariencia-pill <?= $id === $grosorActual ? 'activo' : '' ?>" data-grosor="<?= $id ?>"><?= $nombre ?></button>
+                <?php endforeach; ?>
+            </div>
+        </article>
+    </section>
+
+    <section aria-label="Bordes">
+        <article>
+            <h3 class="margen-inferior-normal">Bordes</h3>
+            <div class="apariencia-pills" id="selector-trazo">
+                <?php foreach (['fino' => 'Fino', 'sutil' => 'Sutil', 'normal' => 'Normal', 'grueso' => 'Grueso', 'muy-grueso' => 'Muy grueso'] as $id => $nombre): ?>
+                <button type="button" class="apariencia-pill <?= $id === $trazoActual ? 'activo' : '' ?>" data-trazo="<?= $id ?>"><?= $nombre ?></button>
                 <?php endforeach; ?>
             </div>
         </article>

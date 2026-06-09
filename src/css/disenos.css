@@ -1,0 +1,1649 @@
+﻿/* =========================================
+   DISENOS.CSS  15 estilos visuales espectaculares
+   Compatibles con paletas y modo claro/oscuro del framework.
+   ========================================= */
+
+
+/* =========================================
+   1. VIDRIO  Glassmorphism
+   ========================================= */
+:root.estilo-glass, .estilo-glass {
+}
+.estilo-glass .tarjeta,
+.estilo-glass article,
+.estilo-glass .tarjeta-informacion,
+.estilo-glass .modal-contenido {
+  background: rgb(from var(--fondo-elemento) r g b / 0.55);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgb(from var(--trazo-suave) r g b / 0.25);
+  box-shadow: 0 8px 32px rgb(from var(--color-marca) r g b / 0.08);
+  color: var(--texto-fuerte);
+}
+.estilo-glass .tarjeta {
+  overflow: hidden;
+}
+.estilo-glass .tarjeta::before {
+  content: '';
+  position: absolute;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(from var(--color-marca) r g b / 0.06), transparent 70%);
+  top: -50px; right: -50px;
+  animation: glass-shine 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glass-shine {
+  0%, 100% { opacity: 0.4; transform: translate(0, 0); }
+  50% { opacity: 1; transform: translate(-15px, 10px); }
+}
+.estilo-glass .tarjeta::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgb(from var(--texto-fuerte) r g b / 0.04), transparent);
+  transform: skewX(-20deg);
+  animation: glass-sweep 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glass-sweep {
+  0%, 100% { left: -60%; }
+  50% { left: 120%; }
+}
+.estilo-glass .barra-lateral {
+  background: rgb(from var(--fondo-elemento) r g b / 0.5);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border-right: 1px solid rgb(from var(--trazo-suave) r g b / 0.2);
+  color: var(--texto-fuerte);
+}
+.estilo-glass button,
+.estilo-glass .accion-boton {
+  background: rgb(from var(--color-marca) r g b / 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.25);
+  color: var(--texto-fuerte);
+}
+.estilo-glass button:hover {
+  background: rgb(from var(--color-marca) r g b / 0.25);
+  box-shadow: 0 4px 20px rgb(from var(--color-marca) r g b / 0.15);
+  color: var(--texto-fuerte);
+}
+.estilo-glass .etiqueta {
+  color: var(--texto-fuerte);
+}
+.estilo-glass .barra-lateral-titulo,
+.estilo-glass nav.barra-lateral a,
+.estilo-glass a.barra-lateral-enlace {
+  color: var(--texto-fuerte);
+}
+.estilo-glass nav.barra-lateral a:hover,
+.estilo-glass a.barra-lateral-enlace:hover {
+  color: var(--color-marca);
+}
+.estilo-glass nav.barra-lateral a.enlace-activo,
+.estilo-glass a.barra-lateral-enlace.enlace-activo {
+  color: var(--color-marca);
+  background: rgb(from var(--color-marca) r g b / 0.1);
+}
+.estilo-glass nav.barra-lateral a .barra-lateral-icono {
+  color: var(--texto-suave);
+}
+.estilo-glass .barra-lateral-pie {
+  color: var(--texto-base);
+}
+.estilo-glass body {
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgb(from var(--color-marca) r g b / 0.04), transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgb(from var(--color-marca-hover) r g b / 0.03), transparent 50%);
+}
+
+/* =========================================
+   2. RELIEVE  Neumorphism
+   ========================================= */
+:root.estilo-neo, .estilo-neo {
+}
+.estilo-neo .tarjeta,
+.estilo-neo article,
+.estilo-neo .tarjeta-informacion {
+  background: var(--fondo-pantalla);
+  box-shadow:
+    -12px -12px 28px rgb(from var(--texto-fuerte) r g b / 0.06),
+    12px 12px 28px rgb(from var(--color-marca) r g b / 0.1);
+  border: none;
+  animation: neo-breathe 6s ease-in-out infinite;
+}
+@keyframes neo-breathe {
+  0%, 100% { box-shadow: -12px -12px 28px rgb(from var(--texto-fuerte) r g b / 0.06), 12px 12px 28px rgb(from var(--color-marca) r g b / 0.1); }
+  50% { box-shadow: -14px -14px 32px rgb(from var(--texto-fuerte) r g b / 0.07), 14px 14px 32px rgb(from var(--color-marca) r g b / 0.12); }
+}
+.estilo-neo .tarjeta:hover {
+  box-shadow:
+    -16px -16px 34px rgb(from var(--texto-fuerte) r g b / 0.08),
+    16px 16px 34px rgb(from var(--color-marca) r g b / 0.13);
+}
+.estilo-neo button,
+.estilo-neo .accion-boton {
+  background: var(--fondo-pantalla);
+  box-shadow:
+    -8px -8px 18px rgb(from var(--texto-fuerte) r g b / 0.06),
+    8px 8px 18px rgb(from var(--color-marca) r g b / 0.1);
+  border: none;
+  color: var(--texto-base);
+}
+.estilo-neo button:hover {
+  box-shadow:
+    -10px -10px 22px rgb(from var(--texto-fuerte) r g b / 0.08),
+    10px 10px 22px rgb(from var(--color-marca) r g b / 0.12);
+  color: var(--texto-fuerte);
+}
+.estilo-neo button:active {
+  box-shadow:
+    inset -6px -6px 14px rgb(from var(--texto-fuerte) r g b / 0.06),
+    inset 6px 6px 14px rgb(from var(--color-marca) r g b / 0.1);
+}
+.estilo-neo .etiqueta {
+  background: var(--fondo-pantalla);
+  box-shadow:
+    inset -3px -3px 8px rgb(from var(--texto-fuerte) r g b / 0.06),
+    inset 3px 3px 8px rgb(from var(--color-marca) r g b / 0.08);
+}
+.estilo-neo .barra-lateral {
+  background: var(--fondo-pantalla);
+  border-right: none;
+  box-shadow:
+    inset -2px 0 12px rgb(from var(--texto-fuerte) r g b / 0.04),
+    inset 2px 0 12px rgb(from var(--color-marca) r g b / 0.06);
+}
+.estilo-neo nav.barra-lateral a,
+.estilo-neo a.barra-lateral-enlace,
+.estilo-neo nav.barra-lateral a:link,
+.estilo-neo nav.barra-lateral a:visited,
+.estilo-neo a.barra-lateral-enlace:link,
+.estilo-neo a.barra-lateral-enlace:visited {
+  color: var(--texto-fuerte) !important;
+}
+.estilo-neo nav.barra-lateral a:hover,
+.estilo-neo a.barra-lateral-enlace:hover {
+  color: var(--color-marca) !important;
+}
+.estilo-neo nav.barra-lateral a.enlace-activo,
+.estilo-neo a.barra-lateral-enlace.enlace-activo,
+.estilo-neo nav.barra-lateral a[aria-current="page"],
+.estilo-neo a.barra-lateral-enlace[aria-current="page"] {
+  color: var(--color-marca) !important;
+}
+
+/* =========================================
+   3. NEON  Synthwave
+   ========================================= */
+:root.estilo-neon, .estilo-neon {
+}
+.estilo-neon body {
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgb(from var(--color-marca) r g b / 0.06), transparent 50%);
+}
+.estilo-neon .tarjeta,
+.estilo-neon article,
+.estilo-neon .tarjeta-informacion {
+  border: 2px solid rgb(from var(--color-marca) r g b / 0.2);
+  box-shadow:
+    0 0 30px rgb(from var(--color-marca) r g b / 0.08),
+    inset 0 0 30px rgb(from var(--color-marca) r g b / 0.03);
+}
+.estilo-neon .tarjeta::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-marca), var(--color-marca-hover), var(--color-marca));
+  background-size: 200% 100%;
+  animation: neon-scan 3s linear infinite;
+}
+@keyframes neon-scan { to { background-position: 200% 0; } }
+.estilo-neon h1,
+.estilo-neon h2,
+.estilo-neon h3 {
+  text-shadow: 0 0 20px rgb(from var(--color-marca) r g b / 0.2);
+  animation: neon-flicker 4s ease-in-out infinite;
+}
+@keyframes neon-flicker {
+  0%, 100% { text-shadow: 0 0 20px rgb(from var(--color-marca) r g b / 0.2); }
+  92% { text-shadow: 0 0 20px rgb(from var(--color-marca) r g b / 0.2), 0 0 40px rgb(from var(--color-marca) r g b / 0.1); }
+  94% { text-shadow: 0 0 5px rgb(from var(--color-marca) r g b / 0.3); }
+  96% { text-shadow: 0 0 20px rgb(from var(--color-marca) r g b / 0.2), 0 0 40px rgb(from var(--color-marca) r g b / 0.1); }
+}
+.estilo-neon button,
+.estilo-neon .accion-boton {
+  border: 2px solid rgb(from var(--color-marca) r g b / 0.3);
+  box-shadow:
+    0 0 15px rgb(from var(--color-marca) r g b / 0.12),
+    inset 0 0 15px rgb(from var(--color-marca) r g b / 0.04);
+  text-shadow: 0 0 8px rgb(from var(--color-marca) r g b / 0.2);
+}
+.estilo-neon button:hover {
+  box-shadow:
+    0 0 35px rgb(from var(--color-marca) r g b / 0.3),
+    inset 0 0 25px rgb(from var(--color-marca) r g b / 0.06);
+  text-shadow: 0 0 15px rgb(from var(--color-marca) r g b / 0.5);
+}
+.estilo-neon .barra-lateral-enlace.activo {
+  box-shadow: inset 3px 0 0 var(--color-marca);
+}
+.estilo-neon .etiqueta {
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.3);
+  box-shadow: 0 0 10px rgb(from var(--color-marca) r g b / 0.1);
+}
+
+/* =========================================
+   4. CIBERPUNK
+   ========================================= */
+:root.estilo-cyber, .estilo-cyber {
+}
+.estilo-cyber .tarjeta,
+.estilo-cyber article,
+.estilo-cyber .tarjeta-informacion {
+  border: 2px solid rgb(from var(--color-marca) r g b / 0.2);
+  position: relative;
+}
+.estilo-cyber .tarjeta::before,
+.estilo-cyber article::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: 10%; right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-marca), var(--color-marca-hover), transparent);
+  background-size: 200% 100%;
+  animation: cyber-scan 4s linear infinite;
+}
+@keyframes cyber-scan { to { background-position: 200% 0; } }
+.estilo-cyber .tarjeta::after,
+.estilo-cyber article::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, transparent 48%, rgb(from var(--color-marca) r g b / 0.03) 48%, rgb(from var(--color-marca) r g b / 0.03) 52%, transparent 52%);
+  background-size: 100% 200%;
+  animation: cyber-glitch 2s steps(4) infinite;
+  pointer-events: none;
+}
+@keyframes cyber-glitch {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { transform: translate(-1px, 2px); opacity: 1; }
+  20% { transform: translate(1px, -1px); opacity: 0.8; }
+  30% { transform: translate(0, 0); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 0; }
+}
+.estilo-cyber h1,
+.estilo-cyber h2,
+.estilo-cyber h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.estilo-cyber button,
+.estilo-cyber .accion-boton {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px solid var(--color-marca);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+  transition: clip-path 0.2s;
+}
+.estilo-cyber button:hover {
+  clip-path: polygon(6px 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 6px);
+}
+.estilo-cyber .barra-lateral-enlace.activo {
+  border-left: 3px solid var(--color-marca);
+  box-shadow: inset 3px 0 10px rgb(from var(--color-marca) r g b / 0.08);
+}
+
+/* =========================================
+   5. BRUTALISTA  Impacto, contraste, poder
+   ========================================= */
+:root.estilo-brutal, .estilo-brutal {
+}
+.estilo-brutal body {
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 40px, rgb(from var(--color-marca) r g b / 0.03) 40px, rgb(from var(--color-marca) r g b / 0.03) 41px);
+}
+.estilo-brutal .tarjeta,
+.estilo-brutal article,
+.estilo-brutal .tarjeta-informacion {
+  border: 4px solid var(--texto-fuerte);
+  border-radius: 0;
+  background: var(--fondo-elemento);
+  box-shadow: 8px 8px 0 0 rgb(from var(--color-marca) r g b / 0.35);
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+.estilo-brutal .tarjeta:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 16px 16px 0 0 rgb(from var(--color-marca) r g b / 0.45);
+  border-color: var(--color-marca);
+}
+.estilo-brutal h1,
+.estilo-brutal h2 {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  text-shadow: 4px 4px 0 rgb(from var(--color-marca) r g b / 0.15), 2px 2px 0 rgb(from var(--color-marca) r g b / 0.08);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  animation: brutal-stamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes brutal-stamp {
+  0% { transform: scale(0.7) translateY(-15px); opacity: 0; }
+  50% { transform: scale(1.04) translateY(0); opacity: 1; }
+  75% { transform: scale(0.98); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.estilo-brutal button,
+.estilo-brutal .accion-boton {
+  border: 4px solid var(--color-marca);
+  border-radius: 0;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: var(--color-marca);
+  color: var(--texto-invertido);
+  box-shadow: 7px 7px 0 0 rgb(from var(--color-marca) r g b / 0.3);
+  transition: transform 0.06s, box-shadow 0.06s;
+  letter-spacing: 0.08em;
+  padding: 0.6rem 1.5rem;
+}
+.estilo-brutal button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 9px 9px 0 0 rgb(from var(--color-marca) r g b / 0.35);
+}
+.estilo-brutal button:active {
+  transform: translate(5px, 5px);
+  box-shadow: 2px 2px 0 0 rgb(from var(--color-marca) r g b / 0.3);
+}
+.estilo-brutal .etiqueta {
+  border: 3px solid var(--color-marca);
+  border-radius: 0;
+  font-weight: 800;
+  box-shadow: 4px 4px 0 0 rgb(from var(--color-marca) r g b / 0.3);
+  letter-spacing: 0.05em;
+}
+.estilo-brutal input,
+.estilo-brutal select,
+.estilo-brutal textarea {
+  border: 4px solid var(--texto-fuerte);
+  border-radius: 0;
+  background: var(--fondo-elemento);
+  font-weight: 600;
+}
+.estilo-brutal input:focus {
+  border-color: var(--color-marca);
+  box-shadow: 5px 5px 0 0 rgb(from var(--color-marca) r g b / 0.2);
+}
+.estilo-brutal .barra-lateral {
+  border-right: 4px solid var(--texto-fuerte);
+  background: var(--fondo-elemento);
+}
+.estilo-brutal .barra-lateral-titulo {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 900;
+  font-size: var(--tamano-sm);
+}
+.estilo-brutal .barra-lateral-enlace {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.estilo-brutal td,
+.estilo-brutal th {
+  border: 3px solid var(--trazo-fuerte);
+}
+.estilo-brutal .modal-contenido {
+  border: 4px solid var(--texto-fuerte);
+  border-radius: 0;
+  box-shadow: 10px 10px 0 0 rgb(from var(--color-marca) r g b / 0.3);
+}
+
+/* =========================================
+   6. VAPORWAVE  Retro 80s, neon, sintetico
+   ========================================= */
+:root.estilo-vapor, .estilo-vapor {
+}
+.estilo-vapor body {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(from var(--color-marca) r g b / 0.1), transparent 45%),
+    radial-gradient(ellipse at 20% 100%, rgb(from var(--color-marca-hover) r g b / 0.06), transparent 35%),
+    radial-gradient(ellipse at 80% 90%, rgb(from var(--color-marca) r g b / 0.04), transparent 30%),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgb(from var(--color-marca) r g b / 0.03) 60px, rgb(from var(--color-marca) r g b / 0.03) 61px),
+    var(--fondo-pantalla);
+}
+.estilo-vapor .tarjeta,
+.estilo-vapor article,
+.estilo-vapor .tarjeta-informacion {
+  border: 2px solid rgb(from var(--color-marca) r g b / 0.2);
+  background: linear-gradient(160deg,
+    rgb(from var(--fondo-elemento) r g b / 0.7),
+    rgb(from var(--color-marca) r g b / 0.04) 60%,
+    rgb(from var(--fondo-elemento) r g b / 0.8)
+  );
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgb(from var(--color-marca) r g b / 0.05);
+}
+.estilo-vapor .tarjeta::before,
+.estilo-vapor article::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg,
+    transparent, transparent 2px,
+    rgb(from var(--color-marca) r g b / 0.05) 2px,
+    rgb(from var(--color-marca) r g b / 0.05) 3px
+  );
+  pointer-events: none;
+}
+.estilo-vapor .tarjeta::after,
+.estilo-vapor article::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; right: -20px;
+  width: 100px; height: 80px;
+  background: linear-gradient(180deg, rgb(from var(--color-marca) r g b / 0.08), transparent);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  opacity: 0.4;
+  animation: vapor-sun 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes vapor-sun {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+.estilo-vapor .tarjeta > * { position: relative; z-index: 1; }
+.estilo-vapor h1,
+.estilo-vapor h2 {
+  text-shadow:
+    4px 4px 0 rgb(from var(--color-marca) r g b / 0.3),
+    -2px -2px 0 rgb(from var(--color-marca-hover) r g b / 0.15),
+    0 0 20px rgb(from var(--color-marca) r g b / 0.08);
+  letter-spacing: 0.1em;
+}
+.estilo-vapor button,
+.estilo-vapor .accion-boton {
+  border: 2px solid rgb(from var(--color-marca) r g b / 0.3);
+  text-shadow: 3px 3px 0 rgb(from var(--color-marca) r g b / 0.15);
+  box-shadow: 0 0 8px rgb(from var(--color-marca) r g b / 0.06);
+  transition: all 0.2s;
+}
+.estilo-vapor button:hover,
+.estilo-vapor .accion-boton:hover {
+  text-shadow: 4px 4px 0 rgb(from var(--color-marca) r g b / 0.25), 0 0 15px rgb(from var(--color-marca) r g b / 0.2);
+  box-shadow:
+    0 0 35px rgb(from var(--color-marca) r g b / 0.15),
+    inset 0 0 20px rgb(from var(--color-marca) r g b / 0.06);
+  border-color: rgb(from var(--color-marca) r g b / 0.5);
+  transform: translateY(-1px);
+}
+.estilo-vapor .barra-lateral {
+  border-right: 2px solid rgb(from var(--color-marca) r g b / 0.1);
+  background: linear-gradient(180deg,
+    var(--fondo-elemento),
+    rgb(from var(--color-marca) r g b / 0.03) 60%,
+    rgb(from var(--color-marca-hover) r g b / 0.02)
+  );
+  position: relative;
+}
+.estilo-vapor .barra-lateral::after {
+  content: '';
+  position: absolute;
+  top: 0; right: -2px; bottom: 30%;
+  width: 2px;
+  background: linear-gradient(180deg, rgb(from var(--color-marca) r g b / 0.15), transparent);
+}
+.estilo-vapor .barra-lateral-titulo {
+  text-shadow: 2px 2px 0 rgb(from var(--color-marca) r g b / 0.2);
+  letter-spacing: 0.12em;
+}
+.estilo-vapor .etiqueta {
+  text-shadow: 2px 2px 0 rgb(from var(--color-marca) r g b / 0.12);
+  border-color: rgb(from var(--color-marca) r g b / 0.25);
+}
+.estilo-vapor input,
+.estilo-vapor select,
+.estilo-vapor textarea {
+  border: 2px solid rgb(from var(--color-marca) r g b / 0.1);
+  background: rgb(from var(--fondo-elemento) r g b / 0.5);
+}
+.estilo-vapor input:focus,
+.estilo-vapor select:focus {
+  border-color: rgb(from var(--color-marca) r g b / 0.3);
+  box-shadow: 0 0 15px rgb(from var(--color-marca) r g b / 0.08);
+}
+
+/* =========================================
+   7. COSMICO  Universo, estrellas, galaxias
+   ========================================= */
+:root.estilo-cosmic, .estilo-cosmic {
+}
+.estilo-cosmic body {
+  background:
+    radial-gradient(ellipse at 15% 20%, rgb(from var(--color-marca) r g b / 0.1), transparent 50%),
+    radial-gradient(ellipse at 50% 30%, rgb(from var(--color-marca-hover) r g b / 0.06), transparent 45%),
+    radial-gradient(ellipse at 85% 75%, rgb(from var(--color-marca) r g b / 0.08), transparent 50%),
+    radial-gradient(ellipse at 30% 80%, rgb(from var(--color-marca-hover) r g b / 0.05), transparent 40%),
+    radial-gradient(ellipse at 60% 55%, rgb(from var(--color-marca) r g b / 0.03), transparent 35%),
+    var(--fondo-pantalla);
+  position: relative;
+}
+/* Capa 1 de estrellas: pequenas y lentas */
+.estilo-cosmic body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 8% 15%, rgb(from var(--texto-fuerte) r g b / 0.5), transparent),
+    radial-gradient(1px 1px at 22% 45%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 35% 12%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 48% 72%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent),
+    radial-gradient(1px 1px at 60% 38%, rgb(from var(--texto-fuerte) r g b / 0.5), transparent),
+    radial-gradient(1.2px 1.2px at 75% 85%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 88% 22%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent),
+    radial-gradient(1px 1px at 15% 90%, rgb(from var(--texto-fuerte) r g b / 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 42% 55%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 68% 8%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent),
+    radial-gradient(1px 1px at 92% 60%, rgb(from var(--texto-fuerte) r g b / 0.5), transparent),
+    radial-gradient(1.2px 1.2px at 55% 30%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 30% 68%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent),
+    radial-gradient(1px 1px at 78% 45%, rgb(from var(--texto-fuerte) r g b / 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 10% 50%, rgb(from var(--color-marca) r g b / 0.5), transparent);
+  background-size: 300px 300px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+  animation: cosmic-drift1 120s linear infinite;
+}
+@keyframes cosmic-drift1 { to { background-position: 200px 100px; } }
+/* Capa 2 de estrellas: medianas y brillantes, parpadean */
+.estilo-cosmic body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 5% 25%, rgb(from var(--texto-fuerte) r g b / 0.7), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(2px 2px at 50% 15%, rgb(from var(--texto-fuerte) r g b / 0.8), transparent),
+    radial-gradient(1px 1px at 70% 50%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 90% 80%, rgb(from var(--texto-fuerte) r g b / 0.7), transparent),
+    radial-gradient(2px 2px at 15% 70%, rgb(from var(--texto-fuerte) r g b / 0.8), transparent),
+    radial-gradient(1px 1px at 45% 90%, rgb(from var(--texto-fuerte) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 65% 30%, rgb(from var(--texto-fuerte) r g b / 0.7), transparent),
+    radial-gradient(2px 2px at 85% 10%, rgb(from var(--texto-fuerte) r g b / 0.8), transparent),
+    radial-gradient(1px 1px at 25% 35%, rgb(from var(--color-marca) r g b / 0.6), transparent),
+    radial-gradient(1px 1px at 75% 65%, rgb(from var(--color-marca) r g b / 0.5), transparent),
+    radial-gradient(2px 2px at 55% 45%, rgb(from var(--color-marca-hover) r g b / 0.6), transparent);
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+  animation: cosmic-drift2 60s linear infinite;
+  opacity: 0.8;
+}
+@keyframes cosmic-drift2 { to { background-position: -150px -80px; } }
+/* Estrella fugaz 1 */
+.estilo-cosmic body .shooting-star {
+  position: fixed;
+  width: 150px; height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(from var(--texto-fuerte) r g b / 0.7), rgb(from var(--color-marca) r g b / 0.5), transparent);
+  top: 12%; left: 85%;
+  transform: rotate(-30deg);
+  animation: cosmic-shoot1 8s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+.estilo-cosmic body .shooting-star::after {
+  content: '';
+  position: absolute; right: 100%;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgb(from var(--texto-fuerte) r g b / 0.9);
+  box-shadow: 0 0 6px rgb(from var(--color-marca) r g b / 0.5);
+}
+@keyframes cosmic-shoot1 {
+  0% { transform: rotate(-30deg) translateX(0); opacity: 0; }
+  3% { opacity: 1; }
+  12% { transform: rotate(-30deg) translateX(-400px); opacity: 0; }
+  100% { transform: rotate(-30deg) translateX(-400px); opacity: 0; }
+}
+/* Estrella fugaz 2 */
+.estilo-cosmic body .shooting-star-2 {
+  position: fixed;
+  width: 100px; height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgb(from var(--texto-fuerte) r g b / 0.5), transparent);
+  top: 40%; left: 95%;
+  transform: rotate(-25deg);
+  animation: cosmic-shoot2 12s linear 6s infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes cosmic-shoot2 {
+  0% { transform: rotate(-25deg) translateX(0); opacity: 0; }
+  4% { opacity: 0.7; }
+  10% { transform: rotate(-25deg) translateX(-250px); opacity: 0; }
+  100% { transform: rotate(-25deg) translateX(-250px); opacity: 0; }
+}
+/* Parpadeo de estrellas via animation con opacidad */
+@keyframes cosmic-twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+.estilo-cosmic .tarjeta,
+.estilo-cosmic article,
+.estilo-cosmic .tarjeta-informacion {
+  background: rgb(from var(--fondo-elemento) r g b / 0.6);
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.06);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+/* Nebulosa 1 - magenta/azul */
+.estilo-cosmic .tarjeta::before,
+.estilo-cosmic article::before {
+  content: '';
+  position: absolute;
+  width: 280px; height: 230px;
+  border-radius: 50%;
+  filter: blur(90px);
+  background: radial-gradient(circle at 40% 30%, rgb(from var(--color-marca) r g b / 0.1), transparent);
+  top: -90px; right: -50px;
+  animation: cosmic-pulse1 8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Nebulosa 2 */
+.estilo-cosmic .tarjeta::after,
+.estilo-cosmic article::after {
+  content: '';
+  position: absolute;
+  width: 200px; height: 250px;
+  border-radius: 50%;
+  filter: blur(80px);
+  background: radial-gradient(circle at 50% 60%, rgb(from var(--color-marca-hover) r g b / 0.07), transparent);
+  bottom: -70px; left: -50px;
+  animation: cosmic-pulse2 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes cosmic-pulse1 {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  100% { transform: translate(25px, 20px) scale(1.4); opacity: 1; }
+}
+@keyframes cosmic-pulse2 {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  100% { transform: translate(-20px, 25px) scale(1.3); opacity: 0.8; }
+}
+/* Estrellas internas en cada tarjeta */
+.estilo-cosmic .tarjeta .star-inner,
+.estilo-cosmic article .star-inner {
+  position: absolute;
+  width: 100%; height: 100%;
+  top: 0; left: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgb(from var(--texto-fuerte) r g b / 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 55% 60%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent),
+    radial-gradient(1px 1px at 80% 25%, rgb(from var(--texto-fuerte) r g b / 0.3), transparent),
+    radial-gradient(1px 1px at 40% 75%, rgb(from var(--texto-fuerte) r g b / 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 70% 90%, rgb(from var(--texto-fuerte) r g b / 0.4), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+.estilo-cosmic .tarjeta > *,
+.estilo-cosmic article > * {
+  position: relative; z-index: 1;
+}
+.estilo-cosmic .barra-lateral {
+  background: rgb(from var(--fondo-elemento) r g b / 0.5);
+  border-right: 1px solid rgb(from var(--color-marca) r g b / 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  position: relative;
+}
+.estilo-cosmic .barra-lateral::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 150px;
+  background: radial-gradient(ellipse at 50% 100%, rgb(from var(--color-marca) r g b / 0.04), transparent);
+  pointer-events: none;
+}
+.estilo-cosmic button,
+.estilo-cosmic .accion-boton {
+  position: relative;
+  overflow: hidden;
+  background: rgb(from var(--fondo-elemento) r g b / 0.4);
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.12);
+}
+.estilo-cosmic button::after,
+.estilo-cosmic .accion-boton::after {
+  content: '';
+  position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: conic-gradient(from 0deg at 50% 50%,
+    transparent, rgb(from var(--color-marca) r g b / 0.06), transparent, rgb(from var(--color-marca-hover) r g b / 0.04), transparent);
+  animation: cosmic-rotate 8s linear infinite;
+  pointer-events: none;
+}
+@keyframes cosmic-rotate { to { transform: rotate(360deg); } }
+.estilo-cosmic button > * { position: relative; z-index: 1; }
+.estilo-cosmic input,
+.estilo-cosmic select,
+.estilo-cosmic textarea {
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.08);
+  background: rgb(from var(--fondo-elemento) r g b / 0.4);
+}
+
+/* =========================================
+   8. ORGANICO  Naturaleza, hojas, tierra
+   ========================================= */
+:root.estilo-organic, .estilo-organic {
+}
+.estilo-organic body {
+  background:
+    radial-gradient(ellipse at 20% 15%, rgb(from var(--color-marca) r g b / 0.06), transparent 50%),
+    radial-gradient(ellipse at 85% 70%, rgb(from var(--color-marca-hover) r g b / 0.04), transparent 50%),
+    var(--fondo-pantalla);
+}
+/* Hoja decorativa animada en el body */
+.estilo-organic body::before {
+  content: '';
+  position: fixed;
+  width: 200px; height: 250px;
+  bottom: -40px; left: -60px;
+  background: rgb(from var(--color-marca) r g b / 0.04);
+  border-radius: 0 80% 60% 30% / 0 60% 80% 30%;
+  transform: rotate(20deg);
+  animation: organic-leaf 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes organic-leaf {
+  0%, 100% { transform: rotate(15deg) scale(1); border-radius: 0 80% 60% 30% / 0 60% 80% 30%; }
+  50% { transform: rotate(25deg) scale(1.05); border-radius: 0 70% 70% 40% / 0 70% 70% 40%; }
+}
+.estilo-organic .tarjeta,
+.estilo-organic article,
+.estilo-organic .tarjeta-informacion {
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.08);
+  background:
+    radial-gradient(ellipse at 70% 20%, rgb(from var(--color-marca) r g b / 0.025), transparent 50%),
+    var(--fondo-elemento);
+  box-shadow:
+    0 2px 12px rgb(from var(--color-marca) r g b / 0.02),
+    0 8px 32px rgb(from var(--color-marca) r g b / 0.02);
+  border-radius: 20px 30px 20px 30px;
+  transition: border-radius 0.6s, box-shadow 0.5s, border-color 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+.estilo-organic .tarjeta:hover,
+.estilo-organic article:hover {
+  border-radius: 25px 18px 30px 22px;
+  box-shadow:
+    0 4px 20px rgb(from var(--color-marca) r g b / 0.04),
+    0 12px 48px rgb(from var(--color-marca) r g b / 0.03);
+  border-color: rgb(from var(--color-marca) r g b / 0.15);
+}
+hoja Circulos concentricos como anillos de arbol */
+.estilo-organic .tarjeta::before,
+.estilo-organic article::before {
+  content: '';
+  position: absolute;
+  bottom: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.04);
+  box-shadow:
+    0 0 0 15px rgb(from var(--color-marca) r g b / 0.02),
+    0 0 0 30px rgb(from var(--color-marca) r g b / 0.015);
+  animation: organic-rings 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes organic-rings {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+.estilo-organic .tarjeta::after,
+.estilo-organic article::after {
+  content: '';
+  position: absolute;
+  width: 140px; height: 100px;
+  border-radius: 60% 20% 50% 30% / 40% 60% 30% 50%;
+  background: rgb(from var(--color-marca) r g b / 0.03);
+  top: -20px; left: -30px;
+  transform: rotate(-10deg);
+  animation: organic-leaflet 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes organic-leaflet {
+  0%, 100% { transform: rotate(-15deg) scale(1); border-radius: 60% 20% 50% 30% / 40% 60% 30% 50%; }
+  50% { transform: rotate(-5deg) scale(1.1); border-radius: 50% 30% 60% 20% / 50% 50% 40% 40%; }
+}
+.estilo-organic h1,
+.estilo-organic h2 {
+  font-weight: 350;
+  letter-spacing: -0.01em;
+  color: var(--texto-fuerte);
+}
+.estilo-organic button,
+.estilo-organic .accion-boton {
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.2);
+  background: rgb(from var(--color-marca) r g b / 0.04);
+  color: var(--texto-base);
+  border-radius: 20px 30px 20px 30px;
+  transition: border-radius 0.4s, background 0.3s, border-color 0.3s;
+}
+.estilo-organic button:hover,
+.estilo-organic .accion-boton:hover {
+  background: rgb(from var(--color-marca) r g b / 0.08);
+  border-color: rgb(from var(--color-marca) r g b / 0.35);
+  color: var(--texto-fuerte);
+  border-radius: 25px 18px 30px 22px;
+}
+.estilo-organic input,
+.estilo-organic select,
+.estilo-organic textarea {
+  border: 1px solid var(--trazo-suave);
+  background: rgb(from var(--fondo-elemento) r g b / 0.4);
+  border-radius: 20px 30px 20px 30px;
+  transition: border-color 0.3s, border-radius 0.4s;
+}
+.estilo-organic input:focus,
+.estilo-organic select:focus,
+.estilo-organic textarea:focus {
+  border-color: rgb(from var(--color-marca) r g b / 0.25);
+  box-shadow: 0 0 0 4px rgb(from var(--color-marca) r g b / 0.04);
+  border-radius: 25px 18px 30px 22px;
+}
+.estilo-organic .barra-lateral {
+  background: var(--fondo-elemento);
+  border-right: 1px solid rgb(from var(--color-marca) r g b / 0.04);
+  position: relative;
+}
+.estilo-organic .barra-lateral::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: radial-gradient(ellipse at 30% 100%, rgb(from var(--color-marca) r g b / 0.03), transparent);
+  pointer-events: none;
+}
+.estilo-organic .etiqueta {
+  border-radius: 20px 30px 20px 30px;
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.12);
+  color: var(--texto-base);
+  background: rgb(from var(--color-marca) r g b / 0.03);
+}
+
+/* =========================================
+   9. MATERIAL  Google Material Design
+   ========================================= */
+:root.estilo-material, .estilo-material {
+}
+.estilo-material .tarjeta,
+.estilo-material article,
+.estilo-material .tarjeta-informacion {
+  border: none;
+  border-radius: 12px;
+  box-shadow:
+    0 1px 3px rgb(from var(--texto-fuerte) r g b / 0.06),
+    0 4px 12px rgb(from var(--texto-fuerte) r g b / 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.25s;
+}
+.estilo-material .tarjeta:hover,
+.estilo-material article:hover {
+  box-shadow:
+    0 4px 8px rgb(from var(--texto-fuerte) r g b / 0.08),
+    0 12px 32px rgb(from var(--texto-fuerte) r g b / 0.06);
+}
+.estilo-material .tarjeta::before,
+.estilo-material article::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-marca), var(--color-marca-hover));
+  border-radius: 12px 12px 0 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.estilo-material .tarjeta .ripple-anim {
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgb(from var(--color-marca) r g b / 0.03);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: material-ripple 6s ease-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes material-ripple {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+}
+.estilo-material .tarjeta > * { position: relative; z-index: 1; }
+.estilo-material .accion-boton.variante-solida,
+.estilo-material button:not(.variante-borde):not(.variante-texto) {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgb(from var(--color-marca) r g b / 0.25);
+  transition: box-shadow 0.2s, transform 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.estilo-material .accion-boton.variante-solida:hover,
+.estilo-material button:not(.variante-borde):not(.variante-texto):hover {
+  box-shadow: 0 4px 16px rgb(from var(--color-marca) r g b / 0.35);
+  transform: translateY(-1px);
+}
+.estilo-material .accion-boton.variante-solida:active,
+.estilo-material button:not(.variante-borde):not(.variante-texto):active {
+  box-shadow: 0 1px 4px rgb(from var(--color-marca) r g b / 0.15);
+  transform: translateY(0);
+}
+.estilo-material .accion-boton.variante-borde {
+  border: 1px solid var(--color-marca);
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+.estilo-material .accion-boton.variante-texto {
+  border: none;
+  background: transparent;
+  color: var(--color-marca);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+}
+.estilo-material .etiqueta {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: var(--tamano-xs);
+}
+.estilo-material .barra-lateral {
+  box-shadow: 2px 0 8px rgb(from var(--texto-fuerte) r g b / 0.04);
+  border-right: none;
+}
+.estilo-material input,
+.estilo-material select,
+.estilo-material textarea {
+  border: none;
+  border-bottom: 2px solid var(--trazo-suave);
+  border-radius: 4px 4px 0 0;
+  background: rgb(from var(--texto-fuerte) r g b / 0.02);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 0.5rem 0.5rem 0.3rem;
+}
+.estilo-material input:focus,
+.estilo-material select:focus,
+.estilo-material textarea:focus {
+  border-bottom-color: var(--color-marca);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 8px rgb(from var(--color-marca) r g b / 0.08);
+  outline: none;
+}
+.estilo-material .campo-etiqueta,
+.estilo-material label {
+  font-size: var(--tamano-xs);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.estilo-material h1,
+.estilo-material h2 {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.estilo-material table th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  font-size: var(--tamano-xs);
+}
+
+/* =========================================
+   10. LIQUIDO  Efecto gooey fluido
+   ========================================= */
+:root.estilo-liquid, .estilo-liquid {
+}
+.estilo-liquid body {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgb(from var(--color-marca) r g b / 0.06), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgb(from var(--color-marca-hover) r g b / 0.04), transparent 50%),
+    var(--fondo-pantalla);
+}
+.estilo-liquid .tarjeta,
+.estilo-liquid article,
+.estilo-liquid .tarjeta-informacion {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+}
+/* Blobs liquidos */
+.estilo-liquid .tarjeta::before,
+.estilo-liquid article::before {
+  content: '';
+  position: absolute;
+  width: 280px; height: 240px;
+  border-radius: 48% 52% 44% 56% / 52% 46% 54% 48%;
+  background: rgb(from var(--color-marca) r g b / 0.12);
+  top: -80px; right: -50px;
+  animation: liquid-goo 12s ease-in-out infinite;
+  pointer-events: none;
+}
+.estilo-liquid .tarjeta::after,
+.estilo-liquid article::after {
+  content: '';
+  position: absolute;
+  width: 200px; height: 220px;
+  border-radius: 52% 48% 56% 44% / 48% 54% 46% 52%;
+  background: rgb(from var(--color-marca-hover) r g b / 0.08);
+  bottom: -60px; left: -40px;
+  animation: liquid-goo2 15s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes liquid-goo {
+  0%, 100% { border-radius: 48% 52% 44% 56% / 52% 46% 54% 48%; transform: translate(0, 0) scale(1); }
+  25% { border-radius: 55% 45% 58% 42% / 48% 52% 56% 44%; transform: translate(25px, -20px) scale(1.12); }
+  50% { border-radius: 45% 55% 38% 62% / 52% 58% 42% 48%; transform: translate(-15px, 25px) scale(0.92); }
+  75% { border-radius: 52% 48% 62% 38% / 44% 48% 52% 56%; transform: translate(20px, 15px) scale(1.06); }
+}
+@keyframes liquid-goo2 {
+  0%, 100% { border-radius: 52% 48% 56% 44% / 48% 54% 46% 52%; transform: translate(0, 0) scale(1); }
+  50% { border-radius: 44% 56% 48% 52% / 56% 44% 54% 46%; transform: translate(-25px, 30px) scale(1.15); }
+}
+.estilo-liquid .tarjeta > *,
+.estilo-liquid article > * {
+  position: relative; z-index: 1;
+  background: rgb(from var(--fondo-elemento) r g b / 0.3);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border-radius: inherit;
+}
+.estilo-liquid button,
+.estilo-liquid .accion-boton {
+  border: 1px solid rgb(from var(--color-marca) r g b / 0.2);
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: var(--texto-fuerte);
+}
+.estilo-liquid button::after,
+.estilo-liquid .accion-boton::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgb(from var(--color-marca) r g b / 0.1), transparent 60%);
+  pointer-events: none;
+}
+.estilo-liquid button:hover,
+.estilo-liquid .accion-boton:hover {
+  border-color: rgb(from var(--color-marca) r g b / 0.35);
+}
+.estilo-liquid .barra-lateral {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  border-right: none;
+}
+.estilo-liquid .barra-lateral::before {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgb(from var(--color-marca) r g b / 0.05);
+  bottom: 5%; left: -60px;
+  animation: liquid-goo 18s ease-in-out infinite;
+  pointer-events: none;
+}
+.estilo-liquid .barra-lateral > * {
+  position: relative;
+  z-index: 1;
+  background: rgb(from var(--fondo-elemento) r g b / 0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* =========================================
+   11. PIXELADO  Retro pixel art
+   ========================================= */
+:root.estilo-pixel, .estilo-pixel {
+  font-family: 'Courier New', 'Consolas', monospace;
+}
+.estilo-pixel body {
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 12px, rgb(from var(--color-marca) r g b / 0.015) 12px, rgb(from var(--color-marca) r g b / 0.015) 13px),
+    repeating-linear-gradient(90deg, transparent, transparent 12px, rgb(from var(--color-marca) r g b / 0.015) 12px, rgb(from var(--color-marca) r g b / 0.015) 13px);
+}
+.estilo-pixel .tarjeta,
+.estilo-pixel article,
+.estilo-pixel .tarjeta-informacion {
+  border: 2px solid var(--trazo-fuerte);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 0 rgb(from var(--color-marca) r g b / 0.15);
+  image-rendering: pixelated;
+}
+.estilo-pixel .tarjeta:hover,
+.estilo-pixel article:hover {
+  box-shadow: 3px 3px 0 0 rgb(from var(--color-marca) r g b / 0.2);
+  border-color: var(--color-marca);
+}
+.estilo-pixel h1,
+.estilo-pixel h2,
+.estilo-pixel h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-shadow: 2px 2px 0 rgb(from var(--color-marca) r g b / 0.15);
+  font-weight: 800;
+}
+.estilo-pixel button,
+.estilo-pixel .accion-boton {
+  border: 2px solid var(--color-marca);
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  box-shadow: 2px 2px 0 0 var(--color-marca);
+  transition: transform 0.06s, box-shadow 0.06s;
+  color: var(--texto-base);
+}
+.estilo-pixel button:hover {
+  box-shadow: 3px 3px 0 0 var(--color-marca);
+}
+.estilo-pixel button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0 0 var(--color-marca);
+}
+.estilo-pixel .etiqueta {
+  border: 2px solid var(--color-marca);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 0 var(--color-marca);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: var(--tamano-xs);
+}
+.estilo-pixel input,
+.estilo-pixel select,
+.estilo-pixel textarea {
+  border: 2px solid var(--trazo-fuerte);
+  border-radius: 0;
+  font-family: 'Courier New', 'Consolas', monospace;
+}
+.estilo-pixel input:focus {
+  border-color: var(--color-marca);
+}
+.estilo-pixel .barra-lateral {
+  border-right: 2px solid var(--trazo-fuerte);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 12px, rgb(from var(--color-marca) r g b / 0.01) 12px, rgb(from var(--color-marca) r g b / 0.01) 13px);
+}
+.estilo-pixel .barra-lateral-titulo {
+  letter-spacing: 0.15em;
+  text-shadow: 1px 1px 0 rgb(from var(--color-marca) r g b / 0.12);
+  font-weight: 800;
+}
+.estilo-pixel .barra-lateral-enlace {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.estilo-pixel .etiqueta {
+  animation: pixel-bounce 2s steps(2) infinite;
+}
+@keyframes pixel-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* =========================================
+   12. DEGRADADO  Gradient Mesh vibrante
+   ========================================= */
+:root.estilo-mesh, .estilo-mesh {
+}
+.estilo-mesh body {
+  background:
+    radial-gradient(ellipse at 15% 20%, rgb(from var(--color-marca) r g b / 0.12), transparent 45%),
+    radial-gradient(ellipse at 60% 40%, rgb(from var(--color-marca-hover) r g b / 0.08), transparent 40%),
+    radial-gradient(ellipse at 85% 75%, rgb(from var(--color-marca) r g b / 0.06), transparent 45%),
+    radial-gradient(ellipse at 30% 80%, rgb(from var(--color-marca-hover) r g b / 0.05), transparent 40%),
+    var(--fondo-pantalla);
+}
+.estilo-mesh .tarjeta,
+.estilo-mesh article,
+.estilo-mesh .tarjeta-informacion {
+  border: none;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgb(from var(--color-marca) r g b / 0.12), transparent 50%),
+    radial-gradient(ellipse at 80% 40%, rgb(from var(--color-marca-hover) r g b / 0.08), transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgb(from var(--color-marca) r g b / 0.06), transparent 50%),
+    linear-gradient(135deg, var(--fondo-elemento), rgb(from var(--color-marca) r g b / 0.02), var(--fondo-elemento));
+  background-size: 150% 150%;
+  animation: mesh-shift 8s ease-in-out infinite;
+}
+@keyframes mesh-shift {
+  0%, 100% { background-position: 0% 0%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+.estilo-mesh .tarjeta::after {
+  content: '';
+  position: absolute;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  filter: blur(30px);
+  background: radial-gradient(circle, rgb(from var(--color-marca) r g b / 0.08), transparent);
+  top: 10%; right: 15%;
+  animation: mesh-blob 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes mesh-blob {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  100% { transform: translate(20px, -15px) scale(1.3); opacity: 1; }
+}
+.estilo-mesh button,
+.estilo-mesh .accion-boton {
+  border: none;
+  background: linear-gradient(135deg, var(--color-marca), var(--color-marca-hover));
+  background-size: 200% 200%;
+  color: var(--texto-invertido);
+  transition: background 0.3s, transform 0.3s;
+  animation: mesh-btn 4s ease-in-out infinite;
+}
+@keyframes mesh-btn {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.estilo-mesh button:hover {
+  animation-play-state: paused;
+  transform: translateY(-1px);
+}
+.estilo-mesh .barra-lateral {
+  border-right: none;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgb(from var(--color-marca) r g b / 0.06), transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgb(from var(--color-marca-hover) r g b / 0.04), transparent 60%),
+    var(--fondo-elemento);
+}
+.estilo-mesh .etiqueta {
+  background: linear-gradient(135deg, rgb(from var(--color-marca) r g b / 0.08), rgb(from var(--color-marca-hover) r g b / 0.04));
+  border: none;
+}
+
+/* =========================================
+   13. ARCILLA  3D suave moderno
+   ========================================= */
+:root.estilo-clay, .estilo-clay {
+}
+.estilo-clay .tarjeta,
+.estilo-clay article,
+.estilo-clay .tarjeta-informacion {
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(145deg,
+    rgb(from var(--fondo-elemento) r g b / 0.95),
+    var(--fondo-elemento),
+    rgb(from var(--color-marca) r g b / 0.03)
+  );
+  box-shadow:
+    0 4px 0 0 rgb(from var(--color-marca) r g b / 0.12),
+    0 12px 32px rgb(from var(--texto-fuerte) r g b / 0.08);
+  transform: translateY(0);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.estilo-clay .tarjeta:hover,
+.estilo-clay article:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 0 0 rgb(from var(--color-marca) r g b / 0.12),
+    0 20px 48px rgb(from var(--texto-fuerte) r g b / 0.12);
+}
+.estilo-clay .tarjeta::before,
+.estilo-clay article::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(from var(--color-marca) r g b / 0.1), transparent);
+  pointer-events: none;
+}
+.estilo-clay button,
+.estilo-clay .accion-boton {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgb(from var(--color-marca) r g b / 0.2), rgb(from var(--color-marca) r g b / 0.12));
+  color: var(--texto-fuerte);
+  box-shadow:
+    0 3px 0 0 rgb(from var(--color-marca) r g b / 0.3),
+    0 6px 16px rgb(from var(--texto-fuerte) r g b / 0.06);
+  transform: translateY(0);
+  transition: transform 0.12s, box-shadow 0.12s, background 0.2s;
+}
+.estilo-clay button:hover,
+.estilo-clay .accion-boton:hover {
+  background: linear-gradient(180deg, rgb(from var(--color-marca) r g b / 0.28), rgb(from var(--color-marca) r g b / 0.18));
+  color: var(--texto-fuerte);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 0 0 rgb(from var(--color-marca) r g b / 0.3),
+    0 8px 20px rgb(from var(--texto-fuerte) r g b / 0.08);
+}
+.estilo-clay button:active,
+.estilo-clay .accion-boton:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 0 rgb(from var(--color-marca) r g b / 0.3),
+    0 2px 4px rgb(from var(--texto-fuerte) r g b / 0.04);
+}
+.estilo-clay .barra-lateral {
+  border-right: none;
+  box-shadow:
+    1px 0 0 0 rgb(from var(--color-marca) r g b / 0.06),
+    3px 0 24px rgb(from var(--texto-fuerte) r g b / 0.03);
+}
+.estilo-clay .etiqueta {
+  background: linear-gradient(180deg, rgb(from var(--color-marca) r g b / 0.1), transparent);
+  border: none;
+}
+.estilo-clay .tarjeta {
+  animation: clay-float 5s ease-in-out infinite;
+}
+@keyframes clay-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.estilo-clay .tarjeta:hover {
+  animation-play-state: paused;
+}
+
+/* =========================================
+   14. ACADEMIA OSCURA
+   ========================================= */
+:root.estilo-academia, .estilo-academia {
+}
+.estilo-academia body {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.estilo-academia h1,
+.estilo-academia h2,
+.estilo-academia h3,
+.estilo-academia h4 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.estilo-academia .tarjeta,
+.estilo-academia article,
+.estilo-academia .tarjeta-informacion {
+  border: 1px solid rgb(from var(--trazo-suave) r g b / 0.5);
+  border-radius: 4px;
+}
+.estilo-academia .tarjeta::before,
+.estilo-academia article::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-marca), transparent);
+  pointer-events: none;
+}
+.estilo-academia button,
+.estilo-academia .accion-boton {
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  border: 1px solid var(--color-marca);
+  text-transform: uppercase;
+  font-size: var(--tamano-md);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.estilo-academia label,
+.estilo-academia .campo-etiqueta {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--tamano-xs);
+}
+.estilo-academia .barra-lateral-titulo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+}
+.estilo-academia .barra-lateral {
+  border-right: 1px solid var(--trazo-suave);
+}
+.estilo-academia .tarjeta::before {
+  background: linear-gradient(90deg, transparent, var(--color-marca), transparent);
+  background-size: 200% 100%;
+  animation: academia-glow 4s ease-in-out infinite;
+}
+@keyframes academia-glow {
+  0%, 100% { background-position: -100% 0; }
+  50% { background-position: 100% 0; }
+}
+
+/* =========================================
+   15. ULTRA MINIMAL
+   ========================================= */
+:root.estilo-minimal, .estilo-minimal {
+}
+.estilo-minimal .tarjeta,
+.estilo-minimal article,
+.estilo-minimal .tarjeta-informacion {
+  border: 1px solid var(--trazo-fuerte);
+  box-shadow: none;
+  background: rgb(from var(--fondo-elemento) r g b / 0.4);
+  color: var(--texto-fuerte);
+  transition: border-color 0.2s, background 0.2s;
+}
+.estilo-minimal .tarjeta:hover,
+.estilo-minimal article:hover {
+  border-color: var(--color-marca);
+  background: rgb(from var(--fondo-elemento) r g b / 0.6);
+}
+.estilo-minimal h1,
+.estilo-minimal h2,
+.estilo-minimal h3 {
+  font-weight: 200;
+  letter-spacing: -0.03em;
+  color: var(--texto-fuerte);
+}
+.estilo-minimal button,
+.estilo-minimal .accion-boton {
+  border: 1px solid var(--color-marca);
+  background: transparent;
+  color: var(--texto-base);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+}
+.estilo-minimal button:hover {
+  background: var(--color-marca);
+  color: var(--texto-invertido);
+  box-shadow: 0 0 0 2px rgb(from var(--color-marca) r g b / 0.15);
+}
+.estilo-minimal input,
+.estilo-minimal select,
+.estilo-minimal textarea {
+  border: none;
+  border-bottom: 1.5px solid var(--trazo-fuerte);
+  background: rgb(from var(--fondo-elemento) r g b / 0.3);
+  border-radius: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+.estilo-minimal input:focus,
+.estilo-minimal select:focus,
+.estilo-minimal textarea:focus {
+  border-bottom-color: var(--color-marca);
+  background: rgb(from var(--fondo-elemento) r g b / 0.5);
+}
+.estilo-minimal .etiqueta {
+  border: 1px solid var(--trazo-fuerte);
+  background: rgb(from var(--fondo-elemento) r g b / 0.4);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.estilo-minimal .barra-lateral {
+  border-right: 1px solid var(--trazo-fuerte);
+  box-shadow: none;
+  background: rgb(from var(--fondo-elemento) r g b / 0.25);
+}
+.estilo-minimal .barra-lateral-titulo {
+  font-weight: 200;
+  letter-spacing: -0.02em;
+}
+.estilo-minimal .tarjeta {
+  animation: minimal-fade 0.8s ease-out both;
+}
+@keyframes minimal-fade {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   GLOBAL: Forzar texto oscuro en sidebar
+   para todos los disenos (especificidad alta)
+   ========================================= */
+.estilo-glass nav.barra-lateral a,
+.estilo-glass a.barra-lateral-enlace,
+.estilo-glass .barra-lateral-titulo,
+.estilo-glass .barra-lateral-pie,
+.estilo-neo nav.barra-lateral a,
+.estilo-neo a.barra-lateral-enlace,
+.estilo-neo .barra-lateral-titulo,
+.estilo-neon nav.barra-lateral a,
+.estilo-neon a.barra-lateral-enlace,
+.estilo-neon .barra-lateral-titulo,
+.estilo-cyber nav.barra-lateral a,
+.estilo-cyber a.barra-lateral-enlace,
+.estilo-cyber .barra-lateral-titulo,
+.estilo-brutal nav.barra-lateral a,
+.estilo-brutal a.barra-lateral-enlace,
+.estilo-brutal .barra-lateral-titulo,
+.estilo-vapor nav.barra-lateral a,
+.estilo-vapor a.barra-lateral-enlace,
+.estilo-vapor .barra-lateral-titulo,
+.estilo-cosmic nav.barra-lateral a,
+.estilo-cosmic a.barra-lateral-enlace,
+.estilo-cosmic .barra-lateral-titulo,
+.estilo-organic nav.barra-lateral a,
+.estilo-organic a.barra-lateral-enlace,
+.estilo-organic .barra-lateral-titulo,
+.estilo-material nav.barra-lateral a,
+.estilo-material a.barra-lateral-enlace,
+.estilo-material .barra-lateral-titulo,
+.estilo-liquid nav.barra-lateral a,
+.estilo-liquid a.barra-lateral-enlace,
+.estilo-liquid .barra-lateral-titulo,
+.estilo-pixel nav.barra-lateral a,
+.estilo-pixel a.barra-lateral-enlace,
+.estilo-pixel .barra-lateral-titulo,
+.estilo-mesh nav.barra-lateral a,
+.estilo-mesh a.barra-lateral-enlace,
+.estilo-mesh .barra-lateral-titulo,
+.estilo-clay nav.barra-lateral a,
+.estilo-clay a.barra-lateral-enlace,
+.estilo-clay .barra-lateral-titulo,
+.estilo-academia nav.barra-lateral a,
+.estilo-academia a.barra-lateral-enlace,
+.estilo-academia .barra-lateral-titulo,
+.estilo-minimal nav.barra-lateral a,
+.estilo-minimal a.barra-lateral-enlace,
+.estilo-minimal .barra-lateral-titulo {
+  color: var(--texto-fuerte);
+}
+.estilo-glass nav.barra-lateral a:hover,
+.estilo-glass a.barra-lateral-enlace:hover,
+.estilo-neo nav.barra-lateral a:hover,
+.estilo-neo a.barra-lateral-enlace:hover,
+.estilo-neon nav.barra-lateral a:hover,
+.estilo-neon a.barra-lateral-enlace:hover,
+.estilo-cyber nav.barra-lateral a:hover,
+.estilo-cyber a.barra-lateral-enlace:hover,
+.estilo-brutal nav.barra-lateral a:hover,
+.estilo-brutal a.barra-lateral-enlace:hover,
+.estilo-vapor nav.barra-lateral a:hover,
+.estilo-vapor a.barra-lateral-enlace:hover,
+.estilo-cosmic nav.barra-lateral a:hover,
+.estilo-cosmic a.barra-lateral-enlace:hover,
+.estilo-organic nav.barra-lateral a:hover,
+.estilo-organic a.barra-lateral-enlace:hover,
+.estilo-material nav.barra-lateral a:hover,
+.estilo-material a.barra-lateral-enlace:hover,
+.estilo-liquid nav.barra-lateral a:hover,
+.estilo-liquid a.barra-lateral-enlace:hover,
+.estilo-pixel nav.barra-lateral a:hover,
+.estilo-pixel a.barra-lateral-enlace:hover,
+.estilo-mesh nav.barra-lateral a:hover,
+.estilo-mesh a.barra-lateral-enlace:hover,
+.estilo-clay nav.barra-lateral a:hover,
+.estilo-clay a.barra-lateral-enlace:hover,
+.estilo-academia nav.barra-lateral a:hover,
+.estilo-academia a.barra-lateral-enlace:hover,
+.estilo-minimal nav.barra-lateral a:hover,
+.estilo-minimal a.barra-lateral-enlace:hover {
+  color: var(--color-marca);
+}
+.estilo-glass nav.barra-lateral a.enlace-activo,
+.estilo-glass a.barra-lateral-enlace.enlace-activo,
+.estilo-neo nav.barra-lateral a.enlace-activo,
+.estilo-neo a.barra-lateral-enlace.enlace-activo,
+.estilo-neon nav.barra-lateral a.enlace-activo,
+.estilo-neon a.barra-lateral-enlace.enlace-activo,
+.estilo-cyber nav.barra-lateral a.enlace-activo,
+.estilo-cyber a.barra-lateral-enlace.enlace-activo,
+.estilo-brutal nav.barra-lateral a.enlace-activo,
+.estilo-brutal a.barra-lateral-enlace.enlace-activo,
+.estilo-vapor nav.barra-lateral a.enlace-activo,
+.estilo-vapor a.barra-lateral-enlace.enlace-activo,
+.estilo-cosmic nav.barra-lateral a.enlace-activo,
+.estilo-cosmic a.barra-lateral-enlace.enlace-activo,
+.estilo-organic nav.barra-lateral a.enlace-activo,
+.estilo-organic a.barra-lateral-enlace.enlace-activo,
+.estilo-material nav.barra-lateral a.enlace-activo,
+.estilo-material a.barra-lateral-enlace.enlace-activo,
+.estilo-liquid nav.barra-lateral a.enlace-activo,
+.estilo-liquid a.barra-lateral-enlace.enlace-activo,
+.estilo-pixel nav.barra-lateral a.enlace-activo,
+.estilo-pixel a.barra-lateral-enlace.enlace-activo,
+.estilo-mesh nav.barra-lateral a.enlace-activo,
+.estilo-mesh a.barra-lateral-enlace.enlace-activo,
+.estilo-clay nav.barra-lateral a.enlace-activo,
+.estilo-clay a.barra-lateral-enlace.enlace-activo,
+.estilo-academia nav.barra-lateral a.enlace-activo,
+.estilo-academia a.barra-lateral-enlace.enlace-activo,
+.estilo-minimal nav.barra-lateral a.enlace-activo,
+.estilo-minimal a.barra-lateral-enlace.enlace-activo {
+  color: var(--color-marca);
+  font-weight: 700;
+}
+
+/* =========================================
+   GLOBAL: Forzar texto oscuro en modo claro
+   y texto claro en modo oscuro para TODOS los disenos
+   ========================================= */
+.estilo-glass, .estilo-glass body, .estilo-glass .tarjeta, .estilo-glass article, .estilo-glass p, .estilo-glass span, .estilo-glass label, .estilo-glass td, .estilo-glass th, .estilo-glass h1, .estilo-glass h2, .estilo-glass h3, .estilo-glass h4, .estilo-glass h5, .estilo-glass .barra-lateral, .estilo-glass button, .estilo-glass .accion-boton,
+.estilo-neo, .estilo-neo body, .estilo-neo .tarjeta, .estilo-neo article, .estilo-neo p, .estilo-neo span, .estilo-neo label, .estilo-neo td, .estilo-neo th, .estilo-neo h1, .estilo-neo h2, .estilo-neo h3, .estilo-neo h4, .estilo-neo h5, .estilo-neo .barra-lateral, .estilo-neo button, .estilo-neo .accion-boton,
+.estilo-neon, .estilo-neon body, .estilo-neon .tarjeta, .estilo-neon article, .estilo-neon p, .estilo-neon span, .estilo-neon label, .estilo-neon td, .estilo-neon th, .estilo-neon h1, .estilo-neon h2, .estilo-neon h3, .estilo-neon h4, .estilo-neon h5, .estilo-neon .barra-lateral, .estilo-neon button, .estilo-neon .accion-boton,
+.estilo-cyber, .estilo-cyber body, .estilo-cyber .tarjeta, .estilo-cyber article, .estilo-cyber p, .estilo-cyber span, .estilo-cyber label, .estilo-cyber td, .estilo-cyber th, .estilo-cyber h1, .estilo-cyber h2, .estilo-cyber h3, .estilo-cyber h4, .estilo-cyber h5, .estilo-cyber .barra-lateral, .estilo-cyber button, .estilo-cyber .accion-boton,
+.estilo-brutal, .estilo-brutal body, .estilo-brutal .tarjeta, .estilo-brutal article, .estilo-brutal p, .estilo-brutal span, .estilo-brutal label, .estilo-brutal td, .estilo-brutal th, .estilo-brutal h1, .estilo-brutal h2, .estilo-brutal h3, .estilo-brutal h4, .estilo-brutal h5, .estilo-brutal .barra-lateral, .estilo-brutal button, .estilo-brutal .accion-boton,
+.estilo-vapor, .estilo-vapor body, .estilo-vapor .tarjeta, .estilo-vapor article, .estilo-vapor p, .estilo-vapor span, .estilo-vapor label, .estilo-vapor td, .estilo-vapor th, .estilo-vapor h1, .estilo-vapor h2, .estilo-vapor h3, .estilo-vapor h4, .estilo-vapor h5, .estilo-vapor .barra-lateral, .estilo-vapor button, .estilo-vapor .accion-boton,
+.estilo-cosmic, .estilo-cosmic body, .estilo-cosmic .tarjeta, .estilo-cosmic article, .estilo-cosmic p, .estilo-cosmic span, .estilo-cosmic label, .estilo-cosmic td, .estilo-cosmic th, .estilo-cosmic h1, .estilo-cosmic h2, .estilo-cosmic h3, .estilo-cosmic h4, .estilo-cosmic h5, .estilo-cosmic .barra-lateral, .estilo-cosmic button, .estilo-cosmic .accion-boton,
+.estilo-organic, .estilo-organic body, .estilo-organic .tarjeta, .estilo-organic article, .estilo-organic p, .estilo-organic span, .estilo-organic label, .estilo-organic td, .estilo-organic th, .estilo-organic h1, .estilo-organic h2, .estilo-organic h3, .estilo-organic h4, .estilo-organic h5, .estilo-organic .barra-lateral, .estilo-organic button, .estilo-organic .accion-boton,
+.estilo-material, .estilo-material body, .estilo-material .tarjeta, .estilo-material article, .estilo-material p, .estilo-material span, .estilo-material label, .estilo-material td, .estilo-material th, .estilo-material h1, .estilo-material h2, .estilo-material h3, .estilo-material h4, .estilo-material h5, .estilo-material .barra-lateral, .estilo-material button, .estilo-material .accion-boton,
+.estilo-liquid, .estilo-liquid body, .estilo-liquid .tarjeta, .estilo-liquid article, .estilo-liquid p, .estilo-liquid span, .estilo-liquid label, .estilo-liquid td, .estilo-liquid th, .estilo-liquid h1, .estilo-liquid h2, .estilo-liquid h3, .estilo-liquid h4, .estilo-liquid h5, .estilo-liquid .barra-lateral, .estilo-liquid button, .estilo-liquid .accion-boton,
+.estilo-pixel, .estilo-pixel body, .estilo-pixel .tarjeta, .estilo-pixel article, .estilo-pixel p, .estilo-pixel span, .estilo-pixel label, .estilo-pixel td, .estilo-pixel th, .estilo-pixel h1, .estilo-pixel h2, .estilo-pixel h3, .estilo-pixel h4, .estilo-pixel h5, .estilo-pixel .barra-lateral, .estilo-pixel button, .estilo-pixel .accion-boton,
+.estilo-mesh, .estilo-mesh body, .estilo-mesh .tarjeta, .estilo-mesh article, .estilo-mesh p, .estilo-mesh span, .estilo-mesh label, .estilo-mesh td, .estilo-mesh th, .estilo-mesh h1, .estilo-mesh h2, .estilo-mesh h3, .estilo-mesh h4, .estilo-mesh h5, .estilo-mesh .barra-lateral, .estilo-mesh button, .estilo-mesh .accion-boton,
+.estilo-clay, .estilo-clay body, .estilo-clay .tarjeta, .estilo-clay article, .estilo-clay p, .estilo-clay span, .estilo-clay label, .estilo-clay td, .estilo-clay th, .estilo-clay h1, .estilo-clay h2, .estilo-clay h3, .estilo-clay h4, .estilo-clay h5, .estilo-clay .barra-lateral, .estilo-clay button, .estilo-clay .accion-boton,
+.estilo-academia, .estilo-academia body, .estilo-academia .tarjeta, .estilo-academia article, .estilo-academia p, .estilo-academia span, .estilo-academia label, .estilo-academia td, .estilo-academia th, .estilo-academia h1, .estilo-academia h2, .estilo-academia h3, .estilo-academia h4, .estilo-academia h5, .estilo-academia .barra-lateral, .estilo-academia button, .estilo-academia .accion-boton,
+.estilo-minimal, .estilo-minimal body, .estilo-minimal .tarjeta, .estilo-minimal article, .estilo-minimal p, .estilo-minimal span, .estilo-minimal label, .estilo-minimal td, .estilo-minimal th, .estilo-minimal h1, .estilo-minimal h2, .estilo-minimal h3, .estilo-minimal h4, .estilo-minimal h5, .estilo-minimal .barra-lateral, .estilo-minimal button, .estilo-minimal .accion-boton {
+  color: var(--texto-fuerte);
+}

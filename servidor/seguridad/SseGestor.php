@@ -74,12 +74,14 @@ class SseGestor
         $tiempoLimite = 30;
         set_time_limit($tiempoLimite + 10);
 
+        session_write_close();
+
         header('Content-Type: text/event-stream');
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('Connection: keep-alive');
         header('X-Accel-Buffering: no');
 
-        if (ob_get_level()) {
+        while (ob_get_level() > 0) {
             ob_end_clean();
         }
 
@@ -97,12 +99,11 @@ class SseGestor
 
     private static function conectarModoArchivo(int $idOperador, int $tiempoLimite, int $ultimoId): void
     {
+        session_write_close();
+
         echo "event: sse.conectado\n";
         echo "data: {\"id_operador\":{$idOperador},\"modo\":\"archivo\"}\n\n";
 
-        if (ob_get_level() === 0) {
-            ob_start();
-        }
         ob_flush();
         flush();
 
@@ -135,7 +136,7 @@ class SseGestor
             ob_flush();
             flush();
 
-            usleep(1000000);
+            usleep(50000);
         }
     }
 
@@ -228,12 +229,11 @@ class SseGestor
 
     private static function conectarModoDB(int $idOperador, int $tiempoLimite, int $ultimoId): void
     {
+        session_write_close();
+
         echo "event: sse.conectado\n";
         echo "data: {\"id_operador\":{$idOperador},\"modo\":\"db\"}\n\n";
 
-        if (ob_get_level() === 0) {
-            ob_start();
-        }
         ob_flush();
         flush();
 
@@ -293,7 +293,7 @@ class SseGestor
             ob_flush();
             flush();
 
-            usleep(500000);
+            usleep(50000);
         }
     }
 }

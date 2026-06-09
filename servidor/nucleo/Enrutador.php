@@ -7,6 +7,7 @@ namespace LiteFramework\Nucleo;
 use ReflectionMethod;
 use LiteFramework\Seguridad\RegistroAuditoria;
 use LiteFramework\Config\GestorEntorno;
+use LiteFramework\Middleware\RendimientoInterceptor;
 use ReflectionFunction;
 
 class Enrutador
@@ -128,7 +129,11 @@ class Enrutador
                     }
                 }
 
-                $cadena = array_merge($ruta['interceptor'], [$ruta['accion']]);
+                $interceptors = $ruta['interceptor'];
+                if (!isset($ruta['nombre']) || !in_array($ruta['nombre'], ['ingreso', 'salir'], true)) {
+                    $interceptors = array_merge([RendimientoInterceptor::class], $interceptors);
+                }
+                $cadena = array_merge($interceptors, [$ruta['accion']]);
                 return $this->ejecutarCadena($cadena, $params);
             }
         }

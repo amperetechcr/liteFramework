@@ -34,6 +34,7 @@ class DiagnosticoError
         $sugerencias = [];
         $accion = null;
         $tieneRemedio = false;
+        $reparaciones = [];
 
         foreach (self::$verificadores as $v) {
             try {
@@ -45,6 +46,12 @@ class DiagnosticoError
                         $diag['remedio'] = $remedio;
                         if (!empty($remedio['exito'])) {
                             $tieneRemedio = true;
+                            $reparaciones[] = [
+                                'tipo' => $diag['tipo'] ?? '',
+                                'verificador' => $v->tipo(),
+                                'mensaje' => $remedio['mensaje'] ?? 'Reparacion automatica aplicada.',
+                                'reintentar' => !empty($remedio['reintentar']),
+                            ];
                             if (!empty($remedio['accion_frontend'])) {
                                 $accion = [
                                     'tipo' => $remedio['accion_frontend'],
@@ -64,6 +71,7 @@ class DiagnosticoError
         return [
             'diagnosticos' => $diagnosticos,
             'tieneRemedio' => $tieneRemedio,
+            'reparaciones' => $reparaciones,
             'sugerencias' => $sugerencias,
             'accion' => $accion,
         ];

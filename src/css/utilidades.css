@@ -1,6 +1,6 @@
-/* =========================================
-   UTILIDADES: Clases atÃ³micas de uso general
-   UbicaciÃ³n: src/css/utilidades.css
+﻿/* =========================================
+   UTILIDADES: Clases atmicas de uso general
+   Ubicacin: src/css/utilidades.css
    ========================================= */
 
 /* --- COLORES DE TEXTO --- */
@@ -8,7 +8,7 @@
 .color-exito { color: var(--color-exito); }
 .color-peligro { color: var(--color-peligro); }
 
-/* --- MÃRGENES --- */
+/* --- MRGENES --- */
 .margen-0 { margin: 0; }
 .margen-normal { margin: var(--espacio-normal); }
 .margen-superior-0 { margin-top: 0; }

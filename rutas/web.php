@@ -108,6 +108,10 @@ $enrutador->get('/apariencia', function () {
     (new ModuloControlador())->indice('apariencia');
 })->interceptor(AutenticacionInterceptor::class)->nombre('apariencia');
 
+$enrutador->get('/diagnostico', function () {
+    (new ModuloControlador())->indice('diagnostico');
+})->interceptor(AutenticacionInterceptor::class)->nombre('diagnostico');
+
 $enrutador->get('/estadisticas', function () {
     (new ModuloControlador())->indice('estadisticas');
 })->interceptor(AutenticacionInterceptor::class)->nombre('estadisticas');
@@ -116,6 +120,57 @@ $enrutador->get('/estadisticas/ver/{id}', function (int $id) {
     $datosVista = (int)$id;
     require DIRECTORIO_RAIZ . '/src/modulos/estadisticas/vistaEstadistica.php';
 })->interceptor(AutenticacionInterceptor::class)->nombre('estadisticas.ver');
+
+$enrutador->get('/estadisticas/vista/{id}', function (int $id) {
+    $est = new GeneradorEstadisticas();
+    $est->desdePlantilla($id);
+    if ($est->tieneError() && empty($est->obtenerResultados())) {
+        http_response_code(500);
+        echo '<div class="alerta alerta-peligro"><p><strong>Error:</strong> ' . h($est->obtenerError()) . '</p></div>';
+        exit;
+    }
+    echo $est->obtenerContenido();
+})->interceptor(AutenticacionInterceptor::class)->nombre('estadisticas.vista');
+
+$enrutador->get('/estadisticas/exportar/{id}/{formato}', function (int $id, string $formato) {
+    $est = new GeneradorEstadisticas();
+    $est->desdePlantilla($id);
+    if ($est->tieneError() && empty($est->obtenerResultados())) {
+        http_response_code(500);
+        echo json_encode(['error' => $est->obtenerError()]);
+        exit;
+    }
+    $resultados = $est->obtenerResultados();
+    $columnas = $est->obtenerColumnas();
+    if ($formato === 'json') {
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="estadistica_' . $id . '.json"');
+        echo json_encode(['titulo' => $est->obtenerTitulo(), 'columnas' => $columnas, 'datos' => $resultados], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if ($formato === 'csv') {
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="estadistica_' . $id . '.csv"');
+        $salida = fopen('php://output', 'w');
+        fwrite($salida, "\xEF\xBB\xBF");
+        fputcsv($salida, $columnas);
+        foreach ($resultados as $fila) {
+            $filaCsv = [];
+            foreach ($columnas as $col) {
+                $filaCsv[] = $fila[$col] ?? '';
+            }
+            fputcsv($salida, $filaCsv);
+        }
+        fclose($salida);
+        exit;
+    }
+    http_response_code(400);
+    echo json_encode(['error' => 'Formato no soportado']);
+})->interceptor(AutenticacionInterceptor::class)->nombre('estadisticas.exportar');
+
+$enrutador->get('/rendimiento', function () {
+    (new ModuloControlador())->indice('rendimiento');
+})->interceptor(AutenticacionInterceptor::class)->nombre('rendimiento');
 
 $enrutador->get('/documentacion', function () {
     (new ModuloControlador())->indice('documentacion');
@@ -350,6 +405,88 @@ $enrutador->get('/api/rendimiento', function () {
     $stats = \LiteFramework\Nucleo\Helpers\AyudanteMonitor::obtenerEstadisticas();
     echo json_encode($stats);
 })->nombre('api.rendimiento');
+
+// API: estadisticas dashboard
+$enrutador->get('/api/estadisticas/dashboard', function () {
+    header('Content-Type: application/json');
+    try {
+        $ids = \LiteFramework\Modelos\Estadistica::listarDashboard();
+    } catch (\Exception $e) {
+        http_response_code(200);
+        echo json_encode([], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    $widgets = [];
+    foreach ($ids as $row) {
+        $id = (int)$row['id_estadistica'];
+        try {
+            $est = new \LiteFramework\Servicios\GeneradorEstadisticas();
+            $est->desdePlantilla($id);
+            $widgets[] = [
+                'id' => $id,
+                'titulo' => $est->obtenerTitulo(),
+                'tipo' => $est->obtenerTipoVisualizacion(),
+                'html' => $est->generarContenidoDashboard(),
+                'error' => $est->tieneError() ? $est->obtenerError() : null,
+                'grafico' => $est->obtenerDatosGrafico(),
+                'ultima_ejecucion' => $row['ultima_ejecucion'] ?? null,
+                'cache_ttl' => (int)($row['cache_ttl'] ?? 300),
+                'columnas' => $est->obtenerColumnas(),
+            ];
+        } catch (\Exception $e) {
+            $widgets[] = [
+                'id' => $id,
+                'titulo' => $row['titulo'] ?? 'Error',
+                'tipo' => 'tarjetas',
+                'html' => '<p class="texto-xs texto-peligro">Error: ' . h($e->getMessage()) . '</p>',
+                'error' => $e->getMessage(),
+                'grafico' => null,
+                'ultima_ejecucion' => null,
+                'cache_ttl' => 300,
+                'columnas' => [],
+            ];
+        }
+    }
+    echo json_encode($widgets, JSON_UNESCAPED_UNICODE);
+})->interceptor(AutenticacionInterceptor::class)->nombre('api.estadisticas.dashboard');
+
+$enrutador->get('/api/estadisticas/datos/{id}', function (int $id) {
+    header('Content-Type: application/json');
+    $est = new \LiteFramework\Servicios\GeneradorEstadisticas();
+    $est->desdePlantilla($id);
+    echo json_encode($est->obtenerDatosGrafico(), JSON_UNESCAPED_UNICODE);
+})->interceptor(AutenticacionInterceptor::class)->nombre('api.estadisticas.datos');
+
+$enrutador->post('/api/estadisticas/pinear/{id}', function (int $id) {
+    header('Content-Type: application/json');
+    $modelo = \LiteFramework\Modelos\Estadistica::buscar($id);
+    if (!$modelo) {
+        http_response_code(404);
+        echo json_encode(['estado' => false, 'error' => 'No encontrada']);
+        exit;
+    }
+    $modelo->en_dashboard = $modelo->en_dashboard ? 0 : 1;
+    if ($modelo->en_dashboard) {
+        $max = (int)\LiteFramework\Modelos\Estadistica::maximo('dashboard_orden');
+        $modelo->dashboard_orden = $max + 1;
+    } else {
+        $modelo->dashboard_orden = 0;
+    }
+    $modelo->guardar();
+    \LiteFramework\Servicios\GeneradorEstadisticas::limpiarCacheTodo();
+    echo json_encode(['estado' => true, 'pineado' => (bool)$modelo->en_dashboard]);
+})->interceptor(AutenticacionInterceptor::class)->nombre('api.estadisticas.pinear');
+
+$enrutador->post('/api/estadisticas/refrescar/{id}', function (int $id) {
+    header('Content-Type: application/json');
+    $est = new \LiteFramework\Servicios\GeneradorEstadisticas();
+    $est->desdePlantilla($id, false);
+    echo json_encode([
+        'html' => $est->generarContenidoDashboard(),
+        'grafico' => $est->obtenerDatosGrafico(),
+        'error' => $est->tieneError() ? $est->obtenerError() : null,
+    ], JSON_UNESCAPED_UNICODE);
+})->interceptor(AutenticacionInterceptor::class)->nombre('api.estadisticas.refrescar');
 
 // Rutas de errores (redirigen a la pagina publica)
 foreach ([400, 401, 403, 404, 500, 503] as $codigo) {

@@ -23,6 +23,7 @@ class Modelo
     private array $cambios = [];
     private bool $existe = false;
     private array $dondePendiente = [];
+    private bool $dondeResuelto = false;
     private array $seleccionColumnas = [];
     private array $eagerRelaciones = [];
     private static ?PDO $conexionGlobal = null;
@@ -217,59 +218,65 @@ class Modelo
 
     public function obtener(): array
     {
+        if ($this->dondeResuelto) {
+            return [];
+        }
+
         $bd = self::conectar();
         $tabla = self::sanitizarIdentificadorSql(static::$tabla);
         $donde = $this->dondePendiente;
         $this->dondePendiente = [];
+        $this->dondeResuelto = true;
 
-        $select = empty($this->seleccionColumnas) ? '*' : implode(', ', $this->seleccionColumnas);
+        $select = $this->seleccionColumnas;
         $this->seleccionColumnas = [];
+        $selectSql = empty($select) ? '*' : implode(', ', $select);
 
-        $sql = "SELECT {$select} FROM {$tabla}";
+        $ordenar = $donde['_ordenar'] ?? null;
+        $limite = $donde['_limite'] ?? null;
+        $saltar = $donde['_saltar'] ?? null;
+        unset($donde['_ordenar'], $donde['_limite'], $donde['_saltar']);
+
+        $sql = "SELECT {$selectSql} FROM {$tabla}";
         $parametros = [];
         $condiciones = [];
 
-        if (!empty($donde)) {
-            foreach ($donde as $clave => $item) {
-                if ($clave === '_ordenar' || $clave === '_limite' || $clave === '_saltar') {
-                    continue;
-                }
-                if (!empty($item['es_raw'])) {
-                    $conector = $item['tipo'] === 'o' ? ' OR ' : ' AND ';
-                    $condiciones[] = $conector . $item['sql_raw'];
-                    continue;
-                }
-                if (!empty($item['es_in'])) {
-                    $conector = $item['tipo'] === 'o' ? ' OR ' : ' AND ';
-                    $condiciones[] = $conector . $item['sql_raw'];
-                    foreach (($item['in_parametros'] ?? []) as $alias => $valor) {
+        foreach ($donde as $item) {
+            if (!empty($item['es_raw'])) {
+                $condiciones[] = ($item['tipo'] === 'o' ? ' OR ' : ' AND ') . $item['sql_raw'];
+                if (!empty($item['in_parametros'])) {
+                    foreach ($item['in_parametros'] as $alias => $valor) {
                         $parametros[$alias] = $valor;
                     }
-                    continue;
                 }
-                $col = self::sanitizarIdentificadorSql($item['columna']);
-                $op = self::sanitizarOperadorSql($item['operador']);
-                $alias = ':donde_' . $col . '_' . count($parametros);
-                $conector = $item['tipo'] === 'o' ? ' OR ' : ' AND ';
-                $condiciones[] = $conector . $col . ' ' . $op . ' ' . $alias;
-                $parametros[$alias] = $item['valor'];
+                continue;
             }
+            if (!empty($item['es_in'])) {
+                $condiciones[] = ($item['tipo'] === 'o' ? ' OR ' : ' AND ') . $item['sql_raw'];
+                foreach (($item['in_parametros'] ?? []) as $alias => $valor) {
+                    $parametros[$alias] = $valor;
+                }
+                continue;
+            }
+            $col = $item['columna'];
+            $op = $item['operador'];
+            $alias = ':d_' . $col . '_' . count($parametros);
+            $condiciones[] = ($item['tipo'] === 'o' ? ' OR ' : ' AND ') . $col . ' ' . $op . ' ' . $alias;
+            $parametros[$alias] = $item['valor'];
         }
 
-        if (!empty($condiciones)) {
-            $sql .= ' WHERE 1=1 ' . implode(' ', $condiciones);
+        if ($condiciones) {
+            $sql .= ' WHERE 1=1 ' . implode('', $condiciones);
         }
 
-        if (isset($donde['_ordenar'])) {
-            $colOrden = self::sanitizarIdentificadorSql($donde['_ordenar'][0]);
-            $dirOrden = self::sanitizarDireccionOrden($donde['_ordenar'][1]);
-            $sql .= ' ORDER BY ' . $colOrden . ' ' . $dirOrden;
+        if ($ordenar !== null) {
+            $sql .= ' ORDER BY ' . self::sanitizarIdentificadorSql($ordenar[0]) . ' ' . self::sanitizarDireccionOrden($ordenar[1]);
         }
 
-        if (isset($donde['_limite'])) {
-            $sql .= ' LIMIT ' . $donde['_limite'];
-            if (isset($donde['_saltar'])) {
-                $sql .= ' OFFSET ' . $donde['_saltar'];
+        if ($limite !== null) {
+            $sql .= ' LIMIT ' . $limite;
+            if ($saltar !== null) {
+                $sql .= ' OFFSET ' . $saltar;
             }
         }
 
@@ -284,7 +291,7 @@ class Modelo
             $resultado[] = new static($fila);
         }
 
-        if (!empty($this->eagerRelaciones)) {
+        if ($this->eagerRelaciones) {
             $this->cargarRelaciones($resultado);
             $this->eagerRelaciones = [];
         }
@@ -388,10 +395,17 @@ class Modelo
 
     public function contarDonde(): int
     {
+        if ($this->dondeResuelto) {
+            return 0;
+        }
+
         $bd = self::conectar();
         $tabla = self::sanitizarIdentificadorSql(static::$tabla);
         $donde = $this->dondePendiente;
         $this->dondePendiente = [];
+        $this->dondeResuelto = true;
+
+        unset($donde['_ordenar'], $donde['_limite'], $donde['_saltar']);
 
         if (empty($donde)) {
             $sql = $bd->query("SELECT COUNT(*) FROM {$tabla}");
@@ -401,32 +415,26 @@ class Modelo
 
         $parametros = [];
         $condiciones = [];
-        foreach ($donde as $clave => $item) {
-            if ($clave === '_ordenar' || $clave === '_limite' || $clave === '_saltar') {
-                continue;
-            }
+        foreach ($donde as $item) {
             if (!empty($item['es_raw'])) {
-                $conector = $item['tipo'] === 'o' ? ' OR ' : ' AND ';
-                $condiciones[] = $conector . $item['sql_raw'];
+                $condiciones[] = ($item['tipo'] === 'o' ? ' OR ' : ' AND ') . $item['sql_raw'];
                 continue;
             }
             if (!empty($item['es_in'])) {
-                $conector = $item['tipo'] === 'o' ? ' OR ' : ' AND ';
-                $condiciones[] = $conector . $item['sql_raw'];
+                $condiciones[] = ($item['tipo'] === 'o' ? ' OR ' : ' AND ') . $item['sql_raw'];
                 foreach (($item['in_parametros'] ?? []) as $alias => $valor) {
                     $parametros[$alias] = $valor;
                 }
                 continue;
             }
-            $col = self::sanitizarIdentificadorSql($item['columna']);
-            $op = self::sanitizarOperadorSql($item['operador']);
+            $col = $item['columna'];
+            $op = $item['operador'];
             $alias = ':c_' . $col . '_' . count($parametros);
-            $conector = $item['tipo'] === 'o' ? ' OR ' : ' AND ';
-            $condiciones[] = $conector . $col . ' ' . $op . ' ' . $alias;
+            $condiciones[] = ($item['tipo'] === 'o' ? ' OR ' : ' AND ') . $col . ' ' . $op . ' ' . $alias;
             $parametros[$alias] = $item['valor'];
         }
 
-        $sql = "SELECT COUNT(*) FROM {$tabla} WHERE 1=1 " . implode(' ', $condiciones);
+        $sql = "SELECT COUNT(*) FROM {$tabla} WHERE 1=1 " . implode('', $condiciones);
         $stmt = $bd->prepare($sql);
         \assert($stmt !== false);
         $stmt->execute($parametros);

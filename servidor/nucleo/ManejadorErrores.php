@@ -21,6 +21,17 @@ class ManejadorErrores
     private static bool $registrados = false;
     private static ?array $ultimoDiagnostico = null;
     private static bool $diagnosticando = false;
+    private static bool $modoJson = false;
+
+    public static function activarModoJson(): void
+    {
+        self::$modoJson = true;
+    }
+
+    public static function estaEnModoJson(): bool
+    {
+        return self::$modoJson;
+    }
 
     public static function registrar(): void
     {
@@ -56,6 +67,11 @@ class ManejadorErrores
             self::loggear($excepcion, 'ERROR_PHP');
         } else {
             self::loggear($excepcion, 'EXCEPCION');
+        }
+
+        if (self::$modoJson) {
+            self::responderJsonIA($excepcion);
+            return;
         }
 
         if (self::esPeticionApi()) {
@@ -142,7 +158,14 @@ class ManejadorErrores
                 if (!self::$diagnosticando) {
                     self::$diagnosticando = true;
                     try {
-                        $contexto['_diagnostico'] = self::diagnosticarError($excepcion, $tipo, $idTraza);
+                        $diag = self::diagnosticarError($excepcion, $tipo, $idTraza);
+                        $contexto['_diagnostico'] = $diag;
+                        if (!empty($diag['reparaciones'])) {
+                            RegistroAuditoria::exito('Sistema', 'Reparacion automatica', [
+                                'reparaciones' => $diag['reparaciones'],
+                                'trace_id' => $idTraza,
+                            ]);
+                        }
                     } finally {
                         self::$diagnosticando = false;
                     }
@@ -188,6 +211,53 @@ class ManejadorErrores
         return false;
     }
 
+    private static function responderJsonIA(\Throwable $excepcion): void
+    {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(500);
+        }
+
+        $contexto = [
+            'ok' => false,
+            'error' => 'Error interno del servidor',
+            'codigo_error' => $excepcion instanceof ErrorException ? 'ERROR_PHP' : 'EXCEPCION',
+        ];
+
+        try {
+            $contexto['trace_id'] = TrazadorPeticiones::obtenerId();
+        } catch (\Throwable $e) {
+            $contexto['trace_id'] = 'N/A';
+        }
+
+        $contexto['excepcion'] = [
+            'clase' => get_class($excepcion),
+            'mensaje' => $excepcion->getMessage(),
+            'archivo' => $excepcion->getFile(),
+            'linea' => $excepcion->getLine(),
+            'traza_completa' => $excepcion->getTraceAsString(),
+        ];
+
+        if ($excepcion->getPrevious() !== null) {
+            $prev = $excepcion->getPrevious();
+            $contexto['excepcion']['previa'] = [
+                'clase' => get_class($prev),
+                'mensaje' => $prev->getMessage(),
+                'archivo' => $prev->getFile(),
+                'linea' => $prev->getLine(),
+            ];
+        }
+
+        if (self::$ultimoDiagnostico !== null) {
+            $contexto['diagnostico'] = self::$ultimoDiagnostico['diagnosticos'] ?? [];
+            $contexto['reparaciones'] = self::$ultimoDiagnostico['reparaciones'] ?? [];
+            $contexto['accion_sugerida'] = self::$ultimoDiagnostico['accion'] ?? null;
+        }
+
+        fwrite(STDERR, json_encode($contexto, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) . PHP_EOL);
+        exit(1);
+    }
+
     private static function responderJsonApi(\Throwable $excepcion): void
     {
         if (!headers_sent()) {
@@ -229,6 +299,9 @@ class ManejadorErrores
             if (!empty(self::$ultimoDiagnostico['diagnosticos'])) {
                 $respuesta['diagnostico'] = self::$ultimoDiagnostico['diagnosticos'];
             }
+            if (!empty(self::$ultimoDiagnostico['reparaciones'])) {
+                $respuesta['reparaciones'] = self::$ultimoDiagnostico['reparaciones'];
+            }
         }
 
         echo json_encode($respuesta);
@@ -252,6 +325,7 @@ class ManejadorErrores
 
         $excepcionParaVista = GestorEntorno::esDepuracion() ? $excepcion : null;
         $diagnosticoHtml = self::$ultimoDiagnostico;
+        $reparacionesAplicadas = !empty(self::$ultimoDiagnostico['reparaciones']) ? self::$ultimoDiagnostico['reparaciones'] : [];
 
         if (file_exists(DIRECTORIO_RAIZ . '/src/error.php')) {
             require DIRECTORIO_RAIZ . '/src/error.php';

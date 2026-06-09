@@ -287,6 +287,28 @@ function inicializarAnimacion()
     }
 }
 
+function aplicarTrazo(nombre)
+{
+    var raiz = document.documentElement;
+    raiz.className = raiz.className.replace(/\btrazo-\S+/g, '').trim();
+    if (nombre !== 'normal') {
+        raiz.classList.add('trazo-' + nombre);
+    }
+    try {
+        localStorage.setItem('trazo-lite-framework', nombre);
+    } catch (e) {}
+}
+
+function inicializarTrazo()
+{
+    try {
+        var guardado = localStorage.getItem('trazo-lite-framework');
+        if (guardado && guardado !== 'normal') {
+            aplicarTrazo(guardado);
+        }
+    } catch (e) {}
+}
+
 function aplicarGrosor(nombre)
 {
     var raiz = document.documentElement;
@@ -386,6 +408,7 @@ function restablecerPersonalizacion()
     aplicarTamano('normal');
     aplicarRadio('normal');
     aplicarAnimacion('normal');
+    aplicarTrazo('normal');
     aplicarGrosor('normal');
     aplicarSombra('normal');
     ['tema-lite-framework', 'paleta-lite-framework', 'estilo-lite-framework',
@@ -393,6 +416,7 @@ function restablecerPersonalizacion()
      'fuente-lite-framework',
      'espaciado-lite-framework', 'tamano-lite-framework',
      'radio-lite-framework', 'animacion-lite-framework',
+     'trazo-lite-framework',
      'grosor-lite-framework', 'sombra-lite-framework'].forEach(function (k) {
         try {
             localStorage.removeItem(k); } catch (e) {
@@ -422,12 +446,13 @@ function obtenerConfiguracionUI()
             tamano: localStorage.getItem('tamano-lite-framework') || 'normal',
             radio: localStorage.getItem('radio-lite-framework') || 'normal',
             animacion: localStorage.getItem('animacion-lite-framework') || 'normal',
+            trazo: localStorage.getItem('trazo-lite-framework') || 'normal',
             grosor: localStorage.getItem('grosor-lite-framework') || 'normal',
             sombra: localStorage.getItem('sombra-lite-framework') || 'normal',
             tema: localStorage.getItem('tema-lite-framework') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')
         };
     } catch (e) {
-        return { paleta: 'indigo', estilo: 'moderno', fondo: 'blanco', textura: 'ninguna', fuente: 'sistema', espaciado: 'normal', tamano: 'normal', radio: 'normal', animacion: 'normal', grosor: 'normal', sombra: 'normal', tema: 'claro' };
+        return { paleta: 'indigo', estilo: 'moderno', fondo: 'blanco', textura: 'ninguna', fuente: 'sistema', espaciado: 'normal', tamano: 'normal', radio: 'normal', animacion: 'normal', trazo: 'normal', grosor: 'normal', sombra: 'normal', tema: 'claro' };
     }
 }
 
@@ -477,6 +502,7 @@ function guardarPersonalizacionServidor()
             tamano: config.tamano,
             radio: config.radio,
             animacion: config.animacion,
+            trazo: config.trazo,
             grosor: config.grosor,
             sombra: config.sombra,
             tema: config.tema
@@ -532,6 +558,7 @@ function cargarPersonalizacionServidor()
             localStorage.setItem('tamano-lite-framework', d.tamano || 'normal');
             localStorage.setItem('radio-lite-framework', d.radio || 'normal');
             localStorage.setItem('animacion-lite-framework', d.animacion || 'normal');
+            localStorage.setItem('trazo-lite-framework', d.trazo || 'normal');
             localStorage.setItem('tema-lite-framework', d.tema || 'claro');
             if (d.fondo) {
                 aplicarFondo(d.fondo);
@@ -559,6 +586,9 @@ function cargarPersonalizacionServidor()
             }
             if (d.animacion) {
                 aplicarAnimacion(d.animacion);
+            }
+            if (d.trazo) {
+                aplicarTrazo(d.trazo);
             }
             if (d.tema) {
                 var raiz = document.documentElement;
@@ -595,6 +625,7 @@ window.aplicarRadio = aplicarRadio;
 window.aplicarAnimacion = aplicarAnimacion;
 window.aplicarGrosor = aplicarGrosor;
 window.aplicarSombra = aplicarSombra;
+window.aplicarTrazo = aplicarTrazo;
 window.aplicarTextura = aplicarTextura;
 window.restablecerPersonalizacion = restablecerPersonalizacion;
 window.obtenerConfiguracionUI = obtenerConfiguracionUI;
@@ -602,4 +633,4 @@ window.alternarTransicionSuave = alternarTransicionSuave;
 window.alternarEstadoCarga = alternarEstadoCarga;
 window.guardarPersonalizacionServidor = guardarPersonalizacionServidor;
 window.cargarPersonalizacionServidor = cargarPersonalizacionServidor;
-export { alternarEstadoCarga, inicializarTema, inicializarPaleta, inicializarEstilo, inicializarFondo, inicializarTextura, inicializarFuente, inicializarEspaciado, inicializarTamano, inicializarRadio, inicializarAnimacion, inicializarGrosor, inicializarSombra, inicializarCliente, aplicarPaleta, aplicarEstilo, aplicarFondo, aplicarTextura, aplicarFuente, aplicarEspaciado, aplicarTamano, aplicarRadio, aplicarAnimacion, aplicarGrosor, aplicarSombra, restablecerPersonalizacion, obtenerConfiguracionUI, alternarTransicionSuave, guardarPersonalizacionServidor, cargarPersonalizacionServidor, mostrarErroresPorURL, MAPA_ERRORES_URL, MAPA_MENSAJES_URL };
+export { alternarEstadoCarga, inicializarTema, inicializarPaleta, inicializarEstilo, inicializarFondo, inicializarTextura, inicializarFuente, inicializarEspaciado, inicializarTamano, inicializarRadio, inicializarAnimacion, inicializarTrazo, inicializarGrosor, inicializarSombra, inicializarCliente, aplicarPaleta, aplicarEstilo, aplicarFondo, aplicarTextura, aplicarFuente, aplicarEspaciado, aplicarTamano, aplicarRadio, aplicarAnimacion, aplicarTrazo, aplicarGrosor, aplicarSombra, restablecerPersonalizacion, obtenerConfiguracionUI, alternarTransicionSuave, guardarPersonalizacionServidor, cargarPersonalizacionServidor, mostrarErroresPorURL, MAPA_ERRORES_URL, MAPA_MENSAJES_URL };

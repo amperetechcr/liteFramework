@@ -74,6 +74,9 @@ class RemediadorError
             if (!$v->tieneRemedioAutomatico()) {
                 continue;
             }
+            if ($v->tipo() !== $tipo) {
+                continue;
+            }
             try {
                 $resultado = $v->ejecutarRemedio(['tipo' => $tipo] + $params);
                 return $resultado;

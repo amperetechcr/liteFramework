@@ -1,560 +1,39 @@
-/* =========================================
+﻿/* =========================================
    ESTILOS: Estilos visuales + componentes por modulo
-   UbicaciÃ³n: src/css/estilos.css
+   Ubicacin: src/css/estilos.css
    Las paletas estan definidas en paletas.css.
    ========================================= */
 
 /* ESTILO: MODERNO (default) */
-
 :root.estilo-moderno,
 .estilo-moderno {
-    --radio-redondeado: 0.5rem;
-    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
-    --sombra-flotante: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-    --sombra-elevada: 0 10px 24px -6px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08);
     --grosor-trazo: 1px;
     --transicion-base: 0.2s ease;
 }
-
-/* ESTILO: MINIMALISTA */
-
-:root.estilo-minimalista,
-.estilo-minimalista {
-    --radio-redondeado: 0;
-    --sombra-suave: none;
-    --sombra-flotante: none;
-    --sombra-elevada: none;
-    --grosor-trazo: 1px;
-    --transicion-base: 0.15s ease;
-}
-
-.estilo-minimalista article,
-.estilo-minimalista .tarjeta,
-.estilo-minimalista .tarjeta-informacion {
-    box-shadow: var(--sombra-suave);
+.estilo-moderno .tarjeta,
+.estilo-moderno article,
+.estilo-moderno .tarjeta-informacion {
+    box-shadow: 0 1px 3px rgb(from var(--texto-fuerte) r g b / 0.06), 0 1px 2px rgb(from var(--texto-fuerte) r g b / 0.04);
     border: 1px solid var(--trazo-suave);
+    transition: box-shadow 0.2s, border-color 0.2s;
 }
-.estilo-minimalista article:hover,
-.estilo-minimalista .tarjeta:hover,
-.estilo-minimalista .tarjeta-informacion:hover {
-    box-shadow: var(--sombra-flotante);
-    border-color: var(--color-marca);
+.estilo-moderno .tarjeta:hover,
+.estilo-moderno article:hover,
+.estilo-moderno .tarjeta-informacion:hover {
+    box-shadow: 0 4px 12px rgb(from var(--texto-fuerte) r g b / 0.08), 0 2px 4px rgb(from var(--texto-fuerte) r g b / 0.06);
+    border-color: rgb(from var(--color-marca) r g b / 0.2);
 }
-.estilo-minimalista input,
-.estilo-minimalista select,
-.estilo-minimalista textarea,
-.estilo-minimalista .campo-entrada {
-    border-width: 1px;
+.estilo-moderno button,
+.estilo-moderno .accion-boton {
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
-.estilo-minimalista button,
-.estilo-minimalista a[role="button"],
-.estilo-minimalista input[type="submit"],
-.estilo-minimalista input[type="button"],
-.estilo-minimalista .accion-boton {
-    border-radius: 0;
+.estilo-moderno button:hover,
+.estilo-moderno .accion-boton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(from var(--color-marca) r g b / 0.15);
 }
 
-/* ESTILO: ELEGANTE */
-
-:root.estilo-elegante,
-.estilo-elegante {
-    --radio-redondeado: 0.375rem;
-    --sombra-suave: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-    --sombra-flotante: 0 4px 16px -4px rgb(0 0 0 / 0.1);
-    --sombra-elevada: 0 8px 32px -8px rgb(0 0 0 / 0.15);
-    --grosor-trazo: 1px;
-    --transicion-base: 0.25s ease;
-}
-
-.estilo-elegante body {
-    font-family: Georgia, "Times New Roman", Times, "Noto Serif", serif;
-}
-.estilo-elegante h1, .estilo-elegante h2, .estilo-elegante h3, .estilo-elegante h4 {
-    font-family: Georgia, "Times New Roman", Times, "Noto Serif", serif;
-    letter-spacing: 0;
-    font-weight: 600;
-}
-.estilo-elegante button,
-.estilo-elegante a[role="button"],
-.estilo-elegante input[type="submit"],
-.estilo-elegante input[type="button"],
-.estilo-elegante .accion-boton {
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    font-size: var(--tamano-md);
-}
-.estilo-elegante label,
-.estilo-elegante .campo-etiqueta {
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    font-size: var(--tamano-xs);
-}
-
-/* ESTILO: REDONDEADO */
-
-:root.estilo-redondeado,
-.estilo-redondeado {
-    --radio-redondeado: 1rem;
-    --sombra-suave: 0 2px 8px 0 rgb(0 0 0 / 0.05);
-    --sombra-flotante: 0 8px 24px -4px rgb(0 0 0 / 0.1);
-    --sombra-elevada: 0 16px 40px -8px rgb(0 0 0 / 0.16);
-    --grosor-trazo: 1px;
-    --transicion-base: 0.2s ease;
-}
-.estilo-redondeado article,
-.estilo-redondeado .tarjeta,
-.estilo-redondeado .tarjeta-informacion {
-    border-radius: var(--radio-redondeado);
-}
-.estilo-redondeado input,
-.estilo-redondeado select,
-.estilo-redondeado textarea,
-.estilo-redondeado .campo-entrada {
-    border-radius: var(--radio-redondeado);
-}
-.estilo-redondeado button,
-.estilo-redondeado a[role="button"],
-.estilo-redondeado input[type="submit"],
-.estilo-redondeado input[type="button"],
-.estilo-redondeado .accion-boton {
-    border-radius: 9999px;
-    padding: 0.5rem 1rem;
-}
-.estilo-redondeado .etiqueta {
-    border-radius: 9999px;
-}
-.estilo-redondeado button.alternador-tema,
-.estilo-redondeado .alternador-tema {
-    border-radius: 9999px;
-}
-
-/* ESTILO: CONTRASTE (accesibilidad) */
-
-:root.estilo-contraste,
-.estilo-contraste {
-    --radio-redondeado: 0;
-    --sombra-suave: none;
-    --sombra-flotante: none;
-    --sombra-elevada: none;
-    --grosor-trazo: 2px;
-    --transicion-base: 0s;
-}
-.estilo-contraste body {
-    font-size: 112.5%;
-    line-height: 1.8;
-}
-.estilo-contraste a {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-.estilo-contraste input,
-.estilo-contraste select,
-.estilo-contraste textarea,
-.estilo-contraste .campo-entrada {
-    border-width: 2px;
-}
-.estilo-contraste button,
-.estilo-contraste a[role="button"],
-.estilo-contraste input[type="submit"],
-.estilo-contraste input[type="button"],
-.estilo-contraste .accion-boton {
-    border: 2px solid var(--color-marca);
-    font-weight: 700;
-}
-.estilo-contraste article,
-.estilo-contraste .tarjeta,
-.estilo-contraste .tarjeta-informacion {
-    border: 2px solid var(--trazo-fuerte);
-    box-shadow: var(--sombra-suave);
-}
-.estilo-contraste article:hover,
-.estilo-contraste .tarjeta:hover,
-.estilo-contraste .tarjeta-informacion:hover {
-    box-shadow: var(--sombra-flotante);
-}
-
-/* ESTILO: JUGUETÃ“N */
-
-:root.estilo-jugueton,
-.estilo-jugueton {
-    --radio-redondeado: 1.25rem;
-    --sombra-suave: 0 2px 8px 0 rgb(0 0 0 / 0.06);
-    --sombra-flotante: 0 8px 24px -4px rgb(0 0 0 / 0.1);
-    --sombra-elevada: 0 20px 48px -8px rgb(0 0 0 / 0.18);
-    --grosor-trazo: 2px;
-    --transicion-base: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.estilo-jugueton .tarjeta,
-.estilo-jugueton article,
-.estilo-jugueton .tarjeta-informacion {
-    border-radius: var(--radio-redondeado);
-    border: 2px solid var(--color-marca-claro);
-    transition: transform var(--transicion-base), box-shadow var(--transicion-base);
-}
-
-.estilo-jugueton .tarjeta:hover,
-.estilo-jugueton article:hover,
-.estilo-jugueton .tarjeta-informacion:hover {
-    transform: translateY(-2px) scale(1.01);
-}
-
-.estilo-jugueton button,
-.estilo-jugueton a[role="button"],
-.estilo-jugueton input[type="submit"],
-.estilo-jugueton input[type="button"],
-.estilo-jugueton .accion-boton {
-    border-radius: 9999px;
-    padding: 0.5rem 1rem;
-    font-weight: 700;
-    border: 2px solid var(--color-marca);
-}
-
-.estilo-jugueton input,
-.estilo-jugueton select,
-.estilo-jugueton textarea,
-.estilo-jugueton .campo-entrada {
-    border-radius: var(--radio-redondeado);
-    border-width: 2px;
-}
-
-.estilo-jugueton .etiqueta {
-    border-radius: 9999px;
-    padding: 0.25rem 1rem;
-}
-
-.estilo-jugueton h1,
-.estilo-jugueton h2,
-.estilo-jugueton h3 {
-    letter-spacing: -0.03em;
-}
-
-/* ESTILO: CORPORATIVO */
-
-:root.estilo-corporativo,
-.estilo-corporativo {
-    --radio-redondeado: 0.25rem;
-    --sombra-suave: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-    --sombra-flotante: 0 2px 6px -2px rgb(0 0 0 / 0.05);
-    --sombra-elevada: 0 4px 12px -4px rgb(0 0 0 / 0.08);
-    --grosor-trazo: 1px;
-    --transicion-base: 0.15s ease;
-}
-
-.estilo-corporativo button,
-.estilo-corporativo a[role="button"],
-.estilo-corporativo input[type="submit"],
-.estilo-corporativo input[type="button"],
-.estilo-corporativo .accion-boton {
-    border-radius: var(--radio-redondeado);
-    padding: 0.5rem 1.25rem;
-    font-weight: 600;
-    text-transform: none;
-    letter-spacing: 0.01em;
-}
-
-.estilo-corporativo label,
-.estilo-corporativo .campo-etiqueta {
-    font-weight: 500;
-    font-size: var(--tamano-md);
-}
-
-.estilo-corporativo input,
-.estilo-corporativo select,
-.estilo-corporativo textarea,
-.estilo-corporativo .campo-entrada {
-    border-radius: var(--radio-redondeado);
-    border-width: 1px;
-}
-
-.estilo-corporativo h1,
-.estilo-corporativo h2,
-.estilo-corporativo h3,
-.estilo-corporativo h4 {
-    letter-spacing: -0.01em;
-    font-weight: 600;
-}
-
-.estilo-corporativo .tarjeta,
-.estilo-corporativo article,
-.estilo-corporativo .tarjeta-informacion {
-    border-radius: var(--radio-redondeado);
-    box-shadow: var(--sombra-flotante);
-}
-
-/* ESTILO: 3D MODERNO */
-
-:root.estilo-3d-moderno,
-.estilo-3d-moderno {
-    --radio-redondeado: 0.375rem;
-    --sombra-suave: 0 2px 6px 0 rgb(0 0 0 / 0.10), 0 1px 2px -1px rgb(0 0 0 / 0.08);
-    --sombra-flotante: 0 10px 20px -4px rgb(0 0 0 / 0.14), 0 4px 8px -4px rgb(0 0 0 / 0.10);
-    --sombra-elevada: 0 20px 40px -8px rgb(0 0 0 / 0.18), 0 8px 16px -6px rgb(0 0 0 / 0.12);
-    --grosor-trazo: 1px;
-    --transicion-base: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Animaciones 3D */
-
-@keyframes apertura-contenido-3d {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes aparecer-tarjeta-3d {
-    0% { opacity: 0; transform: perspective(1000px) translateY(16px) translateZ(-12px); }
-    100% { opacity: 1; transform: perspective(1000px) translateY(0) translateZ(0); }
-}
-
-/* Entrada del contenido principal */
-
-.estilo-3d-moderno main {
-    animation: apertura-contenido-3d 0.5s ease-out both;
-}
-
-/* Profundidad de fondo */
-
-.estilo-3d-moderno body {
-    background-image:
-        radial-gradient(ellipse at 20% 30%, rgb(from var(--color-marca-claro) r g b / 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 70%, rgb(from var(--color-marca) r g b / 0.04) 0%, transparent 60%);
-}
-
-/* Botones: esqueleto fÃ­sico con profundidad */
-
-.estilo-3d-moderno button,
-.estilo-3d-moderno a[role="button"],
-.estilo-3d-moderno input[type="submit"],
-.estilo-3d-moderno input[type="button"],
-.estilo-3d-moderno .accion-boton {
-    border-radius: var(--radio-redondeado);
-    padding: 0.5rem 1.25rem;
-    font-weight: 700;
-    border: none;
-    position: relative;
-    transform-style: preserve-3d;
-    transform: translateY(0) translateZ(0);
-    transition: transform var(--transicion-base), box-shadow var(--transicion-base);
-    cursor: pointer;
-    box-shadow:
-        0 5px 0 0 rgb(0 0 0 / 0.25),
-        0 8px 16px -4px rgb(0 0 0 / 0.15);
-}
-
-.estilo-3d-moderno button::after,
-.estilo-3d-moderno a[role="button"]::after,
-.estilo-3d-moderno input[type="submit"]::after,
-.estilo-3d-moderno input[type="button"]::after,
-.estilo-3d-moderno .accion-boton::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(to bottom, rgb(255 255 255 / 0.18) 0%, transparent 30%, rgb(0 0 0 / 0.12) 100%);
-    pointer-events: none;
-}
-
-.estilo-3d-moderno button:active,
-.estilo-3d-moderno a[role="button"]:active,
-.estilo-3d-moderno input[type="submit"]:active,
-.estilo-3d-moderno input[type="button"]:active,
-.estilo-3d-moderno .accion-boton:active {
-    transform: translateY(3px) translateZ(-2px);
-    box-shadow:
-        0 1px 0 0 rgb(0 0 0 / 0.25),
-        0 2px 4px -2px rgb(0 0 0 / 0.1);
-    transition-duration: 0.08s;
-}
-
-/* BotÃ³n variante borde â†’ 3D hueco */
-.estilo-3d-moderno button[data-variante="borde"],
-.estilo-3d-moderno a[role="button"][data-variante="borde"],
-.estilo-3d-moderno .accion-boton[data-variante="borde"] {
-    background: transparent;
-    border: 2px solid var(--color-marca);
-    box-shadow:
-        inset 0 -3px 0 0 var(--color-marca),
-        0 3px 6px -2px rgb(0 0 0 / 0.1);
-}
-
-.estilo-3d-moderno button[data-variante="borde"]:active,
-.estilo-3d-moderno a[role="button"][data-variante="borde"]:active,
-.estilo-3d-moderno .accion-boton[data-variante="borde"]:active {
-    transform: translateY(2px);
-    box-shadow:
-        inset 0 2px 4px 0 rgb(0 0 0 / 0.1),
-        0 1px 2px 0 rgb(0 0 0 / 0.08);
-}
-
-/* BotÃ³n variante texto â†’ 3D sutil */
-.estilo-3d-moderno button[data-variante="texto"],
-.estilo-3d-moderno a[role="button"][data-variante="texto"],
-.estilo-3d-moderno .accion-boton[data-variante="texto"] {
-    background: transparent;
-    box-shadow: 0 2px 0 0 transparent;
-    padding: 0.5rem 1rem;
-}
-
-.estilo-3d-moderno button[data-variante="texto"]::after,
-.estilo-3d-moderno a[role="button"][data-variante="texto"]::after,
-.estilo-3d-moderno .accion-boton[data-variante="texto"]::after {
-    display: none;
-}
-
-.estilo-3d-moderno button[data-variante="texto"]:active,
-.estilo-3d-moderno a[role="button"][data-variante="texto"]:active,
-.estilo-3d-moderno .accion-boton[data-variante="texto"]:active {
-    transform: translateY(1px);
-    box-shadow: 0 0 0 0 transparent;
-}
-
-/* Tarjetas: levitaciÃ³n 3D con inclinaciÃ³n */
-
-.estilo-3d-moderno .tarjeta,
-.estilo-3d-moderno article,
-.estilo-3d-moderno .tarjeta-informacion {
-    border-radius: var(--radio-redondeado);
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform var(--transicion-base), box-shadow var(--transicion-base);
-    will-change: transform;
-    animation: aparecer-tarjeta-3d 0.5s ease-out both;
-    backface-visibility: hidden;
-    box-shadow:
-        0 4px 8px 0 rgb(0 0 0 / 0.06),
-        0 1px 2px 0 rgb(0 0 0 / 0.04);
-}
-
-.estilo-3d-moderno .tarjeta::before,
-.estilo-3d-moderno article::before,
-.estilo-3d-moderno .tarjeta-informacion::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(135deg, rgb(255 255 255 / 0.12) 0%, transparent 40%, rgb(0 0 0 / 0.04) 100%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.estilo-3d-moderno .tarjeta::after,
-.estilo-3d-moderno article::after,
-.estilo-3d-moderno .tarjeta-informacion::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(ellipse at 25% 20%, rgb(255 255 255 / 0.08) 0%, transparent 55%);
-    pointer-events: none;
-    z-index: 2;
-}
-
-/* Inputs: hundidos en la pÃ¡gina */
-
-.estilo-3d-moderno input,
-.estilo-3d-moderno select,
-.estilo-3d-moderno textarea,
-.estilo-3d-moderno .campo-entrada {
-    border-radius: var(--radio-redondeado);
-    border: 1px solid var(--trazo-suave);
-    box-shadow:
-        inset 0 3px 6px 0 rgb(0 0 0 / 0.06),
-        0 1px 2px 0 rgb(0 0 0 / 0.03);
-    transition: box-shadow var(--transicion-base), border-color var(--transicion-base), transform var(--transicion-base);
-}
-
-.estilo-3d-moderno input:focus,
-.estilo-3d-moderno select:focus,
-.estilo-3d-moderno textarea:focus,
-.estilo-3d-moderno .campo-entrada:focus {
-    transform: translateZ(2px);
-    border-color: var(--color-marca);
-    box-shadow:
-        inset 0 3px 6px 0 rgb(0 0 0 / 0.06),
-        0 0 0 3px var(--color-marca-claro);
-}
-
-/* Etiquetas / badges: relieve sutil */
-
-.estilo-3d-moderno .etiqueta {
-    border-radius: var(--radio-redondeado);
-    padding: 0.25rem 0.75rem;
-    font-weight: 600;
-    box-shadow:
-        0 2px 4px 0 rgb(0 0 0 / 0.08),
-        inset 0 1px 0 0 rgb(255 255 255 / 0.2);
-}
-
-.estilo-3d-moderno .etiqueta[data-variante="marca"] {
-    box-shadow:
-        0 2px 6px 0 rgb(0 0 0 / 0.12),
-        inset 0 1px 0 0 rgb(255 255 255 / 0.15);
-}
-
-/* TipografÃ­a */
-
-.estilo-3d-moderno h1,
-.estilo-3d-moderno h2,
-.estilo-3d-moderno h3 {
-    letter-spacing: -0.02em;
-    font-weight: 800;
-    text-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-}
-
-.estilo-3d-moderno h1 {
-    text-shadow: 0 2px 4px rgb(0 0 0 / 0.06);
-}
-
-/* Modal */
-
-.estilo-3d-moderno .modal-contenido {
-    border-radius: var(--radio-redondeado);
-    box-shadow:
-        0 30px 80px -16px rgb(0 0 0 / 0.35),
-        0 10px 32px -8px rgb(0 0 0 / 0.2),
-        0 0 0 1px rgb(255 255 255 / 0.06);
-}
-
-.estilo-3d-moderno .modal-vista::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: rgb(0 0 0 / 0.5);
-    backdrop-filter: blur(8px);
-    perspective: 1000px;
-}
-
-/* Notificaciones */
-
-.estilo-3d-moderno .notificacion,
-.estilo-3d-moderno .notificador-mensaje {
-    border-radius: var(--radio-redondeado);
-    border: none;
-    transform-style: preserve-3d;
-    background: rgb(from var(--fondo-elemento) r g b / 0.85);
-    transform: perspective(1000px) translateZ(30px);
-    box-shadow:
-        0 8px 24px -4px rgb(0 0 0 / 0.2),
-        0 4px 8px -4px rgb(0 0 0 / 0.12),
-        inset 0 1px 0 0 rgb(255 255 255 / 0.15);
-    backdrop-filter: blur(12px);
-    animation: entrada-notificacion-3d 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes entrada-notificacion-3d {
-    0% {
-        opacity: 0;
-        transform: perspective(1000px) translateZ(-20px) translateX(40px);
-    }
-    100% {
-        opacity: 1;
-        transform: perspective(1000px) translateZ(30px) translateX(0);
-    }
-}
-
-/* CONFIGURACIÃ“N: LÃMITES DE ARCHIVOS */
+/* CONFIGURACIN: LMITES DE ARCHIVOS */
 
 /* Alertas */
 .alerta {
@@ -629,7 +108,7 @@
     padding: 0 var(--espacio-normal) var(--espacio-normal);
 }
 
-/* CÃ³digo de directivas PHP */
+/* Cdigo de directivas PHP */
 pre.codigo-directivas {
     background: var(--fondo-alterno);
     padding: var(--espacio-normal);
@@ -641,14 +120,14 @@ pre.codigo-directivas {
     line-height: 1.5;
 }
 
-/* Input de confirmaciÃ³n */
+/* Input de confirmacin */
 input.campo-confirmacion {
     font-family: monospace;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
-/* MÃ“DULO: MIGRACIONES */
+/* MDULO: MIGRACIONES */
 
 .preview-sql {
     margin-bottom: var(--espacio-normal);
@@ -693,9 +172,9 @@ input.campo-confirmacion {
     border-radius: var(--radio-redondeado);
 }
 
-/* MÃ“DULO: PERSONALIZACIÃ“N */
+/* MDULO: PERSONALIZACIN */
 
-/* MÃ“DULO: INICIO (pÃ¡gina de bienvenida) */
+/* MDULO: INICIO (pgina de bienvenida) */
 
 .cabecera-inicio {
     padding: var(--espacio-normal);
@@ -766,7 +245,7 @@ input.campo-confirmacion {
     padding: var(--espacio-normal);
 }
 
-/* COMPONENTE: EVENTO AUDITORÃA (padding) */
+/* COMPONENTE: EVENTO AUDITORA (padding) */
 
 .evento-auditoria-con-padding {
     padding: var(--espacio-normal);
@@ -820,12 +299,12 @@ input.campo-confirmacion {
     }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    RESET: evitar que estilos visuales rompan modales
    Anula pseudo-elementos ::before/::after, transforms 3D,
    animaciones y backdrop-filter heredados de .estilo-*
    dentro de cualquier modal del sistema.
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 .modal-contenido article,
 .modal-contenido .tarjeta,

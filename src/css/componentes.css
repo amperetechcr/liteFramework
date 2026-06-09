@@ -1,16 +1,16 @@
-/* =========================================
+﻿/* =========================================
    COMPONENTES: Botones, formularios, tablas, tarjetas,
-   notificaciones, modales, paginaciÃ³n y mÃ¡s.
-   UbicaciÃ³n: src/css/componentes.css
-   PropÃ³sito: Estilos de todos los componentes visuales reutilizables.
+   notificaciones, modales, paginacin y ms.
+   Ubicacin: src/css/componentes.css
+   Propsito: Estilos de todos los componentes visuales reutilizables.
    Fusiona: componentes.css + lite.css originales
    ========================================= */
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    TARJETAS (cards)
    Selectores: article, .tarjeta
    Legacy:    .tarjeta-informacion
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 article,
 .tarjeta {
@@ -33,7 +33,7 @@ article:hover,
     article, .tarjeta { padding: var(--espacio-pequeno); border-radius: calc(var(--radio-redondeado) * 0.75); }
 }
 
-/* Tarjetas dentro de rejilla automÃ¡tica */
+/* Tarjetas dentro de rejilla automtica */
 .rejilla-automatica > article,
 .rejilla-automatica > .tarjeta {
     justify-self: center;
@@ -41,7 +41,7 @@ article:hover,
     max-width: 360px;
 }
 
-/* Tarjeta de mÃ³dulo (clickeable) */
+/* Tarjeta de mdulo (clickeable) */
 a.tarjeta-modulo,
 .tarjeta-seleccion-modulo {
     cursor: pointer;
@@ -79,16 +79,16 @@ a.tarjeta-modulo:hover .envoltura-icono-modulo,
     color: white;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    BOTONES
    Selectores: button, a[role="button"],
                input[type="submit"], input[type="button"],
                input[type="reset"]
    Variantes:  data-variante="solido|borde|texto|peligro|exito"
-   TamaÃ±os:    data-tamano="pequeno|grande"
+   Tamaos:    data-tamano="pequeno|grande"
    Estados:    :disabled, .cargando
    Legacy:     .accion-boton, .variante-*, .tamano-*
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 button,
 a[role="button"],
@@ -146,7 +146,7 @@ input[type="reset"]:disabled,
     pointer-events: none;
 }
 
-/* Variante sÃ³lida (default) */
+/* Variante slida (default) */
 button:not([data-variante]),
 button[data-variante="solido"],
 a[role="button"]:not([data-variante]),
@@ -230,7 +230,7 @@ a[role="button"][data-variante="peligro"]:hover,
     box-shadow: 0 4px 12px -2px rgb(220 38 38 / 0.25);
 }
 
-/* TamaÃ±os */
+/* Tamaos */
 button[data-tamano="pequeno"],
 a[role="button"][data-tamano="pequeno"],
 .accion-boton.tamano-pequeno {
@@ -246,7 +246,7 @@ a[role="button"][data-tamano="grande"],
     gap: 0.625rem;
 }
 
-/* BotÃ³n ancho completo */
+/* Botn ancho completo */
 button.ancho-completo,
 a[role="button"].ancho-completo,
 .accion-boton.ancho-completo {
@@ -281,13 +281,13 @@ button[data-variante="solido"].cargando::after,
     border-top-color: white;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    FORMULARIOS
    Selectores: input, select, textarea, label
    Clases:     .grupo-campo, .error-campo
    Legacy:     .campo-agrupado, .campo-entrada,
                .campo-etiqueta, .campo-error
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 .grupo-campo,
 .campo-agrupado {
@@ -374,14 +374,14 @@ textarea.campo-entrada {
     min-width: 0;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    TABLAS
    Selectores: table, thead, tbody, th, td
    Clases:     .tabla-responsiva
    Legacy:     .tabla-principal, .cabecera-tabla,
                .celda-cabecera, .fila-tabla,
                .celda-datos, .contenedor-tabla-responsiva
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 .tabla-responsiva {
     width: 100%;
@@ -440,12 +440,12 @@ tbody td {
     tbody td { padding: var(--espacio-minimo) var(--espacio-pequeno); }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    ETIQUETAS / BADGES
    Clase:     .etiqueta
    Variantes: data-variante="exito|peligro|marca|advertencia"
    Legacy:    .etiqueta-exito, .etiqueta-peligro, etc.
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 .etiqueta {
     padding: 0.25rem 0.75rem;
@@ -490,11 +490,11 @@ tbody td {
     color: var(--color-info);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* 
    ALTERNADOR DE TEMA
    Selector:  button.alternador-tema
    Legacy:    .alternador-tema
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 button.alternador-tema,
 .alternador-tema {
@@ -525,10 +525,10 @@ button.alternador-tema:hover,
     box-shadow: var(--sombra-flotante);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   ENLACE DE SALTO (skip link â€” accesibilidad)
+/* 
+   ENLACE DE SALTO (skip link  accesibilidad)
    Selector:  a.enlace-salto
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
 a.enlace-salto,
 .enlace-salto {
@@ -565,15 +565,15 @@ a.enlace-salto:focus,
     color: var(--texto-base);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PAGINACIÃ“N
+/* 
+   PAGINACIN
    Selector:  nav.paginacion
    Clases:    .paginacion a, .paginacion span
    Legacy:    .paginador, .paginador-enlace,
               .paginador-actual, .paginador-deshabilitado
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    */
 
-/* PaginaciÃ³n inline (estilo legacy en auditoria, operadores) */
+/* Paginacin inline (estilo legacy en auditoria, operadores) */
 nav.paginacion,
 .paginacion {
     display: flex;
@@ -704,7 +704,7 @@ nav.paginador a[rel="next"],
     }
 }
 
-/* MÃ“DULO CABECERA */
+/* MDULO CABECERA */
 
 .tarjeta-modulo {
     background-color: var(--fondo-elemento);
@@ -715,7 +715,7 @@ nav.paginador a[rel="next"],
     margin-bottom: var(--espacio-normal);
 }
 
-/* AUDITORÃA: lista de eventos en cuadrÃ­cula */
+/* AUDITORA: lista de eventos en cuadrcula */
 
 #resultados-auditoria .agrupador-flexible-columnas {
     display: grid;

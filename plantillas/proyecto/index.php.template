@@ -11,7 +11,7 @@ ManejadorErrores::registrar();
 $configUI = require DIRECTORIO_RAIZ . '/servidor/config/ui.php';
 
 $paletasValidas = ['indigo', 'azul', 'esmeralda', 'rosa', 'ambar', 'violeta', 'pizarra', 'cereza', 'cielo'];
-$estilosValidos = ['moderno', 'minimalista', 'elegante', 'redondeado', 'contraste'];
+$estilosValidos = ['moderno', 'glass', 'neo', 'neon', 'cyber', 'brutal', 'vapor', 'cosmic', 'organic', 'material', 'liquid', 'pixel', 'mesh', 'clay', 'academia', 'minimal'];
 $fondosValidos = ['blanco', 'lavanda', 'rosa', 'melon', 'cielo', 'menta', 'arena', 'lila', 'selva', 'medianoche', 'carmesi', 'bosque', 'marino', 'carbon', 'vino', 'azabache'];
 $fuentesValidas = ['sistema', 'serif', 'sans', 'mono', 'escritura'];
 $espaciadosValidos = ['compacto', 'normal', 'amplio'];

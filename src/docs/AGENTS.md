@@ -1,5 +1,9 @@
 # liteFramework — Guía para IA
 
+> **Filosofía:** Este es uno de los únicos frameworks PHP hechos para que la IA lo use, no para que el humano toque código.
+> El humano da instrucciones en lenguaje natural → la IA escribe el código → el framework ejecuta.
+> No hay vendor oculto, no hay dependencias mágicas. La IA conoce cada línea. Por eso no alucina.
+>
 > `declare(strict_types=1)` en 94/94 archivos del servidor. Type hints en cada método y parámetro.
 > Sin `eval()`, sin `extract()`, sin `${$var}`. Sin `vendor/` ni dependencias externas.
 >

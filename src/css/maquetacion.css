@@ -1,7 +1,7 @@
-/* =========================================
-   MAQUETACIÃ“N: Layout, sidebar, animaciones
-   UbicaciÃ³n: src/css/maquetacion.css
-   PropÃ³sito: Sistema de rejillas, contenedores, layout responsive
+﻿/* =========================================
+   MAQUETACIN: Layout, sidebar, animaciones
+   Ubicacin: src/css/maquetacion.css
+   Propsito: Sistema de rejillas, contenedores, layout responsive
    multi-breakpoint y animaciones globales.
    ========================================= */
 
@@ -92,19 +92,19 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SIDEBAR / BARRA LATERAL â€” Multi-breakpoint
+/* 
+   SIDEBAR / BARRA LATERAL  Multi-breakpoint
    States:
-   â‰¥1025px  â€” Full sidebar (240px)
-   769â€“1024 â€” Collapsed (56px) with hover expand
-   601â€“768  â€” Off-canvas overlay (toggle via JS)
-   â‰¤600     â€” Off-canvas fullscreen
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   1025px   Full sidebar (240px)
+   7691024  Collapsed (56px) with hover expand
+   601768   Off-canvas overlay (toggle via JS)
+   600      Off-canvas fullscreen
+    */
 
 .contenedor-principal,
 .envoltura-principal {
-    display: flex;
     min-height: 100dvh;
+    margin-left: 240px;
 }
 
 nav.barra-lateral,
@@ -115,11 +115,18 @@ nav.barra-lateral,
     flex-direction: column;
     background-color: var(--fondo-elemento);
     border-right: 1px solid var(--trazo-suave);
-    position: sticky;
+    position: fixed;
     top: 0;
-    height: 100dvh;
+    left: 0;
+    height: 100vh;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     z-index: 100;
+}
+nav.barra-lateral::-webkit-scrollbar,
+.barra-lateral::-webkit-scrollbar {
+    display: none;
 }
 
 .barra-lateral-cabecera {
@@ -145,7 +152,7 @@ nav.barra-lateral,
     padding: 0;
 }
 
-/* Enlaces de navegaciÃ³n en sidebar â€” selector semÃ¡ntico + clase legacy */
+/* Enlaces de navegacin en sidebar  selector semntico + clase legacy */
 nav.barra-lateral a,
 .barra-lateral-enlace {
     display: flex;
@@ -187,14 +194,13 @@ nav.barra-lateral a.enlace-activo,
     padding-top: var(--espacio-pequeno);
 }
 
-/* Ãrea de contenido */
+/* rea de contenido */
 .area-contenido {
-    flex: 1;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    min-width: 0;
-    max-width: calc(100% - 240px);
 }
+
 .area-contenido main {
     flex: 1;
     padding: var(--espacio-mediano);
@@ -246,8 +252,9 @@ nav.barra-lateral a.enlace-activo,
     .barra-lateral:focus-within .barra-lateral-pie .texto-pequeno {
         display: inline;
     }
-    .area-contenido {
-        max-width: calc(100% - 56px);
+    .contenedor-principal,
+    .envoltura-principal {
+        margin-left: 56px;
     }
 }
 
@@ -276,6 +283,10 @@ nav.barra-lateral a.enlace-activo,
     .barra-lateral-enlace span:not(.barra-lateral-icono),
     .barra-lateral-pie .texto-pequeno {
         display: inline;
+    }
+    .contenedor-principal,
+    .envoltura-principal {
+        margin-left: 0;
     }
     .area-contenido {
         max-width: 100%;
@@ -309,7 +320,7 @@ nav.barra-lateral a.enlace-activo,
     }
 }
 
-/* BotÃ³n hamburguesa */
+/* Botn hamburguesa */
 .boton-menu-lateral {
     display: none;
     align-items: center;
@@ -334,7 +345,7 @@ nav.barra-lateral a.enlace-activo,
     .boton-menu-lateral { display: inline-flex; }
 }
 
-/* Cabecera mÃ³vil */
+/* Cabecera mvil */
 header.cabecera-movil,
 .cabecera-movil {
     display: none;
@@ -372,13 +383,13 @@ header.cabecera-movil,
     }
 }
 
-/* Alternador de tema en cabecera mÃ³vil */
+/* Alternador de tema en cabecera mvil */
 .cabecera-movil .alternador-tema {
     width: 2rem;
     height: 2rem;
 }
 
-/* Cabecera de pÃ¡gina principal */
+/* Cabecera de pgina principal */
 .cabecera-principal {
     display: flex;
     justify-content: space-between;

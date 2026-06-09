@@ -7,19 +7,18 @@ namespace LiteFramework\Config;
 use PDOException;
 use PDO;
 use Exception;
+use LiteFramework\Nucleo\Helpers\AyudanteCache;
+use LiteFramework\Nucleo\Helpers\AyudanteGeneral;
 
 class ConfiguracionSistema
 {
-    private static array $cache = [];
-    private static bool $cacheCargado = false;
-    private static int $cacheCargadoEn = 0;
-    private const TTL_SEGUNDOS = 30;
+    private const CLAVE_CACHE = 'config_sistema';
 
     public static function obtener(string $clave, mixed $defecto = null): mixed
     {
-        self::asegurarCache();
-        if (isset(self::$cache[$clave])) {
-            $fila = self::$cache[$clave];
+        $cache = self::obtenerCache();
+        if (isset($cache[$clave])) {
+            $fila = $cache[$clave];
             return self::convertirTipo($fila['valor'], $fila['tipo_dato']);
         }
         return GestorEntorno::obtener($clave, $defecto);
@@ -27,14 +26,13 @@ class ConfiguracionSistema
 
     public static function obtenerFila(string $clave): ?array
     {
-        self::asegurarCache();
-        return self::$cache[$clave] ?? null;
+        $cache = self::obtenerCache();
+        return $cache[$clave] ?? null;
     }
 
     public static function obtenerTodas(): array
     {
-        self::asegurarCache();
-        return self::$cache;
+        return self::obtenerCache();
     }
 
     public static function establecer(string $clave, mixed $valor, int $versionEsperada, ?int $idOperador = null): array
@@ -68,7 +66,7 @@ class ConfiguracionSistema
             ];
         }
 
-        self::invalidarCache();
+        AyudanteCache::olvidar(self::CLAVE_CACHE);
         return [
             'estado' => 'ok',
             'version' => $versionEsperada + 1,
@@ -93,37 +91,36 @@ class ConfiguracionSistema
             return ['estado' => 'error', 'mensaje' => $e->getMessage()];
         }
 
-        self::invalidarCache();
+        AyudanteCache::olvidar(self::CLAVE_CACHE);
         return ['estado' => 'ok'];
     }
 
     public static function invalidarCache(): void
     {
-        self::$cacheCargado = false;
-        self::$cache = [];
+        AyudanteCache::olvidar(self::CLAVE_CACHE);
     }
 
-    private static function asegurarCache(): void
+    public static function obtenerCache(): array
     {
-        $expirado = (time() - self::$cacheCargadoEn) > self::TTL_SEGUNDOS;
-        if (self::$cacheCargado && !$expirado) {
-            return;
-        }
-
-        self::$cache = [];
-        try {
-            $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-            $stmtConfig = $conexion->query("SELECT clave, valor, tipo_dato, version, actualizado_por FROM configuracion_sistema");
-            \assert($stmtConfig !== false);
-            $filas = $stmtConfig->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($filas as $fila) {
-                self::$cache[$fila['clave']] = $fila;
+        $generar = function (): array {
+            try {
+                $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+                $stmtConfig = $conexion->query("SELECT clave, valor, tipo_dato, version, actualizado_por FROM configuracion_sistema");
+                \assert($stmtConfig !== false);
+                $filas = $stmtConfig->fetchAll(PDO::FETCH_ASSOC);
+                $cache = [];
+                foreach ($filas as $fila) {
+                    $cache[$fila['clave']] = $fila;
+                }
+                return $cache;
+            } catch (Exception $e) {
+                error_log("[ConfiguracionSistema] Error al cargar cache: " . $e->getMessage());
+                return [];
             }
-            self::$cacheCargado = true;
-            self::$cacheCargadoEn = time();
-        } catch (Exception $e) {
-            error_log("[ConfiguracionSistema] Error al cargar cache: " . $e->getMessage());
-        }
+        };
+
+        $valor = AyudanteCache::recordar(self::CLAVE_CACHE, $generar, 30);
+        return is_array($valor) ? $valor : [];
     }
 
     private static function inferirTipo(mixed $valor): string

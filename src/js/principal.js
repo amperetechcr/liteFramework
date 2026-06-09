@@ -1,4 +1,4 @@
-import { inicializarTema, inicializarPaleta, inicializarEstilo, inicializarFondo, inicializarTextura, inicializarFuente, inicializarEspaciado, inicializarTamano, inicializarRadio, inicializarAnimacion, inicializarGrosor, inicializarSombra, inicializarCliente, mostrarErroresPorURL, cargarPersonalizacionServidor } from './ui/lite.js';
+import { inicializarTema, inicializarPaleta, inicializarEstilo, inicializarFondo, inicializarTextura, inicializarFuente, inicializarEspaciado, inicializarTamano, inicializarRadio, inicializarAnimacion, inicializarTrazo, inicializarGrosor, inicializarSombra, inicializarCliente, mostrarErroresPorURL, cargarPersonalizacionServidor } from './ui/lite.js';
 import { SeguridadSistema } from './seguridad.js';
 import './api/utilidades.js';
 import './api/ListaFiltrable.js';
@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     inicializarTamano();
     inicializarRadio();
     inicializarAnimacion();
+    inicializarTrazo();
     inicializarGrosor();
     inicializarSombra();
     inicializarFuente();

@@ -39,6 +39,7 @@
         var tamano = leer('tamano-lite-framework', 'normal');
         var grosor = leer('grosor-lite-framework', 'normal');
         var sombra = leer('sombra-lite-framework', 'normal');
+        var trazo = leer('trazo-lite-framework', 'normal');
         var fondo = leer('fondo-lite-framework', 'blanco');
         var textura = leer('textura-lite-framework', 'ninguna');
 
@@ -73,6 +74,10 @@
 
         document.querySelectorAll('.apariencia-pill[data-sombra]').forEach(function (b) {
             b.classList.toggle('activo', b.getAttribute('data-sombra') === sombra);
+        });
+
+        document.querySelectorAll('.apariencia-pill[data-trazo]').forEach(function (b) {
+            b.classList.toggle('activo', b.getAttribute('data-trazo') === trazo);
         });
 
         document.querySelectorAll('.apariencia-color[data-fondo]').forEach(function (b) {
@@ -312,6 +317,17 @@
         document.getElementById('btn-restablecer').addEventListener('click', function () {
             if (typeof window.restablecerPersonalizacion === 'function') {
                 window.restablecerPersonalizacion();
+                syncTodo();
+                guardarAlServidor();
+            }
+        });
+
+        document.getElementById('selector-trazo').addEventListener('click', function (e) {
+            var btn = e.target.closest('.apariencia-pill[data-trazo]');
+            if (!btn) { return; }
+            var trazo = btn.getAttribute('data-trazo');
+            if (trazo && window.aplicarTrazo) {
+                window.aplicarTrazo(trazo);
                 syncTodo();
                 guardarAlServidor();
             }

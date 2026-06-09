@@ -22,9 +22,22 @@ class GeneradorEstadisticas
     private array $aliasColumnas = [];
     private array $configVisual = [];
     private string $errorSql = '';
+    private int $cacheTtl = 300;
+    private int $idEstadistica = 0;
 
     private static array $coloresDefecto = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#2563eb', '#7c3aed', '#0891b2', '#be123c'];
     private static array $tiposValidos = ['tarjetas', 'barras', 'pastel', 'kpi'];
+    private static string $cacheDir = '';
+
+    private static function dirCache(): string
+    {
+        if (self::$cacheDir === '') {
+            self::$cacheDir = defined('DIRECTORIO_RAIZ')
+                ? DIRECTORIO_RAIZ . '/storage/cache/estadisticas'
+                : sys_get_temp_dir() . '/lf_estadisticas_cache';
+        }
+        return self::$cacheDir;
+    }
 
     public function __construct(string $consultaSql = '')
     {
@@ -104,6 +117,17 @@ class GeneradorEstadisticas
             if (!empty($this->resultados)) {
                 $this->columnas = array_keys($this->resultados[0]);
             }
+
+            if ($this->idEstadistica > 0) {
+                try {
+                    $modelo = Estadistica::buscar($this->idEstadistica);
+                    if ($modelo) {
+                        $modelo->ultima_ejecucion = date('Y-m-d H:i:s');
+                        $modelo->guardar();
+                    }
+                } catch (Exception $e) {
+                }
+            }
         } catch (PDOException $e) {
             $this->errorSql = $e->getMessage();
             RegistroAuditoria::error('GeneradorEstadisticas', 'Error al ejecutar consulta', [
@@ -114,16 +138,34 @@ class GeneradorEstadisticas
         return $this;
     }
 
-    public function desdePlantilla(int $id): self
+    public function desdePlantilla(int $id, bool $usarCache = true): self
     {
+        $this->idEstadistica = $id;
+
+        if ($usarCache) {
+            $cache = $this->obtenerCache($id);
+            if ($cache !== null) {
+                $this->titulo = $cache['titulo'];
+                $this->descripcion = $cache['descripcion'] ?? '';
+                $this->tipoVisualizacion = $cache['tipo'];
+                $this->aliasColumnas = $cache['alias'] ?? [];
+                $this->configVisual = $cache['config'] ?? [];
+                $this->resultados = $cache['resultados'];
+                $this->columnas = $cache['columnas'];
+                $this->errorSql = $cache['error'] ?? '';
+                return $this;
+            }
+        }
+
         try {
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-            $stmt = $conexion->prepare("SELECT titulo, descripcion, consulta_sql, tipo_visualizacion, columnas_mostrar, configuracion_visual FROM estadistica WHERE id_estadistica = :id LIMIT 1");
+            $stmt = $conexion->prepare("SELECT titulo, descripcion, consulta_sql, tipo_visualizacion, columnas_mostrar, configuracion_visual, cache_ttl FROM estadistica WHERE id_estadistica = :id LIMIT 1");
             \assert($stmt !== false);
             $stmt->execute([':id' => $id]);
             $plantilla = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($plantilla) {
+                $this->cacheTtl = (int)($plantilla['cache_ttl'] ?? 300);
                 $this->establecerTitulo($plantilla['titulo']);
                 $this->establecerDescripcion($plantilla['descripcion'] ?? '');
                 $this->establecerConsulta($plantilla['consulta_sql']);
@@ -144,6 +186,7 @@ class GeneradorEstadisticas
                 }
 
                 $this->ejecutar();
+                $this->guardarCache($id);
             }
         } catch (PDOException $e) {
             $this->errorSql = $e->getMessage();
@@ -169,6 +212,112 @@ class GeneradorEstadisticas
     public function obtenerError(): string
     {
         return $this->errorSql;
+    }
+
+    public function obtenerTitulo(): string
+    {
+        return $this->titulo;
+    }
+
+    public function obtenerTipoVisualizacion(): string
+    {
+        return $this->tipoVisualizacion;
+    }
+
+    public function obtenerAliasColumnas(): array
+    {
+        return $this->aliasColumnas;
+    }
+
+    public function obtenerColores(): array
+    {
+        return $this->configVisual['colores'] ?? self::$coloresDefecto;
+    }
+
+    public function obtenerDatosGrafico(): array
+    {
+        $colEtiqueta = $this->columnas[0] ?? '';
+        $colValor = $this->columnas[1] ?? '';
+
+        $datos = [];
+        foreach ($this->resultados as $fila) {
+            $datos[] = [
+                'etiqueta' => $fila[$colEtiqueta] ?? '',
+                'valor' => (float)($fila[$colValor] ?? 0),
+            ];
+        }
+
+        return [
+            'tipo' => $this->tipoVisualizacion,
+            'titulo' => $this->titulo,
+            'colores' => $this->obtenerColores(),
+            'datos' => $datos,
+            'columnas' => $this->columnas,
+            'alias' => $this->aliasColumnas,
+        ];
+    }
+
+    public function limpiarCacheForzado(): void
+    {
+        if ($this->idEstadistica > 0) {
+            $this->limpiarCache($this->idEstadistica);
+        }
+    }
+
+    public function obtenerCache(int $id): ?array
+    {
+        $archivo = self::dirCache() . '/' . $id . '.json';
+        if (!file_exists($archivo)) return null;
+
+        $data = @json_decode(@file_get_contents($archivo), true);
+        if (!$data || !isset($data['expira'])) return null;
+
+        if (time() > $data['expira']) {
+            @unlink($archivo);
+            return null;
+        }
+
+        return $data;
+    }
+
+    public function guardarCache(int $id): void
+    {
+        $dir = self::dirCache();
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+
+        $data = [
+            'titulo' => $this->titulo,
+            'descripcion' => $this->descripcion,
+            'tipo' => $this->tipoVisualizacion,
+            'alias' => $this->aliasColumnas,
+            'config' => $this->configVisual,
+            'resultados' => $this->resultados,
+            'columnas' => $this->columnas,
+            'error' => $this->errorSql,
+            'expira' => time() + $this->cacheTtl,
+        ];
+
+        @file_put_contents($dir . '/' . $id . '.json', json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
+    public function limpiarCache(int $id): void
+    {
+        $archivo = self::dirCache() . '/' . $id . '.json';
+        if (file_exists($archivo)) {
+            @unlink($archivo);
+        }
+    }
+
+    public static function limpiarCacheTodo(): void
+    {
+        $dir = self::dirCache();
+        if (is_dir($dir)) {
+            foreach (glob($dir . '/*.json') as $f) {
+                @unlink($f);
+            }
+        }
     }
 
     private function colores(): array
@@ -204,6 +353,30 @@ class GeneradorEstadisticas
         }
     }
 
+    public function generarContenidoDashboard(): string
+    {
+        if ($this->errorSql !== '') {
+            return '<div class="alerta alerta-peligro"><p><strong>Error:</strong> ' . h($this->errorSql) . '</p></div>';
+        }
+
+        if (empty($this->resultados)) {
+            return '<p class="texto-xs texto-suave alineacion-centrada">Sin datos</p>';
+        }
+
+        $colores = $this->colores();
+
+        switch ($this->tipoVisualizacion) {
+            case 'barras':
+                return $this->generarBarras($colores);
+            case 'pastel':
+                return $this->generarPastel($colores);
+            case 'kpi':
+                return '<div class="kpi-grid">' . $this->generarKpi($colores) . '</div>';
+            default:
+                return $this->generarTarjetas();
+        }
+    }
+
     private function generarTarjetas(): string
     {
         $html = '<div class="resultado-grid">';
@@ -229,6 +402,7 @@ class GeneradorEstadisticas
         $colValor = $this->columnas[1] ?? '';
         $valores = array_column($this->resultados, $colValor);
         $maxValor = !empty($valores) ? max($valores) : 1;
+        $total = array_sum($valores);
 
         $html = '<article>';
         foreach ($this->resultados as $indice => $fila) {
@@ -237,12 +411,13 @@ class GeneradorEstadisticas
             $porcentaje = $maxValor > 0 ? ($valor / $maxValor) * 100 : 0;
             $color = $colores[$indice % count($colores)];
             $formateado = $valor == (int)$valor ? number_format($valor, 0) : number_format($valor, 2);
+            $pctTotal = $total > 0 ? round(($valor / $total) * 100, 1) : 0;
 
             $html .= '<div class="barra-estadistica">';
             $html .= '<span class="barra-etiqueta">' . h($etiqueta) . '</span>';
             $html .= '<div class="barra-contenedor">';
             $html .= '<div class="barra-relleno" style="width:' . $porcentaje . '%;background:' . $color . '"></div>';
-            $html .= '<span class="barra-valor">' . $formateado . '</span>';
+            $html .= '<span class="barra-valor">' . $formateado . ' (' . $pctTotal . '%)</span>';
             $html .= '</div></div>';
         }
         $html .= '</article>';
@@ -291,7 +466,7 @@ class GeneradorEstadisticas
         $colEtiqueta = $this->columnas[0] ?? '';
         $colValor = $this->columnas[1] ?? '';
 
-        $html = '<div class="kpi-grid">';
+        $html = '';
         foreach ($this->resultados as $indice => $fila) {
             $etiqueta = $fila[$colEtiqueta] ?? '';
             $valor = $fila[$colValor] ?? '';
@@ -301,7 +476,6 @@ class GeneradorEstadisticas
             $html .= '<p class="texto-pequeno texto-suave texto-mayuscula">' . h($etiqueta) . '</p>';
             $html .= '</article>';
         }
-        $html .= '</div>';
         return $html;
     }
 

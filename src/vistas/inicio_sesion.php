@@ -7,21 +7,50 @@ $espaciadoClase = claseEspaciadoHTML();
 $tamanoClase = claseTamanoHTML();
 $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' . $fuenteClase . ' ' . $espaciadoClase . ' ' . $tamanoClase);
 $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
+
+// Estadisticas dinámicas del framework — calculadas desde el filesystem, no hardcodeadas
+$totalPruebas = 0;
+$totalAseveraciones = 0;
+$dirTests = DIRECTORIO_RAIZ . '/tests';
+if (is_dir($dirTests)) {
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirTests));
+    foreach ($iterator as $archivo) {
+        if ($archivo->getExtension() === 'php' && str_contains($archivo->getFilename(), 'Test')) {
+            $contenido = file_get_contents($archivo->getPathname());
+            $totalPruebas += preg_match_all('/function\s+test[A-Za-z0-9_]/', $contenido);
+            $totalAseveraciones += preg_match_all('/\$this->assert/', $contenido);
+        }
+    }
+}
+
+$totalSkills = 0;
+foreach ([DIRECTORIO_RAIZ . '/.agents/skills', DIRECTORIO_RAIZ . '/.opencode/skills'] as $dir) {
+    if (is_dir($dir)) {
+        $totalSkills += count(glob($dir . '/*', GLOB_ONLYDIR));
+    }
+}
+
+$mcpRuta = getenv('USERPROFILE') . '/.config/opencode/opencode.json';
+$totalMCPs = 0;
+if (is_file($mcpRuta)) {
+    $mcpConfig = json_decode(file_get_contents($mcpRuta), true);
+    $totalMCPs = isset($mcpConfig['mcp']) ? count($mcpConfig['mcp']) : 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es-CR" class="<?= $clasesHtml ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>liteFramework &mdash; Donde humanos e IA crean juntos</title>
+    <title>liteFramework &mdash; El framework que usa la IA, no el humano</title>
     <link rel="icon" type="image/png" href="<?= URL_BASE ?>/src/img/favicon.png">
-    <meta name="description" content="Framework PHP zero-dependency diseñado para desarrollo colaborativo con IA. OpenCode + OpenClaw nativos. 458 tests, PHPStan level 7.">
+    <meta name="description" content="Framework PHP zero-dependency diseñado para que la IA lo use, no el humano. OpenCode + OpenClaw nativos. <?= $totalPruebas ?> tests, PHPStan level 7. Cero alucinaciones.">
     <meta name="author" content="Ampere Tech Costa Rica S.A.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="<?= URL_BASE ?>/">
 
-    <meta property="og:title" content="liteFramework — AI-First PHP Framework">
-    <meta property="og:description" content="Zero dependencias. Código 100% legible por IA. OpenCode + OpenClaw nativos. MVC, ORM, RBAC, SSE, Sentry.">
+    <meta property="og:title" content="liteFramework — El framework que usa la IA">
+    <meta property="og:description" content="Zero dependencias. Hecho para que la IA escriba el código, no el humano. OpenCode + OpenClaw. Cero alucinaciones.">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_CR">
 
@@ -44,7 +73,7 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
         "@type": "WebSite",
         "name": "liteFramework",
         "url": "<?= URL_BASE ?>/",
-        "description": "Framework PHP zero-dependency para desarrollo colaborativo con IA. OpenCode + OpenClaw nativos.",
+        "description": "Framework PHP zero-dependency para que la IA lo use. El humano instruye, la IA escribe, cero alucinaciones.",
         "inLanguage": "es-CR",
         "publisher": {
             "@type": "Organization",
@@ -166,14 +195,14 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
                 <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
                     <span class="badge-ia">🤖 AI-First</span>
                     <span class="badge-ia">🧹 Zero Deps</span>
-                    <span class="badge-ia">🧪 458 tests</span>
+                    <span class="badge-ia">🧪 <?= $totalPruebas ?> tests</span>
                 </div>
                 <h1 style="font-size:clamp(2.5rem,6vw,4rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:16px;">
-                    Donde humanos<br>
-                    <span style="color:var(--color-marca);background:linear-gradient(135deg,var(--color-marca),var(--color-marca-hover));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">e IA crean juntos</span>
+                    La IA escribe el código.<br>
+                    <span style="color:var(--color-marca);background:linear-gradient(135deg,var(--color-marca),var(--color-marca-hover));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Tú solo das instrucciones.</span>
                 </h1>
                 <p style="font-size:clamp(var(--tamano-lg),1.5vw,var(--tamano-xl));line-height:1.7;color:var(--texto-suave);margin-bottom:40px;max-width:600px;margin-left:auto;margin-right:auto;">
-                    Framework PHP <strong>zero-dependency</strong> diseñado para desarrollo colaborativo con Inteligencia Artificial. OpenCode + OpenClaw nativos, 8 skills de arquitectura, 6 MCP servers. Sin vendor oculto, sin magia.
+                    El único framework PHP <strong>hecho para que la IA lo use</strong>, no para que el humano toque código. OpenCode + OpenClaw nativos, <?= $totalSkills ?> skills, <?= $totalMCPs ?> MCP servers. Cero alucinaciones. Cero código desperdiciado.
                 </p>
                 <a href="#acceso" class="btn ancho-max-320 margen-horizontal-auto" style="text-decoration:none;display:block;text-align:center;padding:16px 32px;font-size:1.1rem;font-weight:600;">
                     Comenzar ahora →
@@ -183,19 +212,19 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
             <!-- Stats -->
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--espacio-normal);max-width:800px;margin:60px auto 0;padding:0 24px;">
                 <div class="hero-stat">
-                    <div class="hero-stat-valor">458</div>
+                    <div class="hero-stat-valor"><?= $totalPruebas ?></div>
                     <div class="hero-stat-etiqueta">🧪 Tests PHPUnit</div>
-                    <div style="font-size:var(--tamano-xs);color:var(--color-exito);margin-top:4px;">1084 aserciones</div>
+                    <div style="font-size:var(--tamano-xs);color:var(--color-exito);margin-top:4px;"><?= $totalAseveraciones ?> aserciones</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-stat-valor">8</div>
+                    <div class="hero-stat-valor"><?= $totalSkills ?></div>
                     <div class="hero-stat-etiqueta">🤖 Skills IA</div>
-                    <div style="font-size:var(--tamano-xs);color:var(--texto-suave);margin-top:4px;">Arquitectura + testing</div>
+                    <div style="font-size:var(--tamano-xs);color:var(--texto-suave);margin-top:4px;">OpenClaw + OpenCode</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-stat-valor">6</div>
+                    <div class="hero-stat-valor"><?= $totalMCPs ?></div>
                     <div class="hero-stat-etiqueta">🔗 MCP Servers</div>
-                    <div style="font-size:var(--tamano-xs);color:var(--texto-suave);margin-top:4px;">git · time · fetch · sentry</div>
+                    <div style="font-size:var(--tamano-xs);color:var(--texto-suave);margin-top:4px;">compartidos OpenCode/Claw</div>
                 </div>
                 <div class="hero-stat">
                     <div class="hero-stat-valor">0</div>
@@ -208,24 +237,24 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
         <!-- Features -->
         <section id="features" style="padding:80px 24px;background:var(--fondo-alterno);">
             <div class="ancho-max-720 margen-horizontal-auto alineacion-centrada" style="margin-bottom:48px;">
-                <h2 style="font-size:clamp(var(--tamano-2xl),3vw,var(--tamano-3xl));font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;">Construido para la era IA</h2>
-                <p style="color:var(--texto-suave);font-size:var(--tamano-lg);">No es un framework con IA agregada. Es un framework donde la IA es ciudadana de primera clase.</p>
+                <h2 style="font-size:clamp(var(--tamano-2xl),3vw,var(--tamano-3xl));font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;">Hecho para que la IA lo use</h2>
+                <p style="color:var(--texto-suave);font-size:var(--tamano-lg);">No es un framework al que le agregamos IA. Es un framework donde la IA es la única que escribe código. El humano solo da instrucciones y supervisa.</p>
             </div>
             <div class="rejilla-automatica" style="max-width:1100px;margin:0 auto;">
                 <article class="tarjeta" style="border-top:3px solid var(--color-marca);">
                     <p style="font-size:2rem;margin-bottom:8px;">🤖</p>
-                    <h3 class="texto-color-marca texto-negrita" style="margin-bottom:8px;">AI Synergy</h3>
-                    <p class="texto-pequeno texto-suave" style="line-height:1.7;">8 skills para OpenClaw, 6 MCP servers (git, time, fetch, sentry, context7, gh_grep), AGENTS.md por capa, código 100% en español con type hints explícitos en cada método.</p>
+                    <h3 class="texto-color-marca texto-negrita" style="margin-bottom:8px;">La IA escribe, no tú</h3>
+                    <p class="texto-pequeno texto-suave" style="line-height:1.7;">Tú das la instrucción en lenguaje natural. La IA escribe el modelo, la ruta, el controlador, la vista y el JS. <?= $totalSkills ?> skills, <?= $totalMCPs ?> MCP servers, AGENTS.md por capa. Cero alucinaciones porque la IA conoce todo el código.</p>
                 </article>
                 <article class="tarjeta" style="border-top:3px solid var(--color-exito);">
                     <p style="font-size:2rem;margin-bottom:8px;">🔍</p>
                     <h3 class="texto-color-marca texto-negrita" style="margin-bottom:8px;">Zero Dependencies</h3>
-                    <p class="texto-pequeno texto-suave" style="line-height:1.7;">Sin Composer, sin npm, sin vendor/. Cada línea del framework fue escrita para que una IA pueda leerla, entenderla y modificarla. Sin cajas negras.</p>
+                    <p class="texto-pequeno texto-suave" style="line-height:1.7;">Sin Composer, sin npm, sin vendor/. La IA lee cada línea del framework. No hay cajas negras donde la IA pueda inventar APIs que no existen. Cero alucinaciones.</p>
                 </article>
                 <article class="tarjeta" style="border-top:3px solid var(--color-info);">
                     <p style="font-size:2rem;margin-bottom:8px;">🧪</p>
                     <h3 class="texto-color-marca texto-negrita" style="margin-bottom:8px;">Quality Gates</h3>
-                    <p class="texto-pequeno texto-suave" style="line-height:1.7;">458 tests / 1084 aserciones, PHPStan level 7, PHPCS 0 errores (PSR-12), CI en PHP 8.2, 8.3 y 8.4. La IA verifica que no rompe nada.</p>
+                    <p class="texto-pequeno texto-suave" style="line-height:1.7;"><?= $totalPruebas ?> tests / <?= $totalAseveraciones ?> aserciones, PHPStan level 7, PHPCS 0 errores. La IA escribe, la IA verifica, la IA corrige. El humano solo supervisa que todo funcione.</p>
                 </article>
                 <article class="tarjeta">
                     <h3 class="texto-color-marca texto-negrita" style="margin-bottom:8px;">Enrutador MVC</h3>
@@ -253,26 +282,26 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
         <!-- AI-First Architecture -->
         <section id="ai-first" style="padding:80px 24px;">
             <div class="ancho-max-720 margen-horizontal-auto alineacion-centrada" style="margin-bottom:48px;">
-                <h2 style="font-size:clamp(var(--tamano-2xl),3vw,var(--tamano-3xl));font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;">Arquitectura AI-First</h2>
-                <p style="color:var(--texto-suave);font-size:var(--tamano-lg);">El código se explica a sí mismo. Cada capa del framework tiene documentación diseñada para que una IA la consuma.</p>
+                <h2 style="font-size:clamp(var(--tamano-2xl),3vw,var(--tamano-3xl));font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;">Humano instruye → IA escribe → Framework ejecuta</h2>
+                <p style="color:var(--texto-suave);font-size:var(--tamano-lg);">La IA conoce el framework al 100%. No hay vendor oculto, no hay dependencias mágicas. Cada línea es visible y comprensible. Por eso no alucina.</p>
             </div>
 
             <div style="max-width:1100px;margin:0 auto;">
                 <div class="rejilla-automatica" style="margin-bottom:48px;">
                     <div class="paso-ia">
                         <div class="paso-ia-numero">1</div>
-                        <h3 style="font-weight:700;font-size:var(--tamano-lg);">OpenCode escribe</h3>
-                        <p class="texto-pequeno texto-suave" style="line-height:1.7;">Modelos, rutas, controladores, vistas, JS, CSS. Skills de patrones prácticos en <code>.opencode/skills/</code>.</p>
+                        <h3 style="font-weight:700;font-size:var(--tamano-lg);">Tú das la instrucción</h3>
+                        <p class="texto-pequeno texto-suave" style="line-height:1.7;">"Crea un módulo Producto con nombre, precio y stock." La IA entiende la arquitectura completa gracias a AGENTS.md y skills.</p>
                     </div>
                     <div class="paso-ia">
                         <div class="paso-ia-numero">2</div>
-                        <h3 style="font-weight:700;font-size:var(--tamano-lg);">OpenClaw verifica</h3>
-                        <p class="texto-pequeno texto-suave" style="line-height:1.7;">Tests PHPUnit, PHPStan, browser testing, accesibilidad, rendimiento. 8 skills especializadas en <code>.agents/skills/</code>.</p>
+                        <h3 style="font-weight:700;font-size:var(--tamano-lg);">La IA escribe el código</h3>
+                        <p class="texto-pequeno texto-suave" style="line-height:1.7;">Modelo, ruta, controlador, vista, JS, CSS. Sin alucinaciones porque conoce cada línea del framework. Skills en <code>.opencode/skills/</code>.</p>
                     </div>
                     <div class="paso-ia">
                         <div class="paso-ia-numero">3</div>
-                        <h3 style="font-weight:700;font-size:var(--tamano-lg);">MCP potencia</h3>
-                        <p class="texto-pequeno texto-suave" style="line-height:1.7;">6 servidores MCP compartidos entre OpenCode y OpenClaw: git, time, fetch, sentry, context7, gh_grep.</p>
+                        <h3 style="font-weight:700;font-size:var(--tamano-lg);">La IA verifica sola</h3>
+                        <p class="texto-pequeno texto-suave" style="line-height:1.7;"><?= $totalPruebas ?> tests PHPUnit, PHPStan level 7, PHPCS PSR-12. <?= $totalMCPs ?> MCP servers. <code>opencode run validate</code>. La IA no entrega código que no pase.</p>
                     </div>
                 </div>
 
@@ -281,7 +310,7 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
                     <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
                         <span class="pill-stack">PHPStan level 7</span>
                         <span class="pill-stack">PHPCS PSR-12</span>
-                        <span class="pill-stack">PHPUnit 458 tests</span>
+                        <span class="pill-stack">PHPUnit <?= $totalPruebas ?> tests</span>
                     </div>
                     <code style="display:inline-block;padding:12px 24px;background:var(--fondo-elemento);border:1px solid var(--trazo-suave);border-radius:var(--radio-redondeado);font-size:var(--tamano-sm);">
                         opencode run validate
@@ -378,9 +407,9 @@ $modulos = count(glob(__DIR__ . '/../modulos/*', GLOB_ONLYDIR));
 
     <footer style="text-align:center;padding:40px 24px;border-top:1px solid var(--trazo-suave);">
         <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
-            <span class="pill-stack">Hecho por humanos</span>
-            <span class="pill-stack">Potenciado por IA</span>
-            <span class="pill-stack">Construido desde cero</span>
+                    <span class="pill-stack">Humano instruye</span>
+                    <span class="pill-stack">IA escribe</span>
+                    <span class="pill-stack">Cero alucinaciones</span>
         </div>
         <p class="texto-pequeno texto-suave">
             &copy; <?= date('Y') ?> Ampere Tech Costa Rica S.A. &bull; liteFramework v1.4.0

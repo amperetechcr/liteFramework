@@ -110,6 +110,12 @@ class GestorEntorno
         if (!defined('SENTRY_DSN')) {
             define('SENTRY_DSN', '');
         }
+        if (!defined('AI_CREW_TOKEN_HASH')) {
+            define('AI_CREW_TOKEN_HASH', '');
+        }
+        if (!defined('AI_AGENT_ROLE')) {
+            define('AI_AGENT_ROLE', 'worker');
+        }
     }
 
     public static function obtener(string $clave, mixed $defecto = null): mixed

@@ -14,7 +14,15 @@
     "crud",
     "controlador api",
     "liteframework",
-    "lite-framework"
+    "lite-framework",
+    "probar ui",
+    "test ui",
+    "ejecutar openclaw",
+    "openclaw",
+    "browser test",
+    "prueba visual",
+    "verificar modulo",
+    "test api"
   ],
   "author": "liteFramework Team",
   "scope": ["php", "html", "sql", "javascript", "css"],

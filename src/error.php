@@ -1,5 +1,9 @@
 <?php
 
+if (!function_exists('h')) {
+    function h(string $texto): string { return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8'); }
+}
+
 $codigosValidos = [400, 401, 403, 404, 500, 503];
 
 if (isset($excepcion)) {
@@ -101,6 +105,24 @@ $urlBase = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
     <div class="error-trace">ID de seguimiento: <?= htmlspecialchars($traceId) ?></div>
     <?php endif; ?>
 
+    <?php if (!empty($reparacionesAplicadas)) : ?>
+    <div class="error-reparacion-automatica">
+        <h2>Reparacion automatica aplicada</h2>
+        <ul>
+            <?php foreach ($reparacionesAplicadas as $r) : ?>
+            <li>
+                <span class="reparacion-icono">&#10003;</span>
+                <strong><?= h($r['verificador'] ?? '') ?>:</strong>
+                <?= h($r['mensaje'] ?? 'Reparado automaticamente.') ?>
+                <?php if (!empty($r['reintentar'])) : ?>
+                <span class="reparacion-reintento">(Reintentando...)</span>
+                <?php endif; ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php endif; ?>
+
     <?php if (!empty($diagnosticoHtml['sugerencias'])) : ?>
     <div class="error-diagnostico">
         <h2>Acciones sugeridas</h2>
@@ -110,7 +132,8 @@ $urlBase = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
             <?php endforeach; ?>
         </ul>
         <?php if (!empty($diagnosticoHtml['accion']['tipo']) && $diagnosticoHtml['accion']['tipo'] === 'reparar') : ?>
-        <button type="button" class="boton boton-reparar" onclick="window.location.reload()">Reintentar</button>
+        <button type="button" class="boton boton-reparar" data-accion="reparar-api" data-reparar-tipo="<?= h($diagnosticoHtml['accion']['verificador'] ?? 'base_datos') ?>">Reparar automaticamente</button>
+        <div id="estado-reparacion" class="error-reparacion-estado"></div>
         <?php endif; ?>
     </div>
     <?php endif; ?>

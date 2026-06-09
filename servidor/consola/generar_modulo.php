@@ -1,22 +1,19 @@
 <?php
 
-/**
- * Generador de módulos CRUD — liteFramework
- *
- * Uso:
- *   php servidor/consola/generar_modulo.php Producto \
- *       --campos="nombre:string:required,precio:decimal:required,stock:int,categoria_id:int" \
- *       --tabla=producto
- *
- * Genera: modelo, migración SQL, controlador API, módulo vista, JS, rutas, autoload
- */
-
 declare(strict_types=1);
 
 use LiteFramework\Servicios\GeneradorModulo;
+use LiteFramework\Cli\Consola;
 
 require_once __DIR__ . '/../autoload.php';
+
+$consola = Consola::instance();
+$modoJson = $consola && $consola->estaEnModoJson();
+
 if ($argc < 2) {
+    if ($modoJson) {
+        $consola?->jsonError('Se requiere <NombreClase>', 'ERR_ARG', 400);
+    }
     echo "Uso: php generar_modulo.php <NombreClase> [--campos=\"...\"] [--tabla=...]\n";
     echo "Ejemplo:\n";
     echo "  php generar_modulo.php Producto --campos=\"nombre:string:required,precio:decimal:required\" --tabla=producto\n";
@@ -37,6 +34,23 @@ for ($i = 2; $i < $argc; $i++) {
 
 $campos = GeneradorModulo::parsearCamposDesdeArgs($camposRaw);
 $resultado = GeneradorModulo::generar($claseNombre, $campos, $tabla);
+
+if ($modoJson) {
+    if (!$resultado['exito']) {
+        $consola?->jsonResultado($resultado);
+    }
+    $consola?->jsonOut([
+        'clase' => $claseNombre,
+        'tabla' => $tabla,
+        'archivos' => array_map(fn($a) => [
+            'tipo' => $a['tipo'],
+            'ruta' => $a['ruta'],
+        ], $resultado['archivos']),
+        'pasos_siguientes' => $resultado['pasos_siguientes'],
+    ], 'modulo:generar');
+    exit(0);
+}
+
 if (!$resultado['exito']) {
     echo "\n⚠️  Errores durante la generacion:\n";
     foreach ($resultado['errores'] as $err) {

@@ -105,3 +105,37 @@ src/modulos/
 ├── estadisticas/  ├── generadorModulo/  ├── generadorPdf/  ├── inicio/
 ├── migraciones/  ├── operadores/  ├── panelControl/  └── subirArchivos/
 ```
+
+## 10. Puente OpenCode ↔ OpenClaw
+
+### Probar un modulo con OpenClaw
+
+```bash
+openclaw agent --agent main --message "Abre http://localhost/liteFramework/{ruta} y verificame que cargue sin errores"
+```
+
+### Ejecutar tests completos con OpenClaw
+
+```bash
+openclaw agent --agent main --message "Ejecuta los tests de liteFramework con PHPUnit y dime el resultado"
+```
+
+### Prueba de interfaz de todos los módulos
+
+```bash
+openclaw agent --agent main --message "Prueba estos módulos de liteFramework: 1) /liteFramework/panelControl 2) /liteFramework/operadores 3) /liteFramework/configuracion 4) /liteFramework/apariencia 5) /liteFramework/generador-modulo 6) /liteFramework/generador-proyecto 7) /liteFramework/migraciones. Reporta si hay errores."
+```
+
+### Prueba de rendimiento
+
+```bash
+openclaw agent --agent main --message "Mide tiempos de carga de /liteFramework/ingreso, /liteFramework/panelControl, /liteFramework/operadores usando el navegador"
+```
+
+### Flujo típico
+
+1. **Desarrollo**: `opencode run "Agregar campo teléfono al formulario de operadores"`
+2. **Verificación**: `opencode run "Ejecuta los tests unitarios"`
+3. **Pruebas E2E**: Ejecutar comando OpenClaw desde acá
+4. **Verificación visual**: Probar módulo con el navegador
+```

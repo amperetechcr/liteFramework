@@ -1,258 +1,146 @@
-/* =========================================
-   PALETAS DE COLOR (13) â€” Teoria del color
-   Cada paleta define: marca, hover, claro, enfoque,
-   exito, advertencia, peligro.
-   Con variantes para tema claro y oscuro.
+﻿/* =========================================
+   PALETAS DE COLOR  13 paletas vibrantes y modernas
    ========================================= */
 
-/* Azul Oceano */
+/* INDIGO  Profundo, creativo, confiable (default) */
+:root.paleta-indigo, .paleta-indigo {
+    --color-marca: #6366f1; --color-marca-hover: #818cf8;
+    --color-marca-claro: #eef2ff; --trazo-enfoque: #a5b4fc;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
+}
+:root.paleta-indigo.forzar-iluminacion-clara, .paleta-indigo.forzar-iluminacion-clara {
+    --color-marca: #4f46e5; --color-marca-hover: #6366f1;
+    --color-marca-claro: #eef2ff; --trazo-enfoque: #a5b4fc;
+}
+
+/* AZUL OCEANO  Fresco, sereno, profesional */
 :root.paleta-azul, .paleta-azul {
-    --color-marca: #2563eb; --color-marca-hover: #1d4ed8;
-    --color-marca-claro: #eff6ff; --trazo-enfoque: #93c5fd;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-azul, .paleta-azul {
-        --color-marca: #3b82f6; --color-marca-hover: #60a5fa;
-        --color-marca-claro: #172554; --trazo-enfoque: #2563eb;
-    }
-}
-:root.paleta-azul.forzar-iluminacion-oscura, .paleta-azul.forzar-iluminacion-oscura {
-    --color-marca: #3b82f6; --color-marca-hover: #60a5fa;
-    --color-marca-claro: #172554; --trazo-enfoque: #2563eb;
+    --color-marca: #3898ec; --color-marca-hover: #5ab0f5;
+    --color-marca-claro: #e8f4fd; --trazo-enfoque: #93c5fd;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-azul.forzar-iluminacion-clara, .paleta-azul.forzar-iluminacion-clara {
-    --color-marca: #2563eb; --color-marca-hover: #1d4ed8;
+    --color-marca: #2563eb; --color-marca-hover: #3898ec;
     --color-marca-claro: #eff6ff; --trazo-enfoque: #93c5fd;
 }
 
-/* Verde Bosque */
+/* ESMERALDA  Fresco, crecimiento, equilibrio */
 :root.paleta-esmeralda, .paleta-esmeralda {
-    --color-marca: #059669; --color-marca-hover: #047857;
+    --color-marca: #34d399; --color-marca-hover: #6ee7b7;
     --color-marca-claro: #ecfdf5; --trazo-enfoque: #6ee7b7;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-esmeralda, .paleta-esmeralda {
-        --color-marca: #10b981; --color-marca-hover: #34d399;
-        --color-marca-claro: #064e3b; --trazo-enfoque: #059669;
-    }
-}
-:root.paleta-esmeralda.forzar-iluminacion-oscura, .paleta-esmeralda.forzar-iluminacion-oscura {
-    --color-marca: #10b981; --color-marca-hover: #34d399;
-    --color-marca-claro: #064e3b; --trazo-enfoque: #059669;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-esmeralda.forzar-iluminacion-clara, .paleta-esmeralda.forzar-iluminacion-clara {
-    --color-marca: #059669; --color-marca-hover: #047857;
+    --color-marca: #059669; --color-marca-hover: #34d399;
     --color-marca-claro: #ecfdf5; --trazo-enfoque: #6ee7b7;
 }
 
-/* Rosa Etereo */
+/* ROSA  Calido, creativo, audaz */
 :root.paleta-rosa, .paleta-rosa {
-    --color-marca: #db2777; --color-marca-hover: #be185d;
-    --color-marca-claro: #fdf2f8; --trazo-enfoque: #f9a8d4;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-rosa, .paleta-rosa {
-        --color-marca: #f472b6; --color-marca-hover: #f9a8d4;
-        --color-marca-claro: #500724; --trazo-enfoque: #db2777;
-    }
-}
-:root.paleta-rosa.forzar-iluminacion-oscura, .paleta-rosa.forzar-iluminacion-oscura {
     --color-marca: #f472b6; --color-marca-hover: #f9a8d4;
-    --color-marca-claro: #500724; --trazo-enfoque: #db2777;
+    --color-marca-claro: #fdf2f8; --trazo-enfoque: #f9a8d4;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-rosa.forzar-iluminacion-clara, .paleta-rosa.forzar-iluminacion-clara {
-    --color-marca: #db2777; --color-marca-hover: #be185d;
+    --color-marca: #ec4899; --color-marca-hover: #f472b6;
     --color-marca-claro: #fdf2f8; --trazo-enfoque: #f9a8d4;
 }
 
-/* Ambar Dorado */
+/* AMBAR  Dorado, energetico, optimista */
 :root.paleta-ambar, .paleta-ambar {
-    --color-marca: #d97706; --color-marca-hover: #b45309;
+    --color-marca: #fbbf24; --color-marca-hover: #fcd34d;
     --color-marca-claro: #fffbeb; --trazo-enfoque: #fcd34d;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-ambar, .paleta-ambar {
-        --color-marca: #f59e0b; --color-marca-hover: #fbbf24;
-        --color-marca-claro: #78350f; --trazo-enfoque: #d97706;
-    }
-}
-:root.paleta-ambar.forzar-iluminacion-oscura, .paleta-ambar.forzar-iluminacion-oscura {
-    --color-marca: #f59e0b; --color-marca-hover: #fbbf24;
-    --color-marca-claro: #78350f; --trazo-enfoque: #d97706;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-ambar.forzar-iluminacion-clara, .paleta-ambar.forzar-iluminacion-clara {
-    --color-marca: #d97706; --color-marca-hover: #b45309;
+    --color-marca: #f59e0b; --color-marca-hover: #fbbf24;
     --color-marca-claro: #fffbeb; --trazo-enfoque: #fcd34d;
 }
 
-/* Violeta Real */
+/* VIOLETA  Real, misterioso, premium */
 :root.paleta-violeta, .paleta-violeta {
-    --color-marca: #7c3aed; --color-marca-hover: #6d28d9;
+    --color-marca: #a78bfa; --color-marca-hover: #c4b5fd;
     --color-marca-claro: #f5f3ff; --trazo-enfoque: #c4b5fd;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-violeta, .paleta-violeta {
-        --color-marca: #8b5cf6; --color-marca-hover: #a78bfa;
-        --color-marca-claro: #3b0764; --trazo-enfoque: #7c3aed;
-    }
-}
-:root.paleta-violeta.forzar-iluminacion-oscura, .paleta-violeta.forzar-iluminacion-oscura {
-    --color-marca: #8b5cf6; --color-marca-hover: #a78bfa;
-    --color-marca-claro: #3b0764; --trazo-enfoque: #7c3aed;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-violeta.forzar-iluminacion-clara, .paleta-violeta.forzar-iluminacion-clara {
-    --color-marca: #7c3aed; --color-marca-hover: #6d28d9;
+    --color-marca: #7c3aed; --color-marca-hover: #a78bfa;
     --color-marca-claro: #f5f3ff; --trazo-enfoque: #c4b5fd;
 }
 
-/* Pizarra Formal */
+/* PIZARRA  Formal, corporativo, sobrio */
 :root.paleta-pizarra, .paleta-pizarra {
-    --color-marca: #475569; --color-marca-hover: #334155;
+    --color-marca: #94a3b8; --color-marca-hover: #b4c3d8;
     --color-marca-claro: #f1f5f9; --trazo-enfoque: #94a3b8;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-pizarra, .paleta-pizarra {
-        --color-marca: #64748b; --color-marca-hover: #94a3b8;
-        --color-marca-claro: #1e293b; --trazo-enfoque: #475569;
-    }
-}
-:root.paleta-pizarra.forzar-iluminacion-oscura, .paleta-pizarra.forzar-iluminacion-oscura {
-    --color-marca: #64748b; --color-marca-hover: #94a3b8;
-    --color-marca-claro: #1e293b; --trazo-enfoque: #475569;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-pizarra.forzar-iluminacion-clara, .paleta-pizarra.forzar-iluminacion-clara {
-    --color-marca: #475569; --color-marca-hover: #334155;
+    --color-marca: #64748b; --color-marca-hover: #94a3b8;
     --color-marca-claro: #f1f5f9; --trazo-enfoque: #94a3b8;
 }
 
-/* Carmin Intenso */
+/* CEREZA  Intenso, pasion, urgencia */
 :root.paleta-cereza, .paleta-cereza {
-    --color-marca: #dc2626; --color-marca-hover: #b91c1c;
+    --color-marca: #f87171; --color-marca-hover: #fca5a5;
     --color-marca-claro: #fef2f2; --trazo-enfoque: #fca5a5;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-cereza, .paleta-cereza {
-        --color-marca: #ef4444; --color-marca-hover: #f87171;
-        --color-marca-claro: #450a0a; --trazo-enfoque: #dc2626;
-    }
-}
-:root.paleta-cereza.forzar-iluminacion-oscura, .paleta-cereza.forzar-iluminacion-oscura {
-    --color-marca: #ef4444; --color-marca-hover: #f87171;
-    --color-marca-claro: #450a0a; --trazo-enfoque: #dc2626;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-cereza.forzar-iluminacion-clara, .paleta-cereza.forzar-iluminacion-clara {
-    --color-marca: #dc2626; --color-marca-hover: #b91c1c;
+    --color-marca: #ef4444; --color-marca-hover: #f87171;
     --color-marca-claro: #fef2f2; --trazo-enfoque: #fca5a5;
 }
 
-/* Cielo Celeste */
+/* CIELO  Celeste, fresco, aereo */
 :root.paleta-cielo, .paleta-cielo {
-    --color-marca: #0891b2; --color-marca-hover: #0e7490;
-    --color-marca-claro: #ecfeff; --trazo-enfoque: #67e8f9;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-cielo, .paleta-cielo {
-        --color-marca: #22d3ee; --color-marca-hover: #67e8f9;
-        --color-marca-claro: #164e63; --trazo-enfoque: #0891b2;
-    }
-}
-:root.paleta-cielo.forzar-iluminacion-oscura, .paleta-cielo.forzar-iluminacion-oscura {
     --color-marca: #22d3ee; --color-marca-hover: #67e8f9;
-    --color-marca-claro: #164e63; --trazo-enfoque: #0891b2;
+    --color-marca-claro: #ecfeff; --trazo-enfoque: #67e8f9;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-cielo.forzar-iluminacion-clara, .paleta-cielo.forzar-iluminacion-clara {
-    --color-marca: #0891b2; --color-marca-hover: #0e7490;
-    --color-marca-claro: #ecfeff; --trazo-enfoque: #67e8f9;
+    --color-marca: #0ea5e9; --color-marca-hover: #38bdf8;
+    --color-marca-claro: #f0f9ff; --trazo-enfoque: #67e8f9;
 }
 
-/* Menta Fresca */
+/* TEAL  Menta profunda, sofisticado, calmado */
 :root.paleta-teal, .paleta-teal {
-    --color-marca: #0d9488; --color-marca-hover: #0f766e;
+    --color-marca: #2dd4bf; --color-marca-hover: #5eead4;
     --color-marca-claro: #f0fdfa; --trazo-enfoque: #5eead4;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-teal, .paleta-teal {
-        --color-marca: #14b8a6; --color-marca-hover: #2dd4bf;
-        --color-marca-claro: #134e4a; --trazo-enfoque: #0d9488;
-    }
-}
-:root.paleta-teal.forzar-iluminacion-oscura, .paleta-teal.forzar-iluminacion-oscura {
-    --color-marca: #14b8a6; --color-marca-hover: #2dd4bf;
-    --color-marca-claro: #134e4a; --trazo-enfoque: #0d9488;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-teal.forzar-iluminacion-clara, .paleta-teal.forzar-iluminacion-clara {
-    --color-marca: #0d9488; --color-marca-hover: #0f766e;
+    --color-marca: #0d9488; --color-marca-hover: #2dd4bf;
     --color-marca-claro: #f0fdfa; --trazo-enfoque: #5eead4;
 }
 
-/* Lima Citrica */
+/* LIMA  Citrico, fresco, energetico */
 :root.paleta-lima, .paleta-lima {
-    --color-marca: #65a30d; --color-marca-hover: #4d7c0f;
+    --color-marca: #a3e635; --color-marca-hover: #bef264;
     --color-marca-claro: #f7fee7; --trazo-enfoque: #bef264;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-lima, .paleta-lima {
-        --color-marca: #84cc16; --color-marca-hover: #a3e635;
-        --color-marca-claro: #365314; --trazo-enfoque: #65a30d;
-    }
-}
-:root.paleta-lima.forzar-iluminacion-oscura, .paleta-lima.forzar-iluminacion-oscura {
-    --color-marca: #84cc16; --color-marca-hover: #a3e635;
-    --color-marca-claro: #365314; --trazo-enfoque: #65a30d;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-lima.forzar-iluminacion-clara, .paleta-lima.forzar-iluminacion-clara {
-    --color-marca: #65a30d; --color-marca-hover: #4d7c0f;
+    --color-marca: #65a30d; --color-marca-hover: #84cc16;
     --color-marca-claro: #f7fee7; --trazo-enfoque: #bef264;
 }
 
-/* Naranja Fuego */
+/* NARANJA  Fuego, creatividad, calidez */
 :root.paleta-naranja, .paleta-naranja {
-    --color-marca: #ea580c; --color-marca-hover: #c2410c;
+    --color-marca: #fb923c; --color-marca-hover: #fdba74;
     --color-marca-claro: #fff7ed; --trazo-enfoque: #fdba74;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-naranja, .paleta-naranja {
-        --color-marca: #f97316; --color-marca-hover: #fb923c;
-        --color-marca-claro: #431407; --trazo-enfoque: #ea580c;
-    }
-}
-:root.paleta-naranja.forzar-iluminacion-oscura, .paleta-naranja.forzar-iluminacion-oscura {
-    --color-marca: #f97316; --color-marca-hover: #fb923c;
-    --color-marca-claro: #431407; --trazo-enfoque: #ea580c;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-naranja.forzar-iluminacion-clara, .paleta-naranja.forzar-iluminacion-clara {
-    --color-marca: #ea580c; --color-marca-hover: #c2410c;
+    --color-marca: #f97316; --color-marca-hover: #fb923c;
     --color-marca-claro: #fff7ed; --trazo-enfoque: #fdba74;
 }
 
-/* Fucsia Vibrante */
+/* FUCSIA  Vibrante, audaz, moderno */
 :root.paleta-fucsia, .paleta-fucsia {
-    --color-marca: #c026d3; --color-marca-hover: #a21caf;
+    --color-marca: #e879f9; --color-marca-hover: #f0abfc;
     --color-marca-claro: #fdf4ff; --trazo-enfoque: #f0abfc;
-    --color-exito: #059669; --color-advertencia: #d97706; --color-peligro: #dc2626;
-}
-@media (prefers-color-scheme: dark) {
-    :root.paleta-fucsia, .paleta-fucsia {
-        --color-marca: #d946ef; --color-marca-hover: #e879f9;
-        --color-marca-claro: #4a044e; --trazo-enfoque: #c026d3;
-    }
-}
-:root.paleta-fucsia.forzar-iluminacion-oscura, .paleta-fucsia.forzar-iluminacion-oscura {
-    --color-marca: #d946ef; --color-marca-hover: #e879f9;
-    --color-marca-claro: #4a044e; --trazo-enfoque: #c026d3;
+    --color-exito: #10b981; --color-advertencia: #f59e0b; --color-peligro: #ef4444;
 }
 :root.paleta-fucsia.forzar-iluminacion-clara, .paleta-fucsia.forzar-iluminacion-clara {
-    --color-marca: #c026d3; --color-marca-hover: #a21caf;
+    --color-marca: #d946ef; --color-marca-hover: #e879f9;
     --color-marca-claro: #fdf4ff; --trazo-enfoque: #f0abfc;
 }

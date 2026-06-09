@@ -20,6 +20,19 @@
         },
 
         ejecutarAccion: function (accion, respuesta) {
+            if (respuesta.reparaciones && respuesta.reparaciones.length > 0) {
+                var msgs = [];
+                respuesta.reparaciones.forEach(function (r) {
+                    msgs.push(r.mensaje || 'Reparacion automatica aplicada.');
+                });
+                if (window.NotificadorHubble) {
+                    window.NotificadorHubble.mostrar(
+                        '<strong>Reparacion automatica:</strong><br>' + msgs.join('<br>'),
+                        'exito',
+                        6000
+                    );
+                }
+            }
             switch (accion.tipo) {
                 case 'regenerar_token':
                     this.regenerarToken(respuesta);

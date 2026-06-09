@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LiteFramework\Modelos;
 
 use PDO;
+use PDOException;
 use LiteFramework\Config\ConexionBaseDatos;
 use LiteFramework\Nucleo\Modelo;
 
@@ -16,6 +17,10 @@ use LiteFramework\Nucleo\Modelo;
  * @property string $tipo_visualizacion
  * @property string|null $columnas_mostrar
  * @property string|null $configuracion_visual
+ * @property int $cache_ttl
+ * @property int $en_dashboard
+ * @property int $dashboard_orden
+ * @property string|null $ultima_ejecucion
  * @property int $id_operador
  * @property string $fecha_creacion
  * @property string|null $fecha_actualizacion
@@ -24,7 +29,7 @@ class Estadistica extends Modelo
 {
     protected static string $tabla = 'estadistica';
     protected static string $idColumna = 'id_estadistica';
-    protected static array $rellenable = ['titulo', 'descripcion', 'consulta_sql', 'tipo_visualizacion', 'columnas_mostrar', 'configuracion_visual', 'id_operador'];
+    protected static array $rellenable = ['titulo', 'descripcion', 'consulta_sql', 'tipo_visualizacion', 'columnas_mostrar', 'configuracion_visual', 'cache_ttl', 'en_dashboard', 'dashboard_orden', 'id_operador'];
     protected static bool $timestamps = true;
 
     public function operador(): ?Operador
@@ -46,6 +51,12 @@ class Estadistica extends Modelo
         return $arr;
     }
 
+    public function ultimaEjecucionFormateada(): string
+    {
+        if (!$this->ultima_ejecucion) return '—';
+        return date('d/m/Y H:i', (int)strtotime($this->ultima_ejecucion));
+    }
+
     public static function listarConFiltros(
         string $busqueda = '',
         int $pagina = 1,
@@ -53,14 +64,14 @@ class Estadistica extends Modelo
     ): array {
         $where = [];
         if ($busqueda !== '') {
-            $where['titulo LIKE'] = '%' . $busqueda . '%';
+            $where['e.titulo LIKE'] = '%' . $busqueda . '%';
         }
 
         $resultado = self::paginar(
             $pagina,
             $porPagina,
             $where,
-            'e.id_estadistica, e.titulo, e.descripcion, e.consulta_sql, e.tipo_visualizacion, e.columnas_mostrar, e.configuracion_visual, e.id_operador, e.fecha_creacion, e.fecha_actualizacion, o.nombre_completo',
+            'e.id_estadistica, e.titulo, e.descripcion, e.consulta_sql, e.tipo_visualizacion, e.columnas_mostrar, e.configuracion_visual, e.cache_ttl, e.en_dashboard, e.dashboard_orden, e.ultima_ejecucion, e.id_operador, e.fecha_creacion, e.fecha_actualizacion, o.nombre_completo',
             'LEFT JOIN operador o ON e.id_operador = o.id_operador'
         );
 
@@ -75,5 +86,23 @@ class Estadistica extends Modelo
             'pagina' => $resultado['pagina'],
             'total_paginas' => $resultado['total_paginas'],
         ];
+    }
+
+    public static function listarDashboard(): array
+    {
+        try {
+            $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+            $stmt = $conexion->prepare(
+                "SELECT id_estadistica, titulo, descripcion, consulta_sql, tipo_visualizacion, columnas_mostrar, configuracion_visual, cache_ttl, ultima_ejecucion
+                 FROM estadistica
+                 WHERE en_dashboard = 1
+                 ORDER BY dashboard_orden ASC, fecha_creacion DESC"
+            );
+            \assert($stmt !== false);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
     }
 }

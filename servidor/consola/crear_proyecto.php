@@ -1,25 +1,26 @@
 <?php
 
-/**
- * Crea un nuevo proyecto desde el framework.
- *
- * Uso:
- *   php servidor/consola/crear_proyecto.php --desde-json=project.json
- *   php servidor/consola/crear_proyecto.php --nombre="MiApp" ...
- */
-
 declare(strict_types=1);
 
 use LiteFramework\Config\GestorEntorno;
 use LiteFramework\Servicios\GeneradorProyecto;
+use LiteFramework\Cli\Consola;
 
 function imprimirError(string $msg): void
 {
+    $consola = Consola::instance();
+    if ($consola && $consola->estaEnModoJson()) {
+        $consola->jsonError($msg, 'ERR_PROYECTO', 1);
+    }
     fwrite(STDERR, "[ERROR] $msg\n");
 }
 
 function imprimirExito(string $msg): void
 {
+    $consola = Consola::instance();
+    if ($consola && $consola->estaEnModoJson()) {
+        return;
+    }
     echo "[OK] $msg\n";
 }
 
@@ -28,6 +29,9 @@ GestorEntorno::cargar();
 if (!defined('DIRECTORIO_RAIZ')) {
     define('DIRECTORIO_RAIZ', realpath(__DIR__ . '/../..'));
 }
+
+$consola = Consola::instance();
+$modoJson = $consola && $consola->estaEnModoJson();
 
 // Parsear argumentos
 $rawArgs = getopt('', [
@@ -41,7 +45,6 @@ $rawArgs = getopt('', [
 ]);
 $args = is_array($rawArgs) ? $rawArgs : [];
 if (isset($args['desde-json'])) {
-    /** @phpstan-ignore-next-line */
     $rutaJson = (string)$args['desde-json'];
     if (!file_exists($rutaJson)) {
         imprimirError("Archivo no encontrado: $rutaJson");
@@ -54,11 +57,9 @@ if (isset($args['desde-json'])) {
         exit(1);
     }
 } else {
-    /** @phpstan-ignore-next-line */
     $modulosParam = isset($args['modulos']) ? (string)$args['modulos'] : '';
     $modulos = !empty($modulosParam) ? explode(',', $modulosParam) : ['inicio', 'panelControl', 'operadores', 'auditoria', 'configuracion', 'apariencia', 'migraciones'];
     $entidades = [];
-    /** @phpstan-ignore-next-line */
     $entidadesParam = isset($args['entidades']) ? (string)$args['entidades'] : '';
     if (!empty($entidadesParam)) {
         foreach (explode(';', $entidadesParam) as $entStr) {
@@ -96,11 +97,9 @@ if (isset($args['desde-json'])) {
         'empresa' => [
             'nombre' => $args['empresa'] ?? ($args['nombre'] ?? 'Mi Empresa'),
         ],
-        /** @phpstan-ignore-next-line */
         'directorio_salida' => rtrim($args['directorio'] ?? getcwd() . '/' . ($args['codigo'] ?? 'miapp'), '/\\'),
         'base_datos' => [
             'anfitrion' => $args['db-anfitrion'] ?? 'localhost',
-            /** @phpstan-ignore-next-line */
             'nombre' => $args['db-nombre'] ?? ($args['codigo'] ?? 'miapp') . '_db',
             'usuario' => $args['db-usuario'] ?? 'root',
             'clave' => $args['db-clave'] ?? '',
@@ -114,15 +113,33 @@ if (isset($args['desde-json'])) {
         'entidades' => $entidades,
         'operador_inicial' => [
             'nombre' => $args['admin-nombre'] ?? 'Administrador',
-            /** @phpstan-ignore-next-line */
             'correo' => $args['admin-correo'] ?? ('admin@' . ($args['codigo'] ?? 'app') . '.com'),
             'clave' => $args['admin-clave'] ?? 'Admin123!',
         ],
     ];
 }
 
-echo "=== Generando proyecto: {$definicion['proyecto']['nombre']} ===\n\n";
+if (!$modoJson) {
+    echo "=== Generando proyecto: {$definicion['proyecto']['nombre']} ===\n\n";
+}
+
 $resultado = GeneradorProyecto::generar($definicion);
+
+if ($modoJson) {
+    if (!$resultado['exito']) {
+        $consola?->jsonError($resultado['error'] ?? 'Error desconocido', 'ERR_PROYECTO', 1);
+    }
+    $consola?->jsonOut([
+        'proyecto' => $definicion['proyecto']['nombre'],
+        'directorio' => $resultado['directorio'] ?? $definicion['directorio_salida'],
+        'archivos_procesados' => $resultado['resumen']['archivos_procesados'] ?? 0,
+        'entidades_generadas' => $resultado['resumen']['entidades_generadas'] ?? [],
+        'modulos_activados' => $resultado['resumen']['modulos_activados'] ?? [],
+        'pasos_siguientes' => $resultado['resumen']['pasos_siguientes'] ?? [],
+    ], 'proyecto:crear');
+    exit(0);
+}
+
 if (!$resultado['exito']) {
     imprimirError($resultado['error'] ?? 'Error desconocido');
     if (!empty($resultado['errores'])) {

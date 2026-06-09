@@ -91,5 +91,5 @@ while (true) {
         echo "[SSE Daemon] Error: {$e->getMessage()}\n";
     }
 
-    sleep(1);
+    usleep(50000);
 }

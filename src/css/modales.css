@@ -1,8 +1,8 @@
-/* ═══════════════════════════════════════════════════════════════
+﻿/* 
    NOTIFICACIONES FLOTANTES (toasts)
    Clase:     .notificacion-flotante
    Variantes: data-variante="exito|peligro|advertencia|informacion"
-   ═══════════════════════════════════════════════════════════════ */
+    */
 
 .notificacion-flotante {
     pointer-events: auto;
@@ -90,12 +90,12 @@
     display: none;
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* 
    MODALES
    Clases:     .modal-superposicion, .ventana-confirmacion,
                .modal-contenido, .modal-cabecera, .modal-acciones,
                .modal-cerrar
-   ═══════════════════════════════════════════════════════════════ */
+    */
 
 .modal-superposicion {
     position: fixed;

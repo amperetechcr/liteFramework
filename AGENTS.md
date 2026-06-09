@@ -1,5 +1,9 @@
 # liteFramework — Guía de arquitectura y flujo de trabajo
 
+**Filosofía:** Este es uno de los únicos frameworks PHP hechos para que la IA lo use, no para que el humano toque código.
+El humano da instrucciones en lenguaje natural → la IA escribe el código → el framework ejecuta.
+No hay vendor oculto. No hay dependencias mágicas. La IA conoce cada línea. Por eso no alucina.
+
 PHP 8.2+ con declare(strict_types=1). Sin dependencias externas (no Composer, no npm).
 Código 100% en español con type hints en cada método.
 OpenCode escribe. OpenClaw verifica.
@@ -20,14 +24,17 @@ OpenCode escribe. OpenClaw verifica.
 - PHPStan level 7, PHPCS 0 errores
 - 6 MCP servers compartidos (git, time, fetch, sentry, context7, gh_grep)
 
-## Flujo de trabajo con IA
+## Flujo de trabajo: humano → IA → framework
 
 ```
-TAREA → OpenCode analiza (skill arquitectura) →
-  → OpenCode escribe código (modelo, ruta, controlador, vista, JS, CSS) →
-    → OpenClaw valida (tests, PHPStan, browser testing, accesibilidad) →
-      → Feedback → iteración
+HUMANO da instrucción en lenguaje natural →
+  → IA analiza con skill arquitectura →
+    → IA escribe código (modelo, ruta, controlador, vista, JS, CSS) →
+      → IA valida (tests, PHPStan, browser testing, accesibilidad) →
+        → Humano verifica resultado o itera
 ```
+
+**El humano nunca escribe código directamente. La IA escribe, la IA verifica, el humano solo supervisa.**
 
 ## Cuando usar OpenCode
 

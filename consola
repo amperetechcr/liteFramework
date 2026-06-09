@@ -13,6 +13,15 @@ $consola = new Consola('consola');
 
 // ─── migraciones ───
 $consola->registrar('migrar', 'Ejecuta migraciones pendientes', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    if (!\LiteFramework\Seguridad\ControlAccesoRBAC::esManager()) {
+        $consola = Consola::instance();
+        if ($consola && $consola->estaEnModoJson()) {
+            $consola->jsonError('Workers no pueden ejecutar migraciones', 'ERR_PERMISO', 403);
+        }
+        echo "ERROR: Solo los agentes Manager pueden ejecutar migraciones." . PHP_EOL;
+        return 1;
+    }
     require DIRECTORIO_RAIZ . '/servidor/migrar.php';
     return 0;
 });
@@ -26,6 +35,7 @@ $consola->registrar('migrar:list', 'Lista migraciones pendientes', function (arr
 
 // ─── generar módulo ───
 $consola->registrar('modulo:generar', 'Genera un módulo CRUD (7 archivos)', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
     $phpArgs = array_merge(['generar_modulo.php'], $args);
     $GLOBALS['argc'] = count($phpArgs);
     $GLOBALS['argv'] = $phpArgs;
@@ -52,7 +62,66 @@ $consola->registrar('pruebas', 'Ejecuta los tests', function (array $args): int 
 }, ['[--filtro=NombreTest]', '[--cobertura]']);
 
 // ─── auditoría ───
+$consola->registrar('auditoria:exportar', 'Exporta eventos de auditoría en JSON o CSV', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $formato = 'json';
+    $filtros = [];
+
+    for ($i = 0; $i < count($args); $i++) {
+        if ($args[$i] === '--formato' && isset($args[$i + 1])) {
+            $formato = $args[++$i];
+        } elseif (str_starts_with($args[$i], '--formato=')) {
+            $formato = substr($args[$i], 10);
+        } elseif (str_starts_with($args[$i], '--nivel=')) {
+            $filtros['nivel'] = substr($args[$i], 8);
+        } elseif (str_starts_with($args[$i], '--modulo=')) {
+            $filtros['modulo'] = substr($args[$i], 9);
+        } elseif (str_starts_with($args[$i], '--desde=')) {
+            $filtros['fecha_desde'] = substr($args[$i], 8);
+        } elseif (str_starts_with($args[$i], '--hasta=')) {
+            $filtros['fecha_hasta'] = substr($args[$i], 8);
+        } elseif (str_starts_with($args[$i], '--ip=')) {
+            $filtros['ip'] = substr($args[$i], 5);
+        } elseif (str_starts_with($args[$i], '--busqueda=')) {
+            $filtros['busqueda'] = substr($args[$i], 11);
+        } elseif (str_starts_with($args[$i], '--limite=')) {
+            $filtros['limite'] = (int)substr($args[$i], 9);
+        }
+    }
+
+    $exportado = \LiteFramework\Seguridad\RegistroAuditoria::exportarEventos(
+        $formato,
+        null,
+        $filtros['modulo'] ?? null,
+        $filtros['fecha_desde'] ?? null,
+        $filtros['fecha_hasta'] ?? null,
+        $filtros['nivel'] ?? null,
+        $filtros['ip'] ?? null,
+        $filtros['busqueda'] ?? null,
+        $filtros['limite'] ?? 10000
+    );
+
+    if ($modoJson && $formato === 'json') {
+        echo $exportado . PHP_EOL;
+    } elseif ($modoJson) {
+        $consola?->jsonOut(['eventos_csv' => $exportado, 'total' => substr_count($exportado, "\n") - 1], 'auditoria:exportar');
+    } else {
+        echo $exportado . PHP_EOL;
+    }
+    return 0;
+}, ['[--formato=json|csv]', '[--nivel=INFO|ERROR|...]', '[--modulo=]', '[--desde=]', '[--hasta=]', '[--ip=]', '[--busqueda=]', '[--limite=10000]']);
+
 $consola->registrar('auditoria:limpiar', 'Limpia eventos antiguos de auditoría', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    if (!\LiteFramework\Seguridad\ControlAccesoRBAC::esManager()) {
+        $consola = Consola::instance();
+        if ($consola && $consola->estaEnModoJson()) {
+            $consola->jsonError('Workers no pueden limpiar auditoria', 'ERR_PERMISO', 403);
+        }
+        echo "ERROR: Solo los agentes Manager pueden limpiar la auditoria." . PHP_EOL;
+        return 1;
+    }
     $phpArgs = array_merge(['limpiar_auditoria.php'], $args);
     $GLOBALS['argc'] = count($phpArgs);
     $GLOBALS['argv'] = $phpArgs;
@@ -61,42 +130,185 @@ $consola->registrar('auditoria:limpiar', 'Limpia eventos antiguos de auditoría'
     return 0;
 }, ['[--dias=90]']);
 
-// ─── inicio ───
-// ─── mantenimiento ───
-$consola->registrar('mantenimiento:on', 'Activa el modo mantenimiento (bloquea no-admins)', function (array $args): int {
-    \LiteFramework\Config\ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', '1', 'booleano');
-    echo "Modo mantenimiento ACTIVADO." . PHP_EOL;
-    return 0;
-});
+$consola->registrar('auditoria:resumen', 'Resumen de eventos de auditoría', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $resumen = \LiteFramework\Seguridad\RegistroAuditoria::obtenerResumen();
 
-$consola->registrar('mantenimiento:off', 'Desactiva el modo mantenimiento', function (array $args): int {
-    \LiteFramework\Config\ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', '0', 'booleano');
-    echo "Modo mantenimiento DESACTIVADO." . PHP_EOL;
-    return 0;
-});
-
-// ─── correo ───
-$consola->registrar('correo:test', 'Envía un correo de prueba', function (array $args): int {
-    $destinatario = $args[0] ?? '';
-    if (!$destinatario) {
-        echo "Uso: consola correo:test <destinatario@correo.com>" . PHP_EOL;
-        return 1;
+    if ($modoJson) {
+        $consola?->jsonOut($resumen, 'auditoria:resumen');
+        return 0;
     }
-    $correo = \LiteFramework\Servicios\Correo::desdeEntorno();
-    $correo->para($destinatario)
-           ->asunto('Correo de prueba — liteFramework')
-           ->cuerpo('<h1>Prueba</h1><p>Este es un correo de prueba desde liteFramework.</p>');
-    $exito = $correo->enviar();
-    echo $exito ? "Correo enviado a {$destinatario}" . PHP_EOL : "Error al enviar correo" . PHP_EOL;
-    return $exito ? 0 : 1;
-}, ['<destinatario@correo.com>']);
+
+    echo "=== Resumen de Auditoria ===\n";
+    echo "Total eventos: {$resumen['total']}\n";
+    echo "Ultima semana: {$resumen['ultima_semana']}\n";
+    echo "Hoy: {$resumen['hoy']}\n";
+    echo "\nPor modulo:\n";
+    foreach ($resumen['por_modulo'] as $m) {
+        echo "  {$m['modulo']}: {$m['total']}\n";
+    }
+    return 0;
+});
 
 // ─── inicio ───
 $consola->registrar('inicio', 'Información del framework', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'framework' => 'liteFramework',
+            'version' => '1.2.1',
+            'php' => PHP_VERSION,
+            'sapi' => php_sapi_name(),
+            'raiz' => DIRECTORIO_RAIZ,
+        ], 'inicio');
+        return 0;
+    }
+
     echo "liteFramework v1.2.1" . PHP_EOL;
     echo "PHP " . PHP_VERSION . " | " . php_sapi_name() . PHP_EOL;
     echo "Raiz: " . DIRECTORIO_RAIZ . PHP_EOL;
     return 0;
 });
+
+// ─── mantenimiento ───
+$consola->registrar('mantenimiento:on', 'Activa el modo mantenimiento (bloquea no-admins)', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    \LiteFramework\Config\ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', '1', 'booleano');
+    $consola = Consola::instance();
+    if ($consola && $consola->estaEnModoJson()) {
+        $consola->jsonOut(['mantenimiento' => true], 'mantenimiento:on');
+        return 0;
+    }
+    echo "Modo mantenimiento ACTIVADO." . PHP_EOL;
+    return 0;
+});
+
+$consola->registrar('mantenimiento:off', 'Desactiva el modo mantenimiento', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    \LiteFramework\Config\ConfiguracionSistema::establecer('MODO_MANTENIMIENTO', '0', 'booleano');
+    $consola = Consola::instance();
+    if ($consola && $consola->estaEnModoJson()) {
+        $consola->jsonOut(['mantenimiento' => false], 'mantenimiento:off');
+        return 0;
+    }
+    echo "Modo mantenimiento DESACTIVADO." . PHP_EOL;
+    return 0;
+});
+
+// ─── correo ───
+// ─── lock ───
+$consola->registrar('lock:adquirir', 'Adquiere un bloqueo exclusivo (mutex)', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $clave = $args[0] ?? '';
+    $tiempo = isset($args[1]) ? (int)$args[1] : 30;
+
+    if (!$clave) {
+        if ($modoJson) {
+            $consola?->jsonError('Se requiere <clave>', 'ERR_ARG', 400);
+        }
+        echo "Uso: consola lock:adquirir <clave> [tiempo_maximo_seg=30]" . PHP_EOL;
+        return 1;
+    }
+
+    $exito = \LiteFramework\Nucleo\BloqueoArchivo::adquirir($clave, $tiempo, true);
+    if ($modoJson) {
+        $consola?->jsonOut(['clave' => $clave, 'adquirido' => $exito, 'tiempo_maximo' => $tiempo], 'lock:adquirir');
+        return $exito ? 0 : 1;
+    }
+    echo $exito ? "Lock adquirido: {$clave}" . PHP_EOL : "Error: no se pudo adquirir lock: {$clave}" . PHP_EOL;
+    return $exito ? 0 : 1;
+}, ['<clave>', '[tiempo_maximo_seg=30]']);
+
+$consola->registrar('lock:liberar', 'Libera un bloqueo', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $clave = $args[0] ?? '';
+
+    if (!$clave) {
+        if ($modoJson) {
+            $consola?->jsonError('Se requiere <clave>', 'ERR_ARG', 400);
+        }
+        echo "Uso: consola lock:liberar <clave>" . PHP_EOL;
+        return 1;
+    }
+
+    \LiteFramework\Nucleo\BloqueoArchivo::liberar($clave);
+    if ($modoJson) {
+        $consola?->jsonOut(['clave' => $clave, 'liberado' => true], 'lock:liberar');
+        return 0;
+    }
+    echo "Lock liberado: {$clave}" . PHP_EOL;
+    return 0;
+}, ['<clave>']);
+
+$consola->registrar('lock:estado', 'Verifica si una clave está bloqueada', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $clave = $args[0] ?? '';
+
+    if (!$clave) {
+        if ($modoJson) {
+            $consola?->jsonError('Se requiere <clave>', 'ERR_ARG', 400);
+        }
+        echo "Uso: consola lock:estado <clave>" . PHP_EOL;
+        return 1;
+    }
+
+    $bloqueado = \LiteFramework\Nucleo\BloqueoArchivo::estaBloqueado($clave);
+    if ($modoJson) {
+        $consola?->jsonOut(['clave' => $clave, 'bloqueado' => $bloqueado], 'lock:estado');
+        return 0;
+    }
+    echo $bloqueado ? "BLOQUEADO: {$clave}" . PHP_EOL : "LIBRE: {$clave}" . PHP_EOL;
+    return 0;
+}, ['<clave>']);
+
+$consola->registrar('lock:limpiar', 'Limpia locks expirados', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $limpiados = \LiteFramework\Nucleo\BloqueoArchivo::limpiarExpirados();
+
+    if ($modoJson) {
+        $consola?->jsonOut(['limpiados' => $limpiados], 'lock:limpiar');
+        return 0;
+    }
+    echo "Locks expirados limpiados: {$limpiados}" . PHP_EOL;
+    return 0;
+});
+
+$consola->registrar('correo:test', 'Envía un correo de prueba', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $destinatario = $args[0] ?? '';
+
+    if (!$destinatario) {
+        if ($modoJson) {
+            $consola?->jsonError('Se requiere destinatario', 'ERR_ARG', 400);
+        }
+        echo "Uso: consola correo:test <destinatario@correo.com>" . PHP_EOL;
+        return 1;
+    }
+
+    $correo = \LiteFramework\Servicios\Correo::desdeEntorno();
+    $correo->para($destinatario)
+           ->asunto('Correo de prueba — liteFramework')
+           ->cuerpo('<h1>Prueba</h1><p>Este es un correo de prueba desde liteFramework.</p>');
+    $exito = $correo->enviar();
+
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'enviado' => $exito,
+            'destinatario' => $destinatario,
+        ], 'correo:test');
+        return $exito ? 0 : 1;
+    }
+
+    echo $exito ? "Correo enviado a {$destinatario}" . PHP_EOL : "Error al enviar correo" . PHP_EOL;
+    return $exito ? 0 : 1;
+}, ['<destinatario@correo.com>']);
 
 $consola->ejecutar($argv);
