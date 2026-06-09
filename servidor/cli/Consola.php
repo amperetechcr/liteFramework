@@ -127,7 +127,7 @@ class Consola
         }
     }
 
-    public function jsonOut(mixed $data, string $comando = null, int $codigo = 0): void
+    public function jsonOut(mixed $data, ?string $comando = null, int $codigo = 0): void
     {
         $payload = [
             'ok' => true,
