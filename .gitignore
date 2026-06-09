@@ -73,3 +73,4 @@ Desktop.ini
 
 # --- PHAR ejecutables ---
 *.phar
+storage/cache/
