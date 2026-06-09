@@ -15,9 +15,6 @@ class AyudanteHttpTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!function_exists('curl_init')) {
-            $this->markTestSkipped('curl no está disponible');
-        }
     }
 
     public function testVerificarDisponible(): void
@@ -43,7 +40,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testCodigoHttpError(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultado = AyudanteHttp::obtener('https://httpbin.org/status/404');
         $this->assertFalse($resultado['exito']);
         $this->assertSame(404, $resultado['codigo']);
@@ -52,7 +48,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testObtenerGetExitoso(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultado = AyudanteHttp::obtener('https://httpbin.org/get');
         $this->assertTrue($resultado['exito']);
         $this->assertSame(200, $resultado['codigo']);
@@ -63,7 +58,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testPostJsonExitoso(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $datos = ['nombre' => 'test', 'valor' => 123];
         $resultado = AyudanteHttp::postJson('https://httpbin.org/post', $datos);
         $this->assertTrue($resultado['exito']);
@@ -74,7 +68,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testPostFormulario(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $datos = ['campo1' => 'valor1', 'campo2' => 'valor2'];
         $resultado = AyudanteHttp::post('https://httpbin.org/post', $datos);
         $this->assertTrue($resultado['exito']);
@@ -85,7 +78,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testParaleloDosPeticiones(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultados = AyudanteHttp::paralelo([
             'a' => ['url' => 'https://httpbin.org/get?x=1'],
             'b' => ['url' => 'https://httpbin.org/get?x=2'],
@@ -99,7 +91,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testParaleloMixtoGetYPost(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultados = AyudanteHttp::paralelo([
             'get' => ['url' => 'https://httpbin.org/get?p=1'],
             'post' => [
@@ -116,7 +107,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testParaleloConError(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultados = AyudanteHttp::paralelo([
             'bien' => ['url' => 'https://httpbin.org/get'],
             'mal' => ['url' => 'https://httpbin.org/status/500'],
@@ -128,7 +118,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testCabecerasParseadas(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultado = AyudanteHttp::obtener('https://httpbin.org/get');
         $this->assertTrue($resultado['exito']);
         $cabeceras = $resultado['cabeceras'];
@@ -138,7 +127,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testEnviarConCabecerasCustom(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultado = AyudanteHttp::enviar('GET', 'https://httpbin.org/headers', [
             'cabeceras' => ['X-Prueba: valor123', 'Accept: application/json'],
         ]);
@@ -150,7 +138,6 @@ class AyudanteHttpTest extends TestCase
 
     public function testParaleloPeticionUnica(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultados = AyudanteHttp::paralelo([
             'unica' => ['url' => 'https://httpbin.org/get'],
         ]);
@@ -160,21 +147,9 @@ class AyudanteHttpTest extends TestCase
 
     public function testTiempoEsNumerico(): void
     {
-        $this->marcarSiNoHayHttpBin();
         $resultado = AyudanteHttp::obtener('https://httpbin.org/get');
         $this->assertIsFloat($resultado['tiempo']);
         $this->assertGreaterThan(0, $resultado['tiempo']);
     }
 
-    private function marcarSiNoHayHttpBin(): void
-    {
-        $habilitado = getenv('TESTS_EXTERNAS_HTTP') === 'true'
-            || getenv('TESTS_EXTERNAS_HTTP') === '1'
-            || (defined('TESTS_EXTERNAS_HTTP') && TESTS_EXTERNAS_HTTP);
-        if (!$habilitado) {
-            $this->markTestSkipped(
-                'Pruebas HTTP externas desactivadas (set TESTS_EXTERNAS_HTTP=true)'
-            );
-        }
-    }
 }

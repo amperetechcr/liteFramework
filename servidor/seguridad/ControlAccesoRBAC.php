@@ -16,7 +16,7 @@ class ControlAccesoRBAC
     private static bool $modoIA = false;
     private static string $rolIA = 'worker';
 
-    public static function PERMISOS_BLOQUEADOS_WORKER(): array
+    public static function permisosBloqueadosWorker(): array
     {
         return [
             'operador.crear',
@@ -97,7 +97,7 @@ class ControlAccesoRBAC
 
     public static function tienePermiso(string $clavePermiso): bool
     {
-        if (self::$modoIA && self::$rolIA === 'worker' && in_array($clavePermiso, self::PERMISOS_BLOQUEADOS_WORKER(), true)) {
+        if (self::$modoIA && self::$rolIA === 'worker' && in_array($clavePermiso, self::permisosBloqueadosWorker(), true)) {
             return false;
         }
         if (empty($_SESSION['matriz_permisos']) || !is_array($_SESSION['matriz_permisos'])) {

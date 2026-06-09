@@ -42,10 +42,14 @@ class AyudanteRendimientoTest extends TestCase
     public function testMedirFuncionSimple(): void
     {
         $resultado = AyudanteRendimiento::medir(function () {
-            return 42;
-        }, 'suma_simple');
+            $sum = 0;
+            for ($i = 0; $i < 100000; $i++) {
+                $sum += $i;
+            }
+            return $sum;
+        }, 'suma_larga');
 
-        $this->assertSame('suma_simple', $resultado['nombre']);
+        $this->assertSame('suma_larga', $resultado['nombre']);
         $this->assertGreaterThan(0, $resultado['tiempo']);
         $this->assertSame(1, $resultado['iteraciones']);
     }

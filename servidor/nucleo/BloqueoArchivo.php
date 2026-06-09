@@ -40,14 +40,17 @@ class BloqueoArchivo
                 if ($meta === null) {
                     ftruncate($handle, 0);
                     rewind($handle);
-                    fwrite($handle, json_encode([
+                    $payload = json_encode([
                         'clave' => $clave,
                         'exclusivo' => $exclusivo,
                         'adquirido' => time(),
                         'expiracion' => time() + $tiempoMaximoSeg,
                         'pid' => getmypid(),
                         'host' => gethostname(),
-                    ]));
+                    ]);
+                    if ($payload !== false) {
+                        fwrite($handle, $payload);
+                    }
                     fflush($handle);
                     flock($handle, LOCK_UN);
                     fclose($handle);

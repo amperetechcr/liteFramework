@@ -6,6 +6,8 @@
 
     <exclude-pattern>plantillas/</exclude-pattern>
     <exclude-pattern>tests/</exclude-pattern>
+    <exclude-pattern>probar-error.php</exclude-pattern>
+    <exclude-pattern>benchmark.php</exclude-pattern>
 
     <arg name="colors"/>
     <arg value="p"/>

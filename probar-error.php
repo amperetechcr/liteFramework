@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Script de prueba del sistema de errores, diagnóstico y reparación automática.
  * Ejecutar: http://localhost/liteFramework/probar-error.php?tipo=csrf
@@ -33,7 +34,6 @@ switch ($tipo) {
         echo "<div class='alerta alerta-exito'>Probando: CSRF expirado (deberia regenerar token automaticamente)</div>";
         $_SESSION['operador_id'] = 1;
         throw new \RuntimeException('token_invalido: CSRF token mismatch');
-        break;
 
     case 'sesion':
         echo "<div class='alerta alerta-exito'>Probando: Sesion expirada (deberia redirigir al login)</div>";
@@ -58,8 +58,8 @@ switch ($tipo) {
     case 'fatal':
         echo "<div class='alerta alerta-exito'>Probando: Error fatal (deberia capturarlo en shutdown)</div>";
         $_SESSION['operador_id'] = 1;
+        /** @phpstan-ignore-next-line */
         undefined_function_call();
-        break;
 
     default:
         echo "<div class='alerta alerta-error'>Tipo no valido. Usa: csrf, sesion, archivos, deadlock, exception, fatal</div>";

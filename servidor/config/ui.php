@@ -19,7 +19,7 @@ return [
     'sombra' => 'normal',
 
     'paletas_validas' => ['indigo', 'azul', 'esmeralda', 'rosa', 'ambar', 'violeta', 'pizarra', 'cereza', 'cielo', 'teal', 'lima', 'naranja', 'fucsia'],
-    'estilos_validos' => ['moderno', 'glass', 'neo', 'neon', 'cyber', 'brutal', 'vapor', 'cosmic', 'organic', 'material', 'liquid', 'pixel', 'mesh', 'clay', 'academia', 'minimal'],
+    'estilos_validos' => ['moderno', 'glass', 'neo', 'neon', 'cyber', 'brutal', 'vapor', 'cosmic', 'organic', 'material', 'liquid', 'pixel', 'mesh', 'clay', 'academia', 'minimal', '3d-moderno', 'jugueton', 'corporativo'],
     'fondos_validos' => ['blanco', 'lavanda', 'rosa', 'melon', 'cielo', 'menta', 'arena', 'lila', 'selva', 'medianoche', 'carmesi', 'bosque', 'marino', 'carbon', 'vino', 'azabache'],
     'fuentes_validas' => ['sistema', 'serif', 'sans', 'mono', 'escritura', 'humanista', 'decorativa'],
     'espaciados_validos' => ['muy-estrecho', 'estrecho', 'normal', 'amplio', 'muy-amplio'],

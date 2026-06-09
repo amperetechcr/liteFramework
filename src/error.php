@@ -1,7 +1,10 @@
 <?php
 
 if (!function_exists('h')) {
-    function h(string $texto): string { return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8'); }
+    function h(string $texto): string
+    {
+        return htmlspecialchars($texto, ENT_QUOTES, 'UTF-8');
+    }
 }
 
 $codigosValidos = [400, 401, 403, 404, 500, 503];

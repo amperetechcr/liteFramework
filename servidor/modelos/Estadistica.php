@@ -53,7 +53,9 @@ class Estadistica extends Modelo
 
     public function ultimaEjecucionFormateada(): string
     {
-        if (!$this->ultima_ejecucion) return '—';
+        if (!$this->ultima_ejecucion) {
+            return '—';
+        }
         return date('d/m/Y H:i', (int)strtotime($this->ultima_ejecucion));
     }
 

@@ -4,22 +4,65 @@
 > Para documentación de endpoints API: ver `src/docs/API.md`
 > Para problema conocido de paginación ORM: ver `PAGINACION_PDO.md`
 
-## ⚠️ Regla de Validación Obligatoria
+## ⚠️ Regla Absoluta: Código que pase PHPStan + PHPCS + PHPUnit
 
-**Antes de entregar cualquier código nuevo o modificado, DEBES ejecutar:**
+**No existe enviar código que falle. No existe skippear tests. No existe baseline para PHPStan.**
+El código debe pasar las 3 validaciones desde el primer intento. Estas son las reglas:
+
+### Reglas PHPStan nivel 7 (tolerancia cero)
+
+| # | Regla | Incumplimiento común | Cómo hacerlo bien |
+|---|-------|----------------------|-------------------|
+| 1 | **Siempre validar `fopen()`** | `fwrite(fopen(...), $data)` sin validar que `fopen` no retorne `false` | `$salida = fopen(...); if ($salida === false) { ... }` |
+| 2 | **Siempre validar `file_get_contents()`** | `json_decode(file_get_contents($f), true)` sin validar que retorne `string` | `$c = file_get_contents($f); if ($c === false) { ... }` después `json_decode($c, true)` |
+| 3 | **Siempre validar `json_encode()`** | `fwrite($h, json_encode($data))` sin validar retorno `false` | `$payload = json_encode($data); if ($payload !== false) { fwrite($h, $payload); }` |
+| 4 | **Siempre validar `glob()`** | `foreach (glob(...) as $f)` sin verificar que sea iterable | `$archivos = glob(...); if (is_array($archivos)) { foreach ($archivos as $f) { ... } }` |
+| 5 | **Usar `->` no `?->` cuando el tipo es no-nullable** | `$consola?->metodo()` donde `$consola` ya se verificó no-null | Usar `$consola->metodo()` después de la verificación |
+| 6 | **Validar tipos de `getopt()`** | `(string)$args['clave']` donde `getopt()` retorna `list\|string\|false` | `isset($args['clave']) && is_string($args['clave']) ? $args['clave'] : ''` |
+| 7 | **No llamar métodos que no existen** | `RegistroAuditoria::exito()` no existe | Usar `RegistroAuditoria::info()`, `advertencia()`, `error()`, `seguridad()`, o `auditoria()` |
+| 8 | **No dejar `break` después de `throw`** | `throw ...; break;` — código inalcanzable | Eliminar el `break` |
+| 9 | **BOM UTF-8 prohibido** | `index.php` empieza con `\xEF\xBB\xBF` | Guardar siempre UTF-8 sin BOM |
+
+### Reglas PHPCS PSR-12 (tolerancia cero)
+
+| # | Regla | Incumplimiento común | Cómo hacerlo bien |
+|---|-------|----------------------|-------------------|
+| 1 | **Sin BOM UTF-8** | Archivos con byte order mark | Guardar UTF-8 sin BOM |
+| 2 | **Braces en línea nueva para funciones** | `function h() { return ...; }` | `function h() {\n    return ...;\n}` |
+| 3 | **Braces necesarios para controles** | `if ($x) return;` | `if ($x) {\n    return;\n}` |
+| 4 | **CamelCase en métodos** | `function PERMISOS_BLOQUEADOS()` | `function permisosBloqueados()` |
+| 5 | **Espacios en union types** | `true\|string` | `true \| string` |
+| 6 | **Switch: todo `case` termina en `break`/`throw`** | Case sin break y sin throw | Agregar `break` o `throw` |
+| 7 | **Sin trailing whitespace** | Espacios al final de línea | Limpiar siempre |
+
+### Reglas PHPUnit (tolerancia cero)
+
+| # | Regla | Incumplimiento común | Cómo hacerlo bien |
+|---|-------|----------------------|-------------------|
+| 1 | **No skippear tests jamás** | `$this->markTestSkipped()` — prohibido | Si un test necesita un servicio externo, que esté disponible |
+| 2 | **Callbacks con trabajo real** | `medir(fn() => 42)` da 0.0ms al hacer assert > 0 | Usar loop de 100k iteraciones |
+| 3 | **No hardcodear colores en CSS** | `color: #22c55e` | Usar `var(--color-exito)`, `var(--color-peligro)` |
+| 4 | **Test y código sincronizados** | Test busca valor que no existe | Si se agrega un test, el código debe existir |
 
 ```bash
-# 1. PHPStan nivel 7
+# 1. Auto-fix PSR-12
+php phpcbf.phar --standard=phpcs.xml.dist --extensions=php --ignore=vendor,plantillas,tests .
+
+# 2. PHPStan nivel 7 — 0 errores
 php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress
 
-# 2. PHPCS PSR-12
+# 3. PHPCS — 0 errores
 php phpcs.phar --standard=phpcs.xml.dist --extensions=php --ignore=vendor,plantillas,tests --runtime-set ignore_warnings_on_exit 1 .
 
-# 3. Tests
+# 4. Tests — 0 failures, 0 skipped
 php tests/phpunit.phar -c tests/phpunit.xml
+
+# 5. Si algo falla, corregir y repetir. No entregar código que falle.
 ```
 
-**No entregues código si alguna de estas 3 falla.**
+**No entregues código si alguna de estas falla. No hay excepciones. No hay baselines. No hay skips.**
+
+---
 
 ## 1. Crear Módulo (5 pasos)
 

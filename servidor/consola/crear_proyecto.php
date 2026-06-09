@@ -44,8 +44,8 @@ $rawArgs = getopt('', [
     'empresa:',
 ]);
 $args = is_array($rawArgs) ? $rawArgs : [];
-if (isset($args['desde-json'])) {
-    $rutaJson = (string)$args['desde-json'];
+if (isset($args['desde-json']) && is_string($args['desde-json'])) {
+    $rutaJson = $args['desde-json'];
     if (!file_exists($rutaJson)) {
         imprimirError("Archivo no encontrado: $rutaJson");
         exit(1);
@@ -57,10 +57,10 @@ if (isset($args['desde-json'])) {
         exit(1);
     }
 } else {
-    $modulosParam = isset($args['modulos']) ? (string)$args['modulos'] : '';
+    $modulosParam = isset($args['modulos']) && is_string($args['modulos']) ? $args['modulos'] : '';
     $modulos = !empty($modulosParam) ? explode(',', $modulosParam) : ['inicio', 'panelControl', 'operadores', 'auditoria', 'configuracion', 'apariencia', 'migraciones'];
     $entidades = [];
-    $entidadesParam = isset($args['entidades']) ? (string)$args['entidades'] : '';
+    $entidadesParam = isset($args['entidades']) && is_string($args['entidades']) ? $args['entidades'] : '';
     if (!empty($entidadesParam)) {
         foreach (explode(';', $entidadesParam) as $entStr) {
             $entStr = trim($entStr);
@@ -87,20 +87,24 @@ if (isset($args['desde-json'])) {
         }
     }
 
+    $codigoProyecto = isset($args['codigo']) && is_string($args['codigo']) ? $args['codigo'] : 'miapp';
     $definicion = [
         'proyecto' => [
             'nombre' => $args['nombre'] ?? 'Mi Aplicacion',
-            'codigo' => $args['codigo'] ?? 'miapp',
+            'codigo' => $codigoProyecto,
             'descripcion' => $args['descripcion'] ?? 'Panel de control',
             'version' => $args['version'] ?? '1.0.0',
         ],
         'empresa' => [
             'nombre' => $args['empresa'] ?? ($args['nombre'] ?? 'Mi Empresa'),
         ],
-        'directorio_salida' => rtrim($args['directorio'] ?? getcwd() . '/' . ($args['codigo'] ?? 'miapp'), '/\\'),
+        'directorio_salida' => rtrim(
+            isset($args['directorio']) && is_string($args['directorio']) ? $args['directorio'] : getcwd() . '/' . $codigoProyecto,
+            '/\\'
+        ),
         'base_datos' => [
             'anfitrion' => $args['db-anfitrion'] ?? 'localhost',
-            'nombre' => $args['db-nombre'] ?? ($args['codigo'] ?? 'miapp') . '_db',
+            'nombre' => $args['db-nombre'] ?? $codigoProyecto . '_db',
             'usuario' => $args['db-usuario'] ?? 'root',
             'clave' => $args['db-clave'] ?? '',
         ],
@@ -113,7 +117,7 @@ if (isset($args['desde-json'])) {
         'entidades' => $entidades,
         'operador_inicial' => [
             'nombre' => $args['admin-nombre'] ?? 'Administrador',
-            'correo' => $args['admin-correo'] ?? ('admin@' . ($args['codigo'] ?? 'app') . '.com'),
+            'correo' => $args['admin-correo'] ?? ('admin@' . $codigoProyecto . '.com'),
             'clave' => $args['admin-clave'] ?? 'Admin123!',
         ],
     ];
@@ -127,9 +131,9 @@ $resultado = GeneradorProyecto::generar($definicion);
 
 if ($modoJson) {
     if (!$resultado['exito']) {
-        $consola?->jsonError($resultado['error'] ?? 'Error desconocido', 'ERR_PROYECTO', 1);
+        $consola->jsonError($resultado['error'] ?? 'Error desconocido', 'ERR_PROYECTO', 1);
     }
-    $consola?->jsonOut([
+    $consola->jsonOut([
         'proyecto' => $definicion['proyecto']['nombre'],
         'directorio' => $resultado['directorio'] ?? $definicion['directorio_salida'],
         'archivos_procesados' => $resultado['resumen']['archivos_procesados'] ?? 0,

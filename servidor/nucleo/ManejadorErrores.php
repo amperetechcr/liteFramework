@@ -161,7 +161,7 @@ class ManejadorErrores
                         $diag = self::diagnosticarError($excepcion, $tipo, $idTraza);
                         $contexto['_diagnostico'] = $diag;
                         if (!empty($diag['reparaciones'])) {
-                            RegistroAuditoria::exito('Sistema', 'Reparacion automatica', [
+                            RegistroAuditoria::info('Sistema', 'Reparacion automatica', [
                                 'reparaciones' => $diag['reparaciones'],
                                 'trace_id' => $idTraza,
                             ]);

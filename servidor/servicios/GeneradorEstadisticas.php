@@ -267,10 +267,18 @@ class GeneradorEstadisticas
     public function obtenerCache(int $id): ?array
     {
         $archivo = self::dirCache() . '/' . $id . '.json';
-        if (!file_exists($archivo)) return null;
+        if (!file_exists($archivo)) {
+            return null;
+        }
 
-        $data = @json_decode(@file_get_contents($archivo), true);
-        if (!$data || !isset($data['expira'])) return null;
+        $contenido = @file_get_contents($archivo);
+        if ($contenido === false) {
+            return null;
+        }
+        $data = @json_decode($contenido, true);
+        if (!$data || !isset($data['expira'])) {
+            return null;
+        }
 
         if (time() > $data['expira']) {
             @unlink($archivo);
@@ -314,8 +322,11 @@ class GeneradorEstadisticas
     {
         $dir = self::dirCache();
         if (is_dir($dir)) {
-            foreach (glob($dir . '/*.json') as $f) {
-                @unlink($f);
+            $archivos = glob($dir . '/*.json');
+            if (is_array($archivos)) {
+                foreach ($archivos as $f) {
+                    @unlink($f);
+                }
             }
         }
     }

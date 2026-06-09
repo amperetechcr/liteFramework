@@ -12,7 +12,7 @@ $modoJson = $consola && $consola->estaEnModoJson();
 
 if ($argc < 2) {
     if ($modoJson) {
-        $consola?->jsonError('Se requiere <NombreClase>', 'ERR_ARG', 400);
+        $consola->jsonError('Se requiere <NombreClase>', 'ERR_ARG', 400);
     }
     echo "Uso: php generar_modulo.php <NombreClase> [--campos=\"...\"] [--tabla=...]\n";
     echo "Ejemplo:\n";
@@ -37,9 +37,9 @@ $resultado = GeneradorModulo::generar($claseNombre, $campos, $tabla);
 
 if ($modoJson) {
     if (!$resultado['exito']) {
-        $consola?->jsonResultado($resultado);
+        $consola->jsonResultado($resultado);
     }
-    $consola?->jsonOut([
+    $consola->jsonOut([
         'clase' => $claseNombre,
         'tabla' => $tabla,
         'archivos' => array_map(fn($a) => [

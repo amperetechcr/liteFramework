@@ -152,6 +152,11 @@ $enrutador->get('/estadisticas/exportar/{id}/{formato}', function (int $id, stri
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="estadistica_' . $id . '.csv"');
         $salida = fopen('php://output', 'w');
+        if ($salida === false) {
+            http_response_code(500);
+            echo json_encode(['error' => 'No se pudo abrir la salida']);
+            exit;
+        }
         fwrite($salida, "\xEF\xBB\xBF");
         fputcsv($salida, $columnas);
         foreach ($resultados as $fila) {

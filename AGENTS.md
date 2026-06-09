@@ -4,6 +4,8 @@
 El humano da instrucciones en lenguaje natural → la IA escribe el código → el framework ejecuta.
 No hay vendor oculto. No hay dependencias mágicas. La IA conoce cada línea. Por eso no alucina.
 
+**Regla de calidad absoluta:** Todo código generado debe pasar PHPStan nivel 7 (0 errores), PHPCS PSR-12 (0 errores), y PHPUnit (0 failures, 0 skipped). No se aceptan baselines, skips, ni excepciones. Ver `.opencode/skills/lite-framework/instructions.md` para las tablas detalladas de reglas.
+
 PHP 8.2+ con declare(strict_types=1). Sin dependencias externas (no Composer, no npm).
 Código 100% en español con type hints en cada método.
 OpenCode escribe. OpenClaw verifica.
