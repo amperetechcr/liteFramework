@@ -1,0 +1,33 @@
+section[aria-label="Inicio de sesion con redes sociales"] {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-borde, #ddd);
+}
+
+.btn-oauth {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: 1px solid var(--color-borde, #ddd);
+    background: var(--color-superficie, #fff);
+    color: var(--color-texto, #333);
+}
+
+.btn-oauth:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.btn-oauth-google:hover {
+    background: #f1f3f4;
+}
+
+.btn-oauth-github:hover {
+    background: #f1f3f4;
+}

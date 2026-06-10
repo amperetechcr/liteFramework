@@ -1,0 +1,401 @@
+﻿/* =========================================
+   MAQUETACIN: Layout, sidebar, animaciones
+   Ubicacin: src/css/maquetacion.css
+   Propsito: Sistema de rejillas, contenedores, layout responsive
+   multi-breakpoint y animaciones globales.
+   ========================================= */
+
+/* CONTENEDORES */
+
+.marco-del-sitio {
+    width: 100%;
+    max-width: min(1400px, 100%);
+    margin-inline: auto;
+    padding-inline: var(--espacio-mediano);
+}
+@media (max-width: 768px) {
+    .marco-del-sitio { padding-inline: var(--espacio-normal); }
+}
+@media (max-width: 480px) {
+    .marco-del-sitio { padding-inline: var(--espacio-pequeno); }
+}
+
+/* SISTEMA DE REJILLAS (grid + flex) */
+
+.agrupador-flexible-columnas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-normal);
+}
+
+.agrupador-flexible-filas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espacio-normal);
+}
+
+.rejilla-automatica {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+    gap: var(--espacio-mediano);
+}
+@media (max-width: 480px) {
+    .rejilla-automatica {
+        grid-template-columns: 1fr;
+        gap: var(--espacio-normal);
+    }
+}
+
+/* LAYOUT CENTRADO Y ALINEACIONES */
+
+.lienzo-centrado-vertical {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+}
+@media (max-width: 768px) {
+    .lienzo-centrado-vertical {
+        padding: var(--espacio-normal);
+    }
+}
+
+.ancho-total { width: 100%; }
+.alineacion-centrada { text-align: center; justify-content: center; }
+.distribucion-espaciada { justify-content: space-between; }
+
+/* COLORES DE TEXTO */
+
+.texto-color-marca { color: var(--color-marca); }
+.texto-peligro { color: var(--color-peligro); }
+.texto-pequeno { font-size: var(--tamano-md); }
+.texto-negrita { font-weight: bold; }
+.texto-suave { color: var(--texto-suave); }
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes entrada-modal {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 
+   SIDEBAR / BARRA LATERAL  Multi-breakpoint
+   States:
+   1025px   Full sidebar (240px)
+   7691024  Collapsed (56px) with hover expand
+   601768   Off-canvas overlay (toggle via JS)
+   600      Off-canvas fullscreen
+    */
+
+.contenedor-principal,
+.envoltura-principal {
+    min-height: 100dvh;
+    margin-left: 240px;
+}
+
+nav.barra-lateral,
+.barra-lateral {
+    width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--fondo-elemento);
+    border-right: 1px solid var(--trazo-suave);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    z-index: 100;
+}
+nav.barra-lateral::-webkit-scrollbar,
+.barra-lateral::-webkit-scrollbar {
+    display: none;
+}
+
+.barra-lateral-cabecera {
+    padding: var(--espacio-mediano);
+    border-bottom: 1px solid var(--trazo-suave);
+}
+
+.barra-lateral-titulo {
+    font-size: clamp(var(--tamano-sm), 2vw, var(--tamano-lg));
+    margin-bottom: 0;
+    color: var(--color-marca);
+}
+
+.barra-lateral-menu {
+    list-style: none;
+    padding: var(--espacio-pequeno) 0;
+    margin: 0;
+    flex: 1;
+}
+
+.barra-lateral-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Enlaces de navegacin en sidebar  selector semntico + clase legacy */
+nav.barra-lateral a,
+.barra-lateral-enlace {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-normal);
+    padding: var(--espacio-normal) var(--espacio-mediano);
+    color: var(--texto-base);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color var(--transicion-base), color var(--transicion-base);
+    border-left: 3px solid transparent;
+}
+
+nav.barra-lateral a:hover,
+.barra-lateral-enlace:hover {
+    background-color: var(--fondo-alterno);
+    color: var(--color-marca);
+    text-decoration: none;
+}
+
+nav.barra-lateral a[aria-current="page"],
+nav.barra-lateral a.enlace-activo,
+.barra-lateral-enlace.enlace-activo {
+    background-color: var(--color-marca-claro);
+    color: var(--color-marca);
+    border-left-color: var(--color-marca);
+    font-weight: 700;
+}
+
+.barra-lateral-icono {
+    font-size: var(--tamano-xl);
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.barra-lateral-pie {
+    border-top: 1px solid var(--trazo-suave);
+    padding-top: var(--espacio-pequeno);
+}
+
+/* rea de contenido */
+.area-contenido {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.area-contenido main {
+    flex: 1;
+    padding: var(--espacio-mediano);
+}
+@media (max-width: 900px) {
+    .area-contenido main { padding: var(--espacio-normal); }
+}
+@media (max-width: 480px) {
+    .area-contenido main { padding: var(--espacio-pequeno); }
+}
+
+/* Tablet landscape & small desktop: collapsed sidebar with hover expand */
+@media (max-width: 1024px) {
+    nav.barra-lateral,
+    .barra-lateral {
+        width: 56px;
+        overflow: hidden;
+        transition: width 0.25s ease, box-shadow 0.25s ease;
+    }
+    nav.barra-lateral:hover,
+    nav.barra-lateral:focus-within,
+    .barra-lateral:hover,
+    .barra-lateral:focus-within {
+        width: 240px;
+        box-shadow: var(--sombra-elevada);
+    }
+    .barra-lateral-cabecera h2,
+    .barra-lateral-cabecera p,
+    nav.barra-lateral a span:not(.barra-lateral-icono),
+    .barra-lateral-enlace span:not(.barra-lateral-icono),
+    .barra-lateral-pie .texto-pequeno {
+        display: none;
+    }
+    nav.barra-lateral:hover .barra-lateral-cabecera h2,
+    nav.barra-lateral:hover .barra-lateral-cabecera p,
+    nav.barra-lateral:hover a span:not(.barra-lateral-icono),
+    nav.barra-lateral:hover .barra-lateral-pie .texto-pequeno,
+    nav.barra-lateral:focus-within .barra-lateral-cabecera h2,
+    nav.barra-lateral:focus-within .barra-lateral-cabecera p,
+    nav.barra-lateral:focus-within a span:not(.barra-lateral-icono),
+    nav.barra-lateral:focus-within .barra-lateral-pie .texto-pequeno,
+    .barra-lateral:hover .barra-lateral-cabecera h2,
+    .barra-lateral:hover .barra-lateral-cabecera p,
+    .barra-lateral:hover .barra-lateral-enlace span:not(.barra-lateral-icono),
+    .barra-lateral:hover .barra-lateral-pie .texto-pequeno,
+    .barra-lateral:focus-within .barra-lateral-cabecera h2,
+    .barra-lateral:focus-within .barra-lateral-cabecera p,
+    .barra-lateral:focus-within .barra-lateral-enlace span:not(.barra-lateral-icono),
+    .barra-lateral:focus-within .barra-lateral-pie .texto-pequeno {
+        display: inline;
+    }
+    .contenedor-principal,
+    .envoltura-principal {
+        margin-left: 56px;
+    }
+}
+
+/* Tablet portrait: off-canvas sidebar overlay */
+@media (max-width: 768px) {
+    nav.barra-lateral,
+    .barra-lateral {
+        position: fixed;
+        left: -240px;
+        width: 240px;
+        height: 100dvh;
+        transition: left 0.3s ease, box-shadow 0.3s ease;
+        z-index: 200;
+        box-shadow: none;
+    }
+    nav.barra-lateral.activa,
+    .barra-lateral.activa,
+    .barra-lateral-activa nav.barra-lateral,
+    .barra-lateral-activa .barra-lateral {
+        left: 0;
+        box-shadow: var(--sombra-elevada);
+    }
+    .barra-lateral-cabecera h2,
+    .barra-lateral-cabecera p,
+    nav.barra-lateral a span:not(.barra-lateral-icono),
+    .barra-lateral-enlace span:not(.barra-lateral-icono),
+    .barra-lateral-pie .texto-pequeno {
+        display: inline;
+    }
+    .contenedor-principal,
+    .envoltura-principal {
+        margin-left: 0;
+    }
+    .area-contenido {
+        max-width: 100%;
+    }
+    .capa-lateral {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 199;
+        backdrop-filter: blur(2px);
+    }
+    .capa-lateral.activa,
+    .barra-lateral-activa .capa-lateral {
+        display: block;
+    }
+}
+
+/* Small phones: full-screen overlay sidebar */
+@media (max-width: 480px) {
+    nav.barra-lateral,
+    .barra-lateral {
+        width: 100%;
+        left: -100%;
+    }
+    nav.barra-lateral.activa,
+    .barra-lateral.activa,
+    .barra-lateral-activa nav.barra-lateral,
+    .barra-lateral-activa .barra-lateral {
+        left: 0;
+    }
+}
+
+/* Botn hamburguesa */
+.boton-menu-lateral {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--trazo-fuerte);
+    border-radius: var(--radio-redondeado);
+    background: var(--fondo-elemento);
+    color: var(--texto-base);
+    cursor: pointer;
+    font-size: var(--tamano-xl);
+    line-height: 1;
+    transition: border-color var(--transicion-base), color var(--transicion-base);
+    flex-shrink: 0;
+}
+.boton-menu-lateral:hover {
+    border-color: var(--color-marca);
+    color: var(--color-marca);
+}
+@media (max-width: 768px) {
+    .boton-menu-lateral { display: inline-flex; }
+}
+
+/* Cabecera mvil */
+header.cabecera-movil,
+.cabecera-movil {
+    display: none;
+    align-items: center;
+    gap: var(--espacio-normal);
+    padding: var(--espacio-pequeno) var(--espacio-normal);
+    background: var(--fondo-elemento);
+    border-bottom: 1px solid var(--trazo-suave);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+.cabecera-movil-titulo {
+    font-size: var(--tamano-base);
+    font-weight: 700;
+    color: var(--color-marca);
+    margin: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cabecera-movil-espacio {
+    flex: 1;
+}
+@media (max-width: 768px) {
+    header.cabecera-movil,
+    .cabecera-movil { display: flex; }
+}
+@media (max-width: 480px) {
+    header.cabecera-movil,
+    .cabecera-movil {
+        padding: var(--espacio-pequeno);
+        gap: var(--espacio-pequeno);
+    }
+}
+
+/* Alternador de tema en cabecera mvil */
+.cabecera-movil .alternador-tema {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Cabecera de pgina principal */
+.cabecera-principal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--espacio-normal) 0;
+    border-bottom: 1px solid var(--trazo-suave);
+    margin-bottom: var(--espacio-grande);
+    gap: var(--espacio-normal);
+}

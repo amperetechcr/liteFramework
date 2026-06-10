@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<ruleset name="liteFramework">
+    <description>Reglas de codificacion para liteFramework — PSR-12 base</description>
+
+    <file>.</file>
+
+    <exclude-pattern>plantillas/</exclude-pattern>
+    <exclude-pattern>tests/</exclude-pattern>
+    <exclude-pattern>probar-error.php</exclude-pattern>
+    <exclude-pattern>benchmark.php</exclude-pattern>
+
+    <arg name="colors"/>
+    <arg value="p"/>
+
+    <rule ref="PSR12">
+        <exclude-pattern>src/modulos/*</exclude-pattern>
+        <exclude-pattern>src/vistas/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="200"/>
+        </properties>
+        <exclude-pattern>servidor/servicios/GeneradorProyecto.php</exclude-pattern>
+        <exclude-pattern>servidor/servicios/GeneradorModulo.php</exclude-pattern>
+        <exclude-pattern>servidor/servicios/GeneradorPdf.php</exclude-pattern>
+        <exclude-pattern>servidor/servicios/GeneradorEstadisticas.php</exclude-pattern>
+        <exclude-pattern>servidor/migrar.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>index.php</exclude-pattern>
+        <exclude-pattern>src/sse.php</exclude-pattern>
+        <exclude-pattern>servidor/api/cerrarSesion.php</exclude-pattern>
+        <exclude-pattern>servidor/api/procesarPeticionPost.php</exclude-pattern>
+        <exclude-pattern>servidor/consola/crear_proyecto.php</exclude-pattern>
+        <exclude-pattern>servidor/consola/ejecutar_pruebas.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration">
+        <exclude-pattern>servidor/nucleo/Helpers/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR12.Functions.ReturnTypeDeclaration">
+        <exclude-pattern>servidor/seguridad/PoliticaContrasena.php</exclude-pattern>
+    </rule>
+
+    <exclude-pattern>.opencode/</exclude-pattern>
+</ruleset>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap.php"
+         colors="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true">
+    <testsuites>
+        <testsuite name="liteframework-casos">
+            <directory>Casos</directory>
+        </testsuite>
+        <testsuite name="liteframework-integracion">
+            <directory>Integracion</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <const name="APP_DEPURACION" value="false"/>
+    </php>
+</phpunit>

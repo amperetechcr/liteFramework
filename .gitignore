@@ -1,0 +1,76 @@
+# =============================================
+# LITE FRAMEWORK - .gitignore
+# =============================================
+
+# --- Entorno ---
+.env
+.env.local
+.env.production
+.env.development
+
+# --- Dependencias ---
+vendor/
+node_modules/
+bower_components/
+
+# --- Almacenamiento (archivos subidos y logs) ---
+storage/archivos/*
+!storage/archivos/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+
+# --- Errores en tiempo de ejecucion ---
+errors/*
+!errors/.gitkeep
+
+# --- Configuracion local del servidor ---
+.user.ini
+.user.ini.backup
+
+# --- Cache / temporales ---
+.cache/
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# --- Logs ---
+*.log
+
+# --- Sistema operativo ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+.netbeans/
+.project
+.classpath
+.settings/
+
+# --- Archivos comprimidos ---
+*.zip
+*.tar
+*.gz
+*.rar
+
+# --- Base de datos (dump local) ---
+*.sql
+!servidor/migraciones/*.sql
+!servidor/estructura.sql
+
+# --- PHAR ejecutables ---
+*.phar
+storage/cache/

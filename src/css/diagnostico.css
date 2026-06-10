@@ -1,0 +1,118 @@
+/* =========================================
+   DIAGNOSTICO: Tarjetas de salud del sistema
+   ========================================= */
+
+.diagnostico-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--espacio-normal);
+}
+
+.diagnostico-card {
+    background: var(--fondo-elemento);
+    border: 1px solid var(--trazo-suave);
+    border-radius: var(--radio-redondeado);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+.diagnostico-card:hover {
+    box-shadow: var(--sombra-flotante);
+}
+
+.diagnostico-card-header {
+    padding: var(--espacio-pequeno) var(--espacio-normal);
+    background: var(--fondo-alterno);
+    border-bottom: 1px solid var(--trazo-suave);
+    font-weight: 600;
+    font-size: var(--tamano-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-pequeno);
+}
+
+.diagnostico-card-body {
+    padding: var(--espacio-normal);
+}
+
+.diagnostico-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    gap: var(--espacio-pequeno);
+}
+
+.diag-label {
+    color: var(--texto-suave);
+    font-size: var(--tamano-md);
+}
+
+.diag-val {
+    color: var(--texto-fuerte);
+    font-weight: 500;
+    font-size: var(--tamano-sm);
+    text-align: right;
+}
+
+.diag-val-ok {
+    color: var(--color-exito);
+}
+.diag-val-error {
+    color: var(--color-peligro);
+}
+
+.diag-bar {
+    height: 4px;
+    background: var(--fondo-alterno);
+    border-radius: 2px;
+    margin: 0.25rem 0 0.5rem;
+    overflow: hidden;
+}
+
+.diag-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-marca), var(--color-marca-hover));
+    border-radius: 2px;
+    transition: width 0.5s;
+}
+
+.diag-bar-verde {
+    background: linear-gradient(90deg, var(--color-exito), #34d399);
+}
+
+.diag-recomendacion {
+    color: var(--color-marca);
+    font-size: var(--tamano-md);
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--color-marca-claro);
+    border-radius: var(--radio-redondeado);
+}
+
+.diagnostico-card-problema {
+    border-color: var(--color-advertencia);
+}
+
+.diagnostico-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--tamano-sm);
+}
+.diagnostico-tabla th {
+    text-align: left;
+    padding: var(--espacio-pequeno) var(--espacio-normal);
+    border-bottom: 2px solid var(--trazo-suave);
+    color: var(--texto-suave);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--tamano-xs);
+}
+.diagnostico-tabla td {
+    padding: var(--espacio-pequeno) var(--espacio-normal);
+    border-bottom: 1px solid var(--trazo-suave);
+}
+.diagnostico-tabla tr:hover td {
+    background: var(--fondo-alterno);
+}

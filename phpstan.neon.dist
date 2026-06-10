@@ -1,0 +1,13 @@
+parameters:
+    level: 7
+    paths:
+        - .
+    scanFiles:
+        - servidor/autoload.php
+        - phpstan.php
+    excludePaths:
+        - plantillas/
+        - tests/
+        - src/
+    ignoreErrors:
+        - identifier: missingType.iterableValue

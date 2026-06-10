@@ -1,0 +1,106 @@
+/* =========================================
+   DOCUMENTACION: Tarjetas y modales del modulo
+   ========================================= */
+
+.tarjeta-seccion-doc {
+    cursor: pointer;
+    transition: transform var(--transicion-base), box-shadow var(--transicion-base), border-color var(--transicion-base);
+}
+
+.tarjeta-seccion-doc:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-flotante);
+    border-color: var(--color-marca);
+}
+
+.tarjeta-seccion-doc:focus-visible {
+    outline: 2px solid var(--color-marca);
+    outline-offset: 2px;
+}
+
+.icono-documentacion {
+    font-size: var(--tamano-3xl);
+    line-height: 1;
+}
+
+/* Overlay del modal */
+.modal-superposicion.modal-documentacion {
+    backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.3);
+    padding: var(--espacio-mediano);
+}
+
+/* Contenedor del modal (especificidad alta para vencer a .estilo-3d-moderno) */
+.modal-superposicion.modal-documentacion .modal-documentacion-contenido {
+    backdrop-filter: none;
+    transform: none;
+    transform-style: flat;
+    max-width: 850px;
+    width: 100%;
+    max-height: 85vh;
+    display: block;
+    overflow-y: auto;
+}
+
+.modal-documentacion-cuerpo {
+    padding: var(--espacio-normal) var(--espacio-mediano);
+}
+
+.modal-documentacion-cuerpo h3 {
+    margin-top: var(--espacio-mediano);
+}
+
+.modal-documentacion-cuerpo pre {
+    font-size: var(--tamano-md);
+    max-height: 350px;
+}
+
+.modal-documentacion-cuerpo table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--espacio-normal);
+}
+
+.modal-documentacion-cuerpo th,
+.modal-documentacion-cuerpo td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--trazo-suave);
+    font-size: var(--tamano-sm);
+}
+
+.modal-documentacion-cuerpo th {
+    background: var(--fondo-alterno);
+    font-weight: 600;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .modal-superposicion.modal-documentacion {
+        padding: var(--espacio-pequeno);
+    }
+
+    .modal-superposicion.modal-documentacion .modal-documentacion-contenido {
+        max-width: 100%;
+        width: 100%;
+        max-height: 92vh;
+        border-radius: var(--radio-redondeado);
+    }
+}
+
+/* Movil: centrado en vez de bottom sheet, usar dvh para evitar recorte por barra del navegador */
+@media (max-width: 480px) {
+    .modal-superposicion.modal-documentacion {
+        align-items: center;
+        justify-content: center;
+        padding: var(--espacio-pequeno);
+    }
+
+    .modal-superposicion.modal-documentacion .modal-documentacion-contenido {
+        max-width: 100%;
+        width: calc(100% - var(--espacio-pequeno));
+        max-height: 85vh;
+        max-height: 85dvh;
+        border-radius: var(--radio-redondeado);
+    }
+}

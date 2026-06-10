@@ -1,0 +1,367 @@
+﻿/* =========================================
+   ESTILOS: Estilos visuales + componentes por modulo
+   Ubicacin: src/css/estilos.css
+   Las paletas estan definidas en paletas.css.
+   ========================================= */
+
+/* ESTILO: MODERNO (default) */
+:root.estilo-moderno,
+.estilo-moderno {
+    --grosor-trazo: 1px;
+    --transicion-base: 0.2s ease;
+}
+.estilo-moderno .tarjeta,
+.estilo-moderno article,
+.estilo-moderno .tarjeta-informacion {
+    box-shadow: 0 1px 3px rgb(from var(--texto-fuerte) r g b / 0.06), 0 1px 2px rgb(from var(--texto-fuerte) r g b / 0.04);
+    border: 1px solid var(--trazo-suave);
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.estilo-moderno .tarjeta:hover,
+.estilo-moderno article:hover,
+.estilo-moderno .tarjeta-informacion:hover {
+    box-shadow: 0 4px 12px rgb(from var(--texto-fuerte) r g b / 0.08), 0 2px 4px rgb(from var(--texto-fuerte) r g b / 0.06);
+    border-color: rgb(from var(--color-marca) r g b / 0.2);
+}
+.estilo-moderno button,
+.estilo-moderno .accion-boton {
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.estilo-moderno button:hover,
+.estilo-moderno .accion-boton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(from var(--color-marca) r g b / 0.15);
+}
+
+/* CONFIGURACIN: LMITES DE ARCHIVOS */
+
+/* Alertas */
+.alerta {
+    padding: var(--espacio-normal);
+    border-radius: var(--radio-redondeado);
+    border: 1px solid transparent;
+    font-size: var(--tamano-sm);
+    line-height: 1.6;
+}
+.alerta-peligro {
+    background: rgb(from var(--color-peligro) r g b / 0.08);
+    border-color: var(--color-peligro);
+    color: var(--color-peligro);
+}
+.alerta code {
+    background: rgb(0 0 0 / 0.06);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+/* Opciones MIME */
+.opcion-mime {
+    display: flex;
+    gap: var(--espacio-pequeno);
+    align-items: center;
+    padding: var(--espacio-normal);
+    border: 1px solid var(--trazo-suave);
+    border-radius: var(--radio-redondeado);
+    cursor: pointer;
+    background: var(--fondo-elemento);
+    transition: border-color var(--transicion-base), background-color var(--transicion-base), box-shadow var(--transicion-base);
+}
+.opcion-mime:has(input:checked),
+.opcion-mime.activo {
+    border-color: var(--color-marca);
+    background: var(--color-marca-claro);
+}
+.opcion-mime:hover {
+    border-color: var(--color-marca-claro);
+    box-shadow: var(--sombra-suave);
+}
+.opcion-mime input[type="checkbox"] {
+    flex-shrink: 0;
+}
+
+/* Tarjeta con borde de peligro */
+.tarjeta-peligro {
+    border-color: var(--color-peligro);
+}
+
+/* Detalle avanzado */
+.detalle-servidor {
+    border-radius: var(--radio-redondeado);
+    overflow: hidden;
+}
+.detalle-servidor summary {
+    cursor: pointer;
+    padding: var(--espacio-normal);
+    border-radius: var(--radio-redondeado);
+    transition: background-color var(--transicion-base);
+    user-select: none;
+}
+.detalle-servidor summary:hover {
+    background: var(--fondo-alterno);
+}
+.detalle-servidor[open] summary {
+    border-bottom: 1px solid var(--trazo-suave);
+    border-radius: var(--radio-redondeado) var(--radio-redondeado) 0 0;
+    margin-bottom: var(--espacio-normal);
+}
+.detalle-servidor[open] > :not(summary) {
+    padding: 0 var(--espacio-normal) var(--espacio-normal);
+}
+
+/* Cdigo de directivas PHP */
+pre.codigo-directivas {
+    background: var(--fondo-alterno);
+    padding: var(--espacio-normal);
+    border-radius: var(--radio-redondeado);
+    overflow-x: auto;
+    font-size: var(--tamano-md);
+    margin-top: var(--espacio-normal);
+    border: 1px solid var(--trazo-suave);
+    line-height: 1.5;
+}
+
+/* Input de confirmacin */
+input.campo-confirmacion {
+    font-family: monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* MDULO: MIGRACIONES */
+
+.preview-sql {
+    margin-bottom: var(--espacio-normal);
+    background: var(--fondo-flotante);
+    border-radius: var(--radio-redondeado);
+    padding: var(--espacio-normal);
+}
+
+.preview-sql pre {
+    background: var(--fondo-pantalla);
+    padding: var(--espacio-normal);
+    border-radius: var(--radio-redondeado);
+    overflow-x: auto;
+    font-size: 0.85em;
+    line-height: 1.4;
+    max-height: 300px;
+    overflow-y: auto;
+    margin: var(--espacio-pequeno) 0 0 0;
+}
+
+.preview-sql pre code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.modal-sql-codigo {
+    max-height: 400px;
+    overflow: auto;
+    background: var(--fondo-pantalla);
+    padding: var(--espacio-normal);
+    border-radius: var(--radio-redondeado);
+}
+
+.modal-sql-codigo pre {
+    margin: 0;
+}
+
+.sumario-migraciones {
+    cursor: pointer;
+    padding: var(--espacio-normal);
+    background: var(--fondo-flotante);
+    border-radius: var(--radio-redondeado);
+}
+
+/* MDULO: PERSONALIZACIN */
+
+/* MDULO: INICIO (pgina de bienvenida) */
+
+.cabecera-inicio {
+    padding: var(--espacio-normal);
+    border-bottom: 1px solid var(--trazo-suave);
+}
+
+.cabecera-inicio-contenedor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cabecera-inicio-titulo {
+    margin: 0;
+    font-size: var(--tamano-xl);
+}
+
+.cabecera-inicio-enlace {
+    margin-right: var(--espacio-normal);
+}
+
+.seccion-bienvenida {
+    text-align: center;
+    padding: var(--espacio-grande) 0;
+}
+
+.seccion-bienvenida h2 {
+    font-size: var(--tamano-3xl);
+    margin-bottom: var(--espacio-normal);
+}
+
+.seccion-bienvenida p {
+    color: var(--texto-suave);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pie-inicio {
+    padding: var(--espacio-normal);
+    border-top: 1px solid var(--trazo-suave);
+    margin-top: var(--espacio-grande);
+}
+
+.pie-inicio-contenedor {
+    text-align: center;
+    color: var(--texto-suave);
+    font-size: var(--tamano-sm);
+}
+
+/* UTILIDADES ADICIONALES */
+
+.flex-inicio { align-items: flex-start; }
+.flex-fin { align-items: flex-end; }
+
+.ancho-min-150 { min-width: 150px; }
+.ancho-min-140 { min-width: 140px; }
+.ancho-min-180 { min-width: 180px; }
+.ancho-min-200 { min-width: 200px; }
+
+.ancho-max-720 { max-width: 720px; }
+.ancho-max-800 { max-width: 800px; }
+
+.margen-horizontal-auto { margin-left: auto; margin-right: auto; }
+
+/* COMPONENTE: OPERADOR TARJETA (padding) */
+
+.operador-tarjeta-con-padding {
+    padding: var(--espacio-normal);
+}
+
+/* COMPONENTE: EVENTO AUDITORA (padding) */
+
+.evento-auditoria-con-padding {
+    padding: var(--espacio-normal);
+}
+
+/* COMPONENTE: BARRA CUOTA PERSONALIZADA */
+
+.barra-cuota-advertencia {
+    accent-color: var(--color-peligro);
+}
+
+.barra-cuota-normal {
+    accent-color: var(--color-marca);
+}
+
+/* PANEL DE CONTROL: Layout de columnas */
+
+.cabecera-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--espacio-normal);
+}
+
+.panel-columnas {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--espacio-mediano);
+    align-items: start;
+}
+
+.panel-columna-principal {
+    min-width: 0;
+}
+
+.panel-columna-lateral {
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .panel-columnas {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .cabecera-panel {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* 
+   RESET: evitar que estilos visuales rompan modales
+   Anula pseudo-elementos ::before/::after, transforms 3D,
+   animaciones y backdrop-filter heredados de .estilo-*
+   dentro de cualquier modal del sistema.
+    */
+
+.modal-contenido article,
+.modal-contenido .tarjeta,
+.modal-contenido .tarjeta-informacion {
+    position: relative;
+    transform: none;
+    transform-style: flat;
+    animation: none;
+    backface-visibility: visible;
+    will-change: auto;
+}
+
+.modal-contenido article::before,
+.modal-contenido article::after,
+.modal-contenido .tarjeta::before,
+.modal-contenido .tarjeta::after,
+.modal-contenido .tarjeta-informacion::before,
+.modal-contenido .tarjeta-informacion::after {
+    display: none;
+}
+
+/* =========================================
+   COMPONENTE: PESTANAS DE NAVEGACION
+   ========================================= */
+
+.pestanas-contenedor {
+    display: flex;
+    gap: var(--espacio-pequeno);
+    margin-bottom: var(--espacio-mediano);
+    overflow-x: auto;
+}
+
+.pestana {
+    padding: var(--espacio-pequeno) var(--espacio-mediano);
+    background: var(--fondo-alterno);
+    border: 1px solid var(--trazo-suave);
+    border-radius: var(--radio-redondeado);
+    color: var(--texto-suave);
+    font-weight: 600;
+    font-size: var(--tamano-sm);
+    cursor: pointer;
+    transition: background var(--transicion-base), color var(--transicion-base), border-color var(--transicion-base);
+    white-space: nowrap;
+}
+
+.pestana:hover {
+    background: var(--fondo-elemento);
+    color: var(--texto-fuerte);
+    border-color: var(--trazo-fuerte);
+}
+
+.pestana.activa {
+    background: var(--color-marca);
+    color: var(--texto-invertido);
+    border-color: var(--color-marca);
+}
+
+.pestana-panel[hidden] {
+    display: none;
+}

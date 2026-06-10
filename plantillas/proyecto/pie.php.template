@@ -1,0 +1,12 @@
+            </main>
+
+<?php if (!defined('DIRECTORIO_RAIZ')) exit('Acceso directo no permitido'); ?>
+
+            <footer class="alineacion-centrada relleno-normal borde-superior">
+                <p class="texto-pequeno">&copy; <?= date('Y') ?> {{EMPRESA_NOMBRE}} &bull; {{APP_NOMBRE}} &bull; PHP JavaScript CSS SQL</p>
+            </footer>
+        </div>
+    </div>
+
+</body>
+</html>

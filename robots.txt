@@ -1,0 +1,20 @@
+# liteFramework - Archivo Robots.txt
+# https://example.com/robots.txt
+
+User-agent: *
+Disallow: /servidor/
+Disallow: /rutas/
+Disallow: /src/
+Disallow: /storage/
+Disallow: /errors/
+Disallow: /?error=
+Disallow: /?paleta=
+Disallow: /?estilo=
+Disallow: /?fuente=
+Disallow: /?espaciado=
+Disallow: /?tamano=
+Disallow: /?personalizacion=
+
+Allow: /
+
+Sitemap: /sitemap.xml

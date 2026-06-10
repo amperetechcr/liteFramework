@@ -1,0 +1,24 @@
+{
+    "name": "amperetechcr/lite-framework",
+    "description": "Framework PHP MVC con autenticacion RBAC, API unificada, ORM Active Record, migraciones, SSE en tiempo real y personalizacion UI",
+    "type": "project",
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "LiteFramework\\": "servidor/"
+        },
+        "files": [
+            "servidor/autoload.php"
+        ]
+    },
+    "scripts": {
+        "test": "@php tests/phpunit.phar -c tests/phpunit.xml",
+        "phpcs": "phpcs --standard=phpcs.xml.dist",
+        "phpstan": "phpstan analyse"
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

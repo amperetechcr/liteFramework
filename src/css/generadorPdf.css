@@ -1,0 +1,319 @@
+﻿/* =========================================
+   GENERADOR PDF: Estilos de impresion y previsualizacion
+   Ubicacion: src/css/generadorPdf.css
+   Proposito: Panel de personalizacion y @media print.
+   La previsualizacion usa variables CSS del framework.
+   La impresion usa colores fijos optimizados para papel.
+   ========================================= */
+
+/* PAGINA DE PREVISUALIZACION (hereda tema) */
+
+.pagina-impresion-pdf {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-documento-pdf {
+    margin: var(--espacio-normal) var(--espacio-grande) var(--espacio-pequeno);
+    color: var(--texto-fuerte);
+}
+
+.encabezado-documento-pdf {
+    padding: var(--espacio-pequeno) var(--espacio-grande);
+    color: var(--texto-suave);
+    font-size: var(--tamano-sm);
+    border-bottom: 1px solid var(--trazo-suave);
+}
+
+.contenido-impresion {
+    flex: 1;
+    padding: var(--espacio-grande);
+    max-width: 210mm;
+    margin: 0 auto;
+    width: 100%;
+    line-height: 1.6;
+}
+
+.contenido-impresion img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* PANEL DE PERSONALIZACION PRE-IMPRESION */
+
+.panel-personalizacion-pdf {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--fondo-pantalla);
+    border-bottom: 2px solid var(--trazo-suave);
+    box-shadow: var(--sombra-suave);
+}
+
+.panel-personalizacion-contenido {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem var(--espacio-normal);
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.panel-personalizacion-grupo {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.panel-personalizacion-grupo label {
+    margin-bottom: 0;
+    white-space: nowrap;
+    color: var(--texto-base);
+}
+
+.panel-personalizacion-grupo select {
+    width: auto;
+    min-width: 100px;
+    padding: 0.35rem 0.5rem;
+    font-size: var(--tamano-xs);
+    background: var(--fondo-elemento);
+    border: 1px solid var(--trazo-fuerte);
+    border-radius: var(--radio-redondeado);
+    color: var(--texto-base);
+    cursor: pointer;
+}
+
+.panel-personalizacion-grupo select:focus {
+    outline: none;
+    border-color: var(--color-marca);
+    box-shadow: 0 0 0 2px var(--color-marca-claro);
+}
+
+.panel-personalizacion-grupo-check {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+}
+
+.panel-personalizacion-grupo-check input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-marca);
+    cursor: pointer;
+    margin: 0;
+}
+
+.panel-personalizacion-grupo-check label {
+    cursor: pointer;
+    margin-bottom: 0;
+    user-select: none;
+}
+
+.panel-personalizacion-divisor {
+    width: 1px;
+    height: 28px;
+    background: var(--trazo-fuerte);
+    margin: 0 0.25rem;
+    align-self: center;
+}
+
+.panel-personalizacion-acciones {
+    display: flex;
+    gap: var(--espacio-pequeno);
+    margin-left: auto;
+}
+
+.panel-personalizacion-acciones .accion-boton {
+    font-size: var(--tamano-xs);
+    padding: 0.4rem 1rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .panel-personalizacion-contenido {
+        padding: var(--espacio-pequeno);
+        gap: var(--espacio-pequeno);
+    }
+
+    .panel-personalizacion-grupo select {
+        min-width: 80px;
+    }
+
+    .panel-personalizacion-divisor {
+        display: none;
+    }
+
+    .panel-personalizacion-acciones {
+        width: 100%;
+    }
+
+    .panel-personalizacion-acciones .accion-boton {
+        width: 100%;
+    }
+}
+
+/* MODULO: TARJETA DE DOCUMENTO (legacy) */
+
+.documento-tarjeta {
+    border-left: 4px solid var(--color-marca);
+    padding: var(--espacio-normal);
+    transition: box-shadow var(--transicion-base), border-left-color var(--transicion-base);
+}
+
+.documento-tarjeta:hover {
+    border-left-color: var(--color-marca-hover);
+    box-shadow: var(--sombra-flotante);
+}
+
+/* 
+   MEDIA PRINT  Colores fijos optimizados
+   ========================================= */
+
+@media print {
+    @page {
+        size: A4;
+        margin: 15mm 12mm;
+    }
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+        line-height: 1.5;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .panel-personalizacion-pdf,
+    .encabezado-documento-pdf,
+    .barra-lateral,
+    .cabecera-movil,
+    .barra-herramientas-impresion,
+    button,
+    a[role="button"],
+    input[type="submit"],
+    input[type="button"],
+    .accion-boton,
+    nav,
+    header:not(.cabecera-inicio),
+    footer:not(.pie-inicio),
+    .capa-lateral,
+    .boton-menu-lateral,
+    .alternador-tema,
+    .enlace-salto,
+    .notificacion,
+    .notificador-mensaje,
+    .modal-superposicion,
+    .modal-contenido,
+    .paginacion,
+    .paginador,
+    .oculto-impresion {
+        display: none !important;
+    }
+
+    .contenido-impresion {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .pagina-impresion-pdf {
+        display: block !important;
+        min-height: auto !important;
+    }
+
+    .titulo-documento-pdf {
+        margin: 0 0 0.75rem 0 !important;
+    }
+
+    article,
+    .tarjeta,
+    .tarjeta-informacion {
+        box-shadow: none !important;
+        border: 1px solid #cccccc !important;
+        background: #ffffff !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: #000000 !important;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    h1 { font-size: 18pt; }
+    h2 { font-size: 16pt; }
+    h3 { font-size: 14pt; }
+
+    p, li, td, th {
+        color: #333333 !important;
+    }
+
+    a {
+        color: #000000 !important;
+        text-decoration: underline;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #999999;
+        padding: 4pt 6pt;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    pre, code {
+        background: #f5f5f5 !important;
+        border: 1px solid #cccccc !important;
+        color: #333333 !important;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    blockquote {
+        border-left: 3pt solid #666666 !important;
+        background: #f9f9f9 !important;
+        color: #333333 !important;
+    }
+
+    .etiqueta {
+        border: 1px solid #999999 !important;
+        background: #f0f0f0 !important;
+        color: #333333 !important;
+    }
+
+    .salto-pagina {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .evitar-salto {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .visible-impresion {
+        display: block !important;
+    }
+}
