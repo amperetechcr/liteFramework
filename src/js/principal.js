@@ -94,9 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
         window.__liteSse = new LiteSse(metaUrl);
         window.liteSse = window.__liteSse;
         window.__liteSse.subscribir('auditoria_alerta', function (datos) {
-            // NOTA: SSE re-emite eventos históricos de bitácora al reconectar
-            // Mostrarlos como notificación es ruido. Solo loggear.
-            console.log('[SSE] ' + datos.nivel + ' ' + datos.modulo + ': ' + datos.accion + (datos.ip ? ' | IP: ' + datos.ip : ''));
+            var msg = '[' + datos.nivel + '] ' + datos.modulo + ': ' + datos.accion;
+            if (datos.ip) {
+                msg += ' | IP: ' + datos.ip;
+            }
+            if (window.NotificadorHubble) {
+                window.NotificadorHubble.mostrar(msg, datos.nivel === 'SEGURIDAD' ? 'peligro' : 'advertencia', 8000);
+            }
         });
     }
 
