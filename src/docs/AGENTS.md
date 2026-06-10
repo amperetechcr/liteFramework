@@ -231,6 +231,25 @@ php servidor/migrar.php ejecutar  # ejecuta todas
 ```
 Archivos en `servidor/migraciones/00X_*.sql` con `GestorMigraciones.php`.
 
+## Windows - Tests se pegan en PowerShell
+PHPUnit 11 usa `\r` en el progreso, PowerShell 5.1 se cuelga al pipear.
+Ejecutar siempre con `cmd /c`:
+```cmd
+cmd /c ""C:\xampp\php\php.exe" -f tests\phpunit.phar -- -c tests\phpunit.xml"
+```
+
+## Protocolo de depuración (NO SALTAR PASOS)
+1. Tests (cmd /c) → el código debe pasar
+2. Bitácora (lite_mcp_lite_crud) → leer error REAL de BD
+3. Log archivo (storage/logs/trazabilidad.log) → trazas y trace_id
+4. Consola navegador (F12) → errores JS, 403/404, fetch fails
+5. MCP tools → datos vivos, no adivinar
+6. console.log → solo si 1-5 no dieron respuesta
+7. Fix más simple (1 línea) → probar, si falla revertir
+8. Si 3 intentos fallan → revertir TODO, volver al paso 1
+
+**Prohibido:** desactivar seguridad completa, modificar archivos no relacionados, 10 cambios a la vez, asumir sin ver logs.
+
 ## Recordatorios IA
 
 1. **Type hints SIEMPRE**: `function foo(string $param): array` — en parámetros y retorno. Sin excepción.

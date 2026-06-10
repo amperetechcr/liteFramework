@@ -181,4 +181,25 @@ openclaw agent --agent main --message "Mide tiempos de carga de /liteFramework/i
 2. **Verificación**: `opencode run "Ejecuta los tests unitarios"`
 3. **Pruebas E2E**: Ejecutar comando OpenClaw desde acá
 4. **Verificación visual**: Probar módulo con el navegador
+
+## ⚠️ Windows PowerShell - Tests se pegan
+PHPUnit 11 usa `\r` (carriage return) en la barra de progreso. PowerShell 5.1 se cuelga al pipear eso.
+**Siempre usar cmd /c para ejecutar tests:**
+```cmd
+cmd /c ""C:\xampp\php\php.exe" -f tests\phpunit.phar -- -c tests\phpunit.xml"
+```
+
+## ⚠️ Protocolo de depuración (NO SALTAR PASOS)
+```
+1. Tests (cmd /c)        → el código debe pasar, es la línea base
+2. Bitácora (crud listar)→ leer error REAL de BD, no adivinar
+3. Log archivo           → trazas y trace_id en storage/logs/
+4. Consola navegador F12 → JS errors, 403/404, fetch fails
+5. MCP tools             → datos vivos con lite_mcp_lite_crud
+6. console.log           → solo si 1-5 no dieron respuesta
+7. Fix más simple primero→ 1 línea, probar, si no funciona revertir
+8. 3 intentos fallidos   → revertir TODO y volver al paso 1
+```
+
+**Prohibido:** desactivar seguridad completa, modificar archivos no relacionados, 10 cambios simultáneos, asumir sin ver logs.
 ```
