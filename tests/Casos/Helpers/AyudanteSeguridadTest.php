@@ -33,7 +33,7 @@ class AyudanteSeguridadTest extends TestCase {
     }
 
     public function testTokenCSRF(): void {
-        $_SESSION['token_csrf'] = 'abc123';
+        $_SESSION['csrf_token'] = 'abc123';
         $this->assertEquals('abc123', Seguridad::tokenCSRF());
     }
 
@@ -63,7 +63,7 @@ class AyudanteSeguridadTest extends TestCase {
     }
 
     public function testCsrfMeta(): void {
-        $_SESSION['token_csrf'] = 'token123';
+        $_SESSION['csrf_token'] = 'token123';
         $meta = Seguridad::csrfMeta();
         $this->assertStringContainsString('csrf-token', $meta);
         $this->assertStringContainsString('token123', $meta);
