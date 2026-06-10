@@ -184,9 +184,9 @@ openclaw agent --agent main --message "Mide tiempos de carga de /liteFramework/i
 
 ## ⚠️ Windows PowerShell - Tests se pegan
 PHPUnit 11 usa `\r` (carriage return) en la barra de progreso. PowerShell 5.1 se cuelga al pipear eso.
-**Siempre usar cmd /c para ejecutar tests:**
+**Siempre usar cmd /c + 2>nul para ejecutar tests (sino PowerShell mezcla stderr con stdout y se cuelga):**
 ```cmd
-cmd /c ""C:\xampp\php\php.exe" -f tests\phpunit.phar -- -c tests\phpunit.xml"
+cmd /c ""C:\xampp\php\php.exe" -f tests\phpunit.phar -- -c tests\phpunit.xml 2>nul"
 ```
 
 ## ⚠️ Protocolo de depuración (NO SALTAR PASOS)

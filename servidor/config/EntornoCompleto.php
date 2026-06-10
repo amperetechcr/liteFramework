@@ -86,9 +86,13 @@ class EntornoCompleto
             $lineas = file($archivo, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
             foreach ($lineas as $linea) {
                 $linea = trim($linea);
-                if ($linea === '' || str_starts_with($linea, '#')) continue;
+                if ($linea === '' || str_starts_with($linea, '#')) {
+                    continue;
+                }
                 $partes = explode('=', $linea, 2);
-                if (count($partes) !== 2) continue;
+                if (count($partes) !== 2) {
+                    continue;
+                }
                 $clave = trim($partes[0]);
                 $valor = trim($partes[1]);
                 $vars[$clave] = self::enmascararSiSensible($clave, $valor);
@@ -169,7 +173,9 @@ class EntornoCompleto
         $sensibles = ['CLAVE', 'PASSWORD', 'SECRET', 'TOKEN', 'KEY', 'DSN'];
         foreach ($sensibles as $s) {
             if (stripos($clave, $s) !== false) {
-                if (strlen($valor) <= 4) return '****';
+                if (strlen($valor) <= 4) {
+                    return '****';
+                }
                 return substr($valor, 0, 4) . '****' . substr($valor, -4);
             }
         }

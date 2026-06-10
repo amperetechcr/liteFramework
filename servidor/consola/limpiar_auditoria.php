@@ -16,6 +16,7 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
+$consola = null;
 try {
     $consola = Consola::instance();
     $modoJson = $consola && $consola->estaEnModoJson();

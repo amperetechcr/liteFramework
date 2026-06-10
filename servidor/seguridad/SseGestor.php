@@ -141,7 +141,9 @@ class SseGestor
         echo "event: sse.conectado\n";
         echo "data: {\"id_operador\":{$idOperador},\"modo\":\"archivo\"}\n\n";
 
-        if (ob_get_level() > 0) { ob_flush(); }
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
         flush();
 
         $inicio = time();
@@ -170,7 +172,9 @@ class SseGestor
             }
 
             echo ": heartbeat\n\n";
-            if (ob_get_level() > 0) { ob_flush(); }
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
             flush();
 
             usleep(50000);
@@ -271,7 +275,9 @@ class SseGestor
         echo "event: sse.conectado\n";
         echo "data: {\"id_operador\":{$idOperador},\"modo\":\"db\"}\n\n";
 
-        if (ob_get_level() > 0) { ob_flush(); }
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
         flush();
 
         $inicio = time();
@@ -327,7 +333,9 @@ class SseGestor
             }
 
             echo ": heartbeat\n\n";
-            if (ob_get_level() > 0) { ob_flush(); }
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
             flush();
 
             usleep(50000);
