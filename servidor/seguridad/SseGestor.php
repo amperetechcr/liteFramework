@@ -256,6 +256,10 @@ class SseGestor
             if ((int)$ev['id'] <= $ultimoId) {
                 continue;
             }
+            // Conexión nueva (ultimoId=0): ignorar eventos viejos (>60s)
+            if ($ultimoId === 0 && isset($ev['ts']) && (time() - (int)$ev['ts']) > 60) {
+                continue;
+            }
             if ((int)($ev['id_operador'] ?? -1) !== 0 && (int)($ev['id_operador'] ?? -1) !== $idOperador) {
                 continue;
             }
