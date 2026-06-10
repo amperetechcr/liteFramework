@@ -25,7 +25,7 @@
         <?php endforeach; ?>
     </div>
 
-    <?php if ($totalPaginas > 1): ?>
+    <?php if (!empty($paginador) && $paginador->totalPaginas > 1): ?>
     <?= $paginador->render() ?>
     <?php endif; ?>
     <?php endif; ?>

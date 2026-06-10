@@ -1,0 +1,527 @@
+<?php
+
+declare(strict_types=1);
+
+namespace LiteFramework\Servicios;
+
+/**
+ * OrquestadorIA — Catálogo inteligente de herramientas del framework.
+ *
+ * Permite a la IA descubrir qué helper/método usar según su intención,
+ * sin necesidad de escanear ~350 archivos manualmente.
+ *
+ * Modos de uso:
+ *   OrquestadorIA::catalogo()              → todo el catálogo
+ *   OrquestadorIA::catalogo('texto')       → solo categoría
+ *   OrquestadorIA::buscar('validar csrf')  → top 3 matches
+ *   OrquestadorIA::ejecutar('Seguridad', 'validarCSRF', ['token' => '...'])
+ */
+class OrquestadorIA
+{
+    private static ?array $catalogo = null;
+
+    public static function catalogo(?string $categoria = null): array
+    {
+        self::init();
+        if ($categoria !== null) {
+            if (isset(self::$catalogo[$categoria])) {
+                return self::$catalogo[$categoria];
+            }
+            $porAlias = [];
+            foreach (self::$catalogo as $cat => $items) {
+                foreach ($items as $h) {
+                    $a = $h['alias'] ?? '';
+                    if (strtolower($a) === strtolower($categoria) || strtolower($h['helper']) === strtolower($categoria)) {
+                        $porAlias[$cat] = $h;
+                    }
+                }
+            }
+            return $porAlias ?: [];
+        }
+        return self::$catalogo;
+    }
+
+    public static function buscar(string $intento, int $limite = 3): array
+    {
+        self::init();
+
+        $tokens = self::tokenizar($intento);
+        if (empty($tokens)) {
+            return [];
+        }
+
+        $puntuados = [];
+
+        foreach (self::$catalogo as $categoria => $helpers) {
+            foreach ($helpers as $h) {
+                foreach ($h['metodos'] as $m) {
+                    $palabras = array_merge(
+                        [$m['nombre'], $h['alias'], $h['helper'], $categoria],
+                        $m['k']
+                    );
+                    $textoBusqueda = implode(' ', $palabras) . ' ' . ($m['d'] ?? '');
+                    $textoBusqueda = mb_strtolower($textoBusqueda);
+
+                    $puntos = 0;
+                    foreach ($tokens as $tok) {
+                        if (str_contains($textoBusqueda, $tok)) {
+                            $puntos += 3;
+                        }
+                        foreach ($m['k'] as $kw) {
+                            if (str_contains(mb_strtolower($kw), $tok)) {
+                                $puntos += 2;
+                            }
+                        }
+                    }
+
+                    if ($puntos > 0) {
+                        $puntuados[] = [
+                            'puntos' => $puntos,
+                            'helper' => $h['helper'],
+                            'alias' => $h['alias'],
+                            'categoria' => $categoria,
+                            'metodo' => $m['nombre'],
+                            'descripcion' => $m['d'] ?? '',
+                            'parametros' => $m['p'] ?? [],
+                            'retorna' => $m['r'] ?? 'mixed',
+                        ];
+                    }
+                }
+            }
+        }
+
+        usort($puntuados, fn($a, $b) => $b['puntos'] <=> $a['puntos']);
+        return array_slice($puntuados, 0, $limite);
+    }
+
+    public static function ejecutar(string $helper, string $metodo, array $params = []): mixed
+    {
+        $fqcn = 'LiteFramework\\Nucleo\\Helpers\\' . $helper;
+        if (!class_exists($fqcn)) {
+            $aliasMap = [
+                'Seguridad' => 'AyudanteSeguridad',
+                'Cadena' => 'AyudanteCadena',
+                'Arreglo' => 'AyudanteArreglo',
+                'General' => 'AyudanteGeneral',
+                'Fecha' => 'AyudanteFecha',
+                'ArchivoH' => 'AyudanteArchivo',
+                'OperadorH' => 'AyudanteOperador',
+                'HttpCliente' => 'AyudanteHttp',
+                'Cache' => 'AyudanteCache',
+                'Rendimiento' => 'AyudanteRendimiento',
+                'Monitor' => 'AyudanteMonitor',
+            ];
+            $real = $aliasMap[$helper] ?? null;
+            if ($real === null) {
+                throw new \InvalidArgumentException("Helper no encontrado: $helper");
+            }
+            $fqcn = 'LiteFramework\\Nucleo\\Helpers\\' . $real;
+        }
+
+        if (!method_exists($fqcn, $metodo)) {
+            throw new \InvalidArgumentException("Método $metodo no existe en $helper");
+        }
+
+        $ref = new \ReflectionMethod($fqcn, $metodo);
+        if (!$ref->isPublic() || !$ref->isStatic()) {
+            throw new \InvalidArgumentException("$helper::$metodo no es público y estático");
+        }
+
+        $args = [];
+        foreach ($ref->getParameters() as $rp) {
+            $nombre = $rp->getName();
+            if (array_key_exists($nombre, $params)) {
+                $args[] = $params[$nombre];
+            } elseif ($rp->isDefaultValueAvailable()) {
+                $args[] = $rp->getDefaultValue();
+            } else {
+                throw new \InvalidArgumentException("Falta parámetro requerido: \$$nombre");
+            }
+        }
+
+        return $fqcn::$metodo(...$args);
+    }
+
+    public static function sugerir(string $intento, int $limite = 3): array
+    {
+        $resultados = self::buscar($intento, $limite);
+        $agrupado = [];
+        foreach ($resultados as $r) {
+            $clave = $r['alias'] . '::' . $r['metodo'];
+            $agrupado[$clave] = $r;
+        }
+        return $agrupado;
+    }
+
+    /**
+     * Modo auto: recibe lenguaje natural, detecta el mejor helper/método,
+     * y lo ejecuta automáticamente. Si hay ambigüedad, devuelve sugerencias.
+     */
+    public static function auto(string $intento, array $params = []): array
+    {
+        $resultados = self::buscar($intento, 5);
+
+        if (empty($resultados)) {
+            return [
+                'exito' => false,
+                'error' => 'No se encontró ningún helper para: ' . $intento,
+                'sugerencias' => [],
+            ];
+        }
+
+        $mejor = $resultados[0];
+        $segundo = $resultados[1] ?? null;
+
+        $confianza = true;
+        if ($segundo !== null && $segundo['puntos'] >= $mejor['puntos'] * 0.8) {
+            $confianza = false;
+        }
+        if ($mejor['puntos'] < 4) {
+            $confianza = false;
+        }
+
+        if (!$confianza) {
+            $sugerencias = [];
+            foreach ($resultados as $r) {
+                $sugerencias[] = [
+                    'helper' => $r['alias'],
+                    'metodo' => $r['metodo'],
+                    'descripcion' => $r['descripcion'],
+                    'parametros' => $r['parametros'],
+                    'confianza' => $r['puntos'],
+                ];
+            }
+            return [
+                'exito' => false,
+                'ambiguedad' => true,
+                'error' => 'Múltiples opciones posibles. Especifica más.',
+                'sugerencias' => $sugerencias,
+            ];
+        }
+
+        try {
+            $helperReal = $mejor['helper'];
+            $aliasMap = [
+                'AyudanteCadena' => 'Cadena',
+                'AyudanteFecha' => 'Fecha',
+                'AyudanteArreglo' => 'Arreglo',
+                'AyudanteSeguridad' => 'Seguridad',
+                'AyudanteArchivo' => 'ArchivoH',
+                'AyudanteCache' => 'Cache',
+                'AyudanteHttp' => 'HttpCliente',
+                'AyudanteRendimiento' => 'Rendimiento',
+                'AyudanteOperador' => 'OperadorH',
+                'AyudanteMonitor' => 'Monitor',
+                'AyudanteGeneral' => 'General',
+            ];
+            $alias = $aliasMap[$helperReal] ?? $mejor['alias'];
+
+            $resultado = self::ejecutar($alias, $mejor['metodo'], $params);
+
+            return [
+                'exito' => true,
+                'helper' => $alias,
+                'metodo' => $mejor['metodo'],
+                'descripcion' => $mejor['descripcion'],
+                'resultado' => $resultado,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'exito' => false,
+                'error' => $e->getMessage(),
+                'helper_sugerido' => $mejor['alias'] . '::' . $mejor['metodo'],
+                'parametros_requeridos' => $mejor['parametros'],
+            ];
+        }
+    }
+
+    private static function tokenizar(string $texto): array
+    {
+        $stopwords = ['el', 'la', 'los', 'las', 'de', 'del', 'en', 'un', 'una', 'y', 'e', 'o', 'a',
+                       'que', 'es', 'por', 'con', 'para', 'su', 'se', 'no', 'lo', 'como', 'mas',
+                       'pero', 'sus', 'le', 'ya', 'este', 'entre', 'porque', 'todo', 'sin', 'the',
+                       'and', 'for', 'are', 'not', 'was', 'has', 'but', 'all', 'any', 'can', 'get',
+                       'al', 'del', 'me', 'te', 'nos', 'os'];
+        $palabras = preg_split('/[\s\-_]+/', mb_strtolower($texto));
+        $resultado = [];
+        foreach ($palabras as $p) {
+            $p = trim($p);
+            if (strlen($p) > 1 && !in_array($p, $stopwords, true)) {
+                $resultado[] = $p;
+            }
+        }
+        return $resultado;
+    }
+
+    private static function init(): void
+    {
+        if (self::$catalogo !== null) return;
+
+        self::$catalogo = [
+            'texto' => [
+                [
+                    'helper' => 'AyudanteCadena',
+                    'alias' => 'Cadena',
+                    'descripcion' => 'Manipulación de cadenas de texto',
+                    'metodos' => [
+                        ['nombre' => 'limitar', 'p' => ['texto:string', 'limite:int', 'fin:string|...'], 'r' => 'string', 'd' => 'Limita texto a N caracteres con puntos suspensivos', 'k' => ['acortar', 'cortar', 'resumir', 'truncar']],
+                        ['nombre' => 'truncar', 'p' => ['texto:string|null', 'limite:int', 'fin:string|...'], 'r' => 'string', 'd' => 'Corta texto al final de la última palabra completa', 'k' => ['cortar palabra', 'no romper palabra']],
+                        ['nombre' => 'slug', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Convierte texto a slug URL-friendly', 'k' => ['url amigable', 'url slug', 'slug', 'normalizar url', 'seo']],
+                        ['nombre' => 'capitalizar', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Primera letra en mayúscula', 'k' => ['primera mayuscula', 'upper first']],
+                        ['nombre' => 'titulo', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Capitaliza cada palabra (title case)', 'k' => ['title case', 'cada palabra']],
+                        ['nombre' => 'minusculas', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Convierte a minúsculas', 'k' => ['lowercase', 'lower', 'minuscula']],
+                        ['nombre' => 'mayusculas', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Convierte a mayúsculas', 'k' => ['uppercase', 'upper', 'mayuscula']],
+                        ['nombre' => 'contiene', 'p' => ['cadena:string|null', 'buscar:string', 'sensitivo:bool=false'], 'r' => 'bool', 'd' => 'Verifica si un texto contiene una subcadena', 'k' => ['buscar texto', 'subcadena', 'contains']],
+                        ['nombre' => 'iniciar', 'p' => ['texto:string|null', 'longitud:int'], 'r' => 'string', 'd' => 'Obtiene los primeros N caracteres', 'k' => ['primeros', 'inicio', 'left']],
+                        ['nombre' => 'terminar', 'p' => ['texto:string|null', 'longitud:int'], 'r' => 'string', 'd' => 'Obtiene los últimos N caracteres', 'k' => ['ultimos', 'final', 'right']],
+                        ['nombre' => 'aleatorio', 'p' => ['longitud:int=16'], 'r' => 'string', 'd' => 'Genera cadena alfanumérica aleatoria', 'k' => ['random', 'azar', 'token texto']],
+                        ['nombre' => 'espaciar', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Elimina espacios en blanco excesivos', 'k' => ['normalizar espacios', 'espacios multiples']],
+                        ['nombre' => 'envolver', 'p' => ['texto:string|null', 'etiquetaApertura:string', 'etiquetaCierre:string|null'], 'r' => 'string', 'd' => 'Envuelve texto entre etiquetas HTML', 'k' => ['wrap', 'html wrap', 'etiquetas']],
+                        ['nombre' => 'reemplazarEntre', 'p' => ['texto:string|null', 'etiqueta:string', 'reemplazo:string'], 'r' => 'string', 'd' => 'Reemplaza contenido entre etiquetas HTML', 'k' => ['reemplazar html', 'replace between']],
+                        ['nombre' => 'extraer', 'p' => ['texto:string|null', 'inicio:string', 'fin:string'], 'r' => 'string', 'd' => 'Extrae texto entre dos marcadores', 'k' => ['extract between', 'entre marcadores']],
+                        ['nombre' => 'palabras', 'p' => ['texto:string|null'], 'r' => 'int', 'd' => 'Cuenta palabras en un texto', 'k' => ['contar palabras', 'word count']],
+                        ['nombre' => 'contarCaracteres', 'p' => ['texto:string|null'], 'r' => 'int', 'd' => 'Cuenta caracteres sin espacios', 'k' => ['contar caracteres', 'char count']],
+                        ['nombre' => 'invertir', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Invierte una cadena', 'k' => ['reverse', 'reversa']],
+                        ['nombre' => 'hash', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Genera hash corto único (SHA256 truncado)', 'k' => ['hash rapido', 'hash corto']],
+                        ['nombre' => 'stripTags', 'p' => ['texto:string|null', 'etiquetasPermitidas:string|null'], 'r' => 'string', 'd' => 'Elimina etiquetas HTML (opcional: permite algunas)', 'k' => ['limpiar html', 'strip html', 'quitar etiquetas']],
+                        ['nombre' => 'escapar', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Escapa caracteres especiales HTML', 'k' => ['html escape', 'escape html', 'entidades']],
+                        ['nombre' => 'desescapar', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Decodifica entidades HTML', 'k' => ['html decode', 'unescape', 'decodificar']],
+                        ['nombre' => 'esEmail', 'p' => ['texto:string|null'], 'r' => 'bool', 'd' => 'Verifica si es un email válido', 'k' => ['validar email', 'email valido', 'correo']],
+                        ['nombre' => 'esUrl', 'p' => ['texto:string|null'], 'r' => 'bool', 'd' => 'Verifica si es una URL válida', 'k' => ['validar url', 'url valida']],
+                        ['nombre' => 'enmascarar', 'p' => ['texto:string|null', 'patron:string=*', 'mostrarInicio:int=4', 'mostrarFin:int=4'], 'r' => 'string', 'd' => 'Enmascara texto (ej: 1234****5678)', 'k' => ['mascara', 'ocultar', 'mask', 'tarjeta']],
+                        ['nombre' => 'normalizar', 'p' => ['texto:string|null'], 'r' => 'string', 'd' => 'Normaliza texto quitando acentos', 'k' => ['quitar acentos', 'sin tildes', 'normalizar']],
+                    ],
+                ],
+            ],
+            'fecha' => [
+                [
+                    'helper' => 'AyudanteFecha',
+                    'alias' => 'Fecha',
+                    'descripcion' => 'Manipulación de fechas y tiempos',
+                    'metodos' => [
+                        ['nombre' => 'hoy', 'p' => ['formato:string=Y-m-d'], 'r' => 'string', 'd' => 'Fecha actual en formato dado', 'k' => ['fecha actual', 'today', 'hoy']],
+                        ['nombre' => 'ahora', 'p' => ['formato:string=Y-m-d H:i:s'], 'r' => 'string', 'd' => 'Fecha y hora actual', 'k' => ['ahora', 'now', 'fecha hora']],
+                        ['nombre' => 'formatear', 'p' => ['fecha:string|DateTime|null', 'formato:string=d/m/Y H:i:s', 'timezoneOffset:int|null'], 'r' => 'string', 'd' => 'Formatea una fecha con formato personalizado', 'k' => ['formatear fecha', 'date format']],
+                        ['nombre' => 'diferencia', 'p' => ['fecha1:string|DateTime', 'fecha2:string|DateTime', 'unidad:string=dias'], 'r' => 'int', 'd' => 'Diferencia entre dos fechas en seg/min/hrs/dias/sem/meses/años', 'k' => ['diferencia fechas', 'date diff', 'calcular dias']],
+                        ['nombre' => 'relativo', 'p' => ['fecha:string|DateTime|null'], 'r' => 'string', 'd' => 'Texto relativo: "hace 3 días", "en 2 horas"', 'k' => ['fecha relativa', 'time ago', 'hace cuanto']],
+                        ['nombre' => 'edad', 'p' => ['fechaNacimiento:string|DateTime'], 'r' => 'int', 'd' => 'Calcula edad desde fecha de nacimiento', 'k' => ['calcular edad', 'birthday']],
+                        ['nombre' => 'esHoy', 'p' => ['fecha:string|DateTime'], 'r' => 'bool', 'd' => 'Verifica si una fecha es hoy', 'k' => ['es hoy', 'is today']],
+                        ['nombre' => 'esPasado', 'p' => ['fecha:string|DateTime'], 'r' => 'bool', 'd' => 'Verifica si una fecha ya pasó', 'k' => ['es pasado', 'ya paso', 'is past']],
+                        ['nombre' => 'esFuturo', 'p' => ['fecha:string|DateTime'], 'r' => 'bool', 'd' => 'Verifica si una fecha es futura', 'k' => ['es futuro', 'futura', 'is future']],
+                        ['nombre' => 'sumarDias', 'p' => ['fecha:string|DateTime', 'dias:int'], 'r' => 'DateTime', 'd' => 'Suma días a una fecha', 'k' => ['sumar dias', 'add days']],
+                        ['nombre' => 'restarDias', 'p' => ['fecha:string|DateTime', 'dias:int'], 'r' => 'DateTime', 'd' => 'Resta días a una fecha', 'k' => ['restar dias', 'sub days']],
+                        ['nombre' => 'primerDiaMes', 'p' => ['fecha:string|DateTime|null=null'], 'r' => 'DateTime', 'd' => 'Primer día del mes de una fecha', 'k' => ['primer dia mes', 'first day month']],
+                        ['nombre' => 'ultimoDiaMes', 'p' => ['fecha:string|DateTime|null=null'], 'r' => 'DateTime', 'd' => 'Último día del mes de una fecha', 'k' => ['ultimo dia mes', 'last day month']],
+                        ['nombre' => 'comparar', 'p' => ['fecha1:string|DateTime', 'fecha2:string|DateTime'], 'r' => 'int', 'd' => 'Compara dos fechas (-1, 0, 1)', 'k' => ['comparar fechas', 'date compare']],
+                        ['nombre' => 'estaEntre', 'p' => ['fecha:string|DateTime', 'inicio:string|DateTime', 'fin:string|DateTime'], 'r' => 'bool', 'd' => 'Verifica si fecha está en rango', 'k' => ['entre fechas', 'rango', 'date between']],
+                        ['nombre' => 'aTimestamp', 'p' => ['fecha:string|DateTime'], 'r' => 'int', 'd' => 'Convierte fecha a Unix timestamp', 'k' => ['a timestamp', 'unix', 'epoch']],
+                        ['nombre' => 'crear', 'p' => ['fecha:string|DateTime|null=null'], 'r' => 'DateTime', 'd' => 'Crea objeto DateTime desde string o null', 'k' => ['crear fecha', 'new date', 'datetime']],
+                        ['nombre' => 'aMySQL', 'p' => ['fecha:string|DateTime'], 'r' => 'string', 'd' => 'Formatea fecha a formato MySQL (Y-m-d H:i:s)', 'k' => ['formato mysql', 'mysql date']],
+                    ],
+                ],
+            ],
+            'arreglo' => [
+                [
+                    'helper' => 'AyudanteArreglo',
+                    'alias' => 'Arreglo',
+                    'descripcion' => 'Utilidades para arreglos y colecciones',
+                    'metodos' => [
+                        ['nombre' => 'primero', 'p' => ['arreglo:array'], 'r' => 'mixed', 'd' => 'Primer elemento del arreglo', 'k' => ['primer elemento', 'first']],
+                        ['nombre' => 'ultimo', 'p' => ['arreglo:array'], 'r' => 'mixed', 'd' => 'Último elemento del arreglo', 'k' => ['ultimo elemento', 'last']],
+                        ['nombre' => 'obtener', 'p' => ['arreglo:array', 'clave:int|string', 'defecto:mixed=null'], 'r' => 'mixed', 'd' => 'Valor del arreglo por clave con fallback', 'k' => ['get', 'obtener clave', 'array get']],
+                        ['nombre' => 'tomar', 'p' => ['arreglo:array', 'limite:int'], 'r' => 'array', 'd' => 'Toma los primeros N elementos', 'k' => ['tomar n', 'take', 'slice inicio']],
+                        ['nombre' => 'ignorar', 'p' => ['arreglo:array', 'limite:int'], 'r' => 'array', 'd' => 'Ignora los primeros N elementos', 'k' => ['skip', 'saltar', 'desde']],
+                        ['nombre' => 'pluck', 'p' => ['arreglo:array', 'clave:string', 'indice:string|null=null'], 'r' => 'array', 'd' => 'Extrae columna de array de objetos/arrays', 'k' => ['columna', 'extraer campo', 'pluck']],
+                        ['nombre' => 'agrupar', 'p' => ['arreglo:array', 'clave:string'], 'r' => 'array', 'd' => 'Agrupa elementos por una clave', 'k' => ['group by', 'agrupar por']],
+                        ['nombre' => 'filtrar', 'p' => ['arreglo:array', 'callback:callable'], 'r' => 'array', 'd' => 'Filtra con función callback', 'k' => ['filter', 'filtrar por']],
+                        ['nombre' => 'ordenar', 'p' => ['arreglo:array', 'clave:string', 'direccion:string=ASC'], 'r' => 'array', 'd' => 'Ordena por clave ASC/DESC', 'k' => ['ordenar por', 'sort', 'order by']],
+                        ['nombre' => 'aplanar', 'p' => ['arreglo:array', 'profundidad:int=-1'], 'r' => 'array', 'd' => 'Aplana array multidimensional', 'k' => ['flatten', 'aplanar', 'array flat']],
+                        ['nombre' => 'unico', 'p' => ['arreglo:array'], 'r' => 'array', 'd' => 'Valores únicos del arreglo', 'k' => ['unique', 'valores unicos', 'duplicados']],
+                        ['nombre' => 'contiene', 'p' => ['arreglo:array', 'valor:mixed', 'estricto:bool=true'], 'r' => 'bool', 'd' => 'Verifica si existe un valor', 'k' => ['in array', 'contiene valor']],
+                        ['nombre' => 'indiceDe', 'p' => ['arreglo:array', 'valor:mixed', 'estricto:bool=true'], 'r' => 'int|string|null', 'd' => 'Busca índice de un valor', 'k' => ['array search', 'buscar indice']],
+                        ['nombre' => 'chunks', 'p' => ['arreglo:array', 'tamano:int'], 'r' => 'array', 'd' => 'Divide en fragmentos de tamaño N', 'k' => ['chunk', 'fragmentos', 'partes']],
+                        ['nombre' => 'combinar', 'p' => ['claves:array', 'valores:array'], 'r' => 'array', 'd' => 'Combina arrays (claves + valores)', 'k' => ['combine', 'array combine']],
+                        ['nombre' => 'invertir', 'p' => ['arreglo:array'], 'r' => 'array', 'd' => 'Invierte orden preservando keys', 'k' => ['reverse', 'array reverse']],
+                        ['nombre' => 'claves', 'p' => ['arreglo:array'], 'r' => 'array', 'd' => 'Obtiene las claves del arreglo', 'k' => ['keys', 'array keys']],
+                        ['nombre' => 'valores', 'p' => ['arreglo:array'], 'r' => 'array', 'd' => 'Obtiene los valores del arreglo', 'k' => ['values', 'array values']],
+                        ['nombre' => 'contarPor', 'p' => ['arreglo:array', 'callback:callable|string'], 'r' => 'array', 'd' => 'Cuenta ocurrencias agrupadas por campo/callback', 'k' => ['count by', 'contar agrupado']],
+                        ['nombre' => 'reducir', 'p' => ['arreglo:array', 'callback:callable', 'inicial:mixed=null'], 'r' => 'mixed', 'd' => 'Reduce array a un solo valor', 'k' => ['reduce', 'fold']],
+                        ['nombre' => 'cada', 'p' => ['arreglo:array', 'callback:callable'], 'r' => 'array', 'd' => 'Aplica función a cada elemento', 'k' => ['each', 'map', 'mapear', 'transformar']],
+                        ['nombre' => 'estaVacio', 'p' => ['arreglo:array'], 'r' => 'bool', 'd' => 'Verifica si el arreglo está vacío', 'k' => ['empty', 'vacio', 'is empty']],
+                        ['nombre' => 'conteo', 'p' => ['arreglo:array'], 'r' => 'int', 'd' => 'Cuenta elementos del arreglo', 'k' => ['count', 'contar', 'length']],
+                        ['nombre' => 'buscar', 'p' => ['arreglo:array', 'callback:callable'], 'r' => 'array', 'd' => 'Filtra elementos que coinciden con callback', 'k' => ['buscar en', 'find', 'search array']],
+                        ['nombre' => 'sumar', 'p' => ['arreglo:array', 'clave:string'], 'r' => 'int|float', 'd' => 'Suma valores de una columna', 'k' => ['sum', 'sumar campo']],
+                        ['nombre' => 'promedio', 'p' => ['arreglo:array', 'clave:string'], 'r' => 'float', 'd' => 'Promedio de valores de una columna', 'k' => ['avg', 'average', 'promedio campo']],
+                    ],
+                ],
+            ],
+            'seguridad' => [
+                [
+                    'helper' => 'AyudanteSeguridad',
+                    'alias' => 'Seguridad',
+                    'descripcion' => 'Autenticación, autorización y CSRF',
+                    'metodos' => [
+                        ['nombre' => 'tokenCSRF', 'p' => [], 'r' => 'string', 'd' => 'Obtiene el token CSRF de la sesión actual', 'k' => ['csrf token', 'obtener token']],
+                        ['nombre' => 'sesionActiva', 'p' => [], 'r' => 'bool', 'd' => 'Verifica si hay sesión de operador activa', 'k' => ['sesion activa', 'logged in', 'autenticado']],
+                        ['nombre' => 'idOperador', 'p' => [], 'r' => 'int', 'd' => 'ID del operador en sesión (0 si no autenticado)', 'k' => ['id operador', 'user id', 'operador actual']],
+                        ['nombre' => 'autenticacionRequerida', 'p' => [], 'r' => 'void', 'd' => 'Redirige al login si no hay sesión activa', 'k' => ['requiere autenticacion', 'login required']],
+                        ['nombre' => 'permisoRequerido', 'p' => ['clave:string'], 'r' => 'void', 'd' => 'Lanza excepción si el operador no tiene permiso', 'k' => ['requiere permiso', 'check permission']],
+                        ['nombre' => 'tienePermiso', 'p' => ['clave:string'], 'r' => 'bool', 'd' => 'Verifica si el operador tiene un permiso específico', 'k' => ['tiene permiso', 'has permission', 'verificar permiso']],
+                        ['nombre' => 'validarCSRF', 'p' => ['token:string'], 'r' => 'bool', 'd' => 'Valida un token CSRF contra la sesión', 'k' => ['validar csrf', 'csrf valido', 'verify csrf']],
+                        ['nombre' => 'csrfMeta', 'p' => [], 'r' => 'string', 'd' => 'Genera meta tag HTML con el token CSRF', 'k' => ['csrf meta tag', 'csrf html']],
+                        ['nombre' => 'tokenNuevo', 'p' => [], 'r' => 'string', 'd' => 'Genera y guarda un nuevo token CSRF', 'k' => ['generar csrf', 'new token', 'regenerar']],
+                        ['nombre' => 'ipCliente', 'p' => [], 'r' => 'string', 'd' => 'Dirección IP del cliente', 'k' => ['ip cliente', 'client ip', 'remote addr']],
+                        ['nombre' => 'agenteUsuario', 'p' => [], 'r' => 'string', 'd' => 'User-Agent del cliente', 'k' => ['user agent', 'navegador']],
+                    ],
+                ],
+            ],
+            'archivo' => [
+                [
+                    'helper' => 'AyudanteArchivo',
+                    'alias' => 'ArchivoH',
+                    'descripcion' => 'Clasificación y sanitización de archivos',
+                    'metodos' => [
+                        ['nombre' => 'tamanoLegible', 'p' => ['bytes:int'], 'r' => 'string', 'd' => 'Convierte bytes a formato legible (KB, MB, GB)', 'k' => ['tamano archivo', 'file size', 'bytes legible']],
+                        ['nombre' => 'esImagen', 'p' => ['mime:string'], 'r' => 'bool', 'd' => 'Verifica si un MIME es de imagen', 'k' => ['es imagen', 'is image', 'mime imagen']],
+                        ['nombre' => 'esDocumento', 'p' => ['mime:string'], 'r' => 'bool', 'd' => 'Verifica si un MIME es de documento', 'k' => ['es documento', 'documento', 'mime doc']],
+                        ['nombre' => 'esVideo', 'p' => ['mime:string'], 'r' => 'bool', 'd' => 'Verifica si un MIME es de video', 'k' => ['es video', 'video', 'mime video']],
+                        ['nombre' => 'esAudio', 'p' => ['mime:string'], 'r' => 'bool', 'd' => 'Verifica si un MIME es de audio', 'k' => ['es audio', 'audio', 'mime audio']],
+                        ['nombre' => 'esComprimido', 'p' => ['mime:string'], 'r' => 'bool', 'd' => 'Verifica si un MIME es comprimido', 'k' => ['es comprimido', 'zip', 'mime zip']],
+                        ['nombre' => 'categoriaMime', 'p' => ['mime:string'], 'r' => 'string', 'd' => 'Categoría general del tipo MIME', 'k' => ['categoria mime', 'tipo mime']],
+                        ['nombre' => 'iconoExtension', 'p' => ['extension:string'], 'r' => 'string', 'd' => 'Icono emoji para la extensión del archivo', 'k' => ['icono archivo', 'file icon', 'emoji']],
+                        ['nombre' => 'extensionSegura', 'p' => ['nombre:string'], 'r' => 'string', 'd' => 'Extrae la extensión con validación de seguridad', 'k' => ['extension segura', 'safe extension']],
+                        ['nombre' => 'sanitizarNombre', 'p' => ['nombre:string'], 'r' => 'string', 'd' => 'Limpia nombre de archivo eliminando caracteres peligrosos', 'k' => ['sanitizar archivo', 'clean filename', 'nombre seguro']],
+                        ['nombre' => 'esNombreSeguro', 'p' => ['nombre:string'], 'r' => 'bool', 'd' => 'Verifica si el nombre de archivo es seguro', 'k' => ['nombre seguro', 'filename safe', 'validar nombre']],
+                    ],
+                ],
+            ],
+            'cache' => [
+                [
+                    'helper' => 'AyudanteCache',
+                    'alias' => 'Cache',
+                    'descripcion' => 'Sistema de caché multi-backend (APCu + archivo + memoria)',
+                    'metodos' => [
+                        ['nombre' => 'recordar', 'p' => ['clave:string', 'generar:callable', 'ttl:int=300'], 'r' => 'mixed', 'd' => 'Cachea resultado de un callback con TTL', 'k' => ['cachear', 'remember', 'memorizar']],
+                        ['nombre' => 'recordarJson', 'p' => ['clave:string', 'generar:callable', 'ttl:int=300'], 'r' => 'array', 'd' => 'Cachea callback que retorna array, devuelve array siempre', 'k' => ['cachear json', 'remember json']],
+                        ['nombre' => 'obtener', 'p' => ['clave:string'], 'r' => 'mixed', 'd' => 'Obtiene valor de la caché por clave', 'k' => ['obtener cache', 'get cache', 'leer cache']],
+                        ['nombre' => 'guardar', 'p' => ['clave:string', 'valor:mixed', 'ttl:int=300'], 'r' => 'bool', 'd' => 'Guarda valor en caché con TTL', 'k' => ['guardar cache', 'set cache', 'almacenar']],
+                        ['nombre' => 'olvidar', 'p' => ['clave:string'], 'r' => 'bool', 'd' => 'Elimina una clave de la caché', 'k' => ['olvidar cache', 'forget', 'eliminar cache']],
+                        ['nombre' => 'limpiar', 'p' => [], 'r' => 'bool', 'd' => 'Limpia toda la caché', 'k' => ['limpiar cache', 'clear cache', 'flush']],
+                        ['nombre' => 'tiene', 'p' => ['clave:string'], 'r' => 'bool', 'd' => 'Verifica si una clave existe en caché', 'k' => ['existe cache', 'has cache']],
+                        ['nombre' => 'recordarResultadosPaginados', 'p' => ['prefijo:string', 'pagina:int', 'porPagina:int', 'generar:callable', 'ttl:int=300'], 'r' => 'array', 'd' => 'Cachea resultados paginados', 'k' => ['cache paginado', 'paginacion cache']],
+                        ['nombre' => 'olvidarPorPrefijo', 'p' => ['prefijo:string'], 'r' => 'int', 'd' => 'Elimina todas las claves que coincidan con prefijo', 'k' => ['olvidar prefijo', 'forget prefix']],
+                        ['nombre' => 'info', 'p' => [], 'r' => 'array', 'd' => 'Información del estado de la caché (APCu, memoria, archivos)', 'k' => ['info cache', 'estado cache', 'cache status']],
+                    ],
+                ],
+            ],
+            'http' => [
+                [
+                    'helper' => 'AyudanteHttp',
+                    'alias' => 'HttpCliente',
+                    'descripcion' => 'Cliente HTTP con cURL (GET, POST, paralelo)',
+                    'metodos' => [
+                        ['nombre' => 'obtener', 'p' => ['url:string', 'cabeceras:array=[]', 'timeout:int=15'], 'r' => 'array', 'd' => 'Petición GET con cabeceras personalizadas', 'k' => ['get', 'http get', 'obtener url']],
+                        ['nombre' => 'post', 'p' => ['url:string', 'datos:array|string', 'cabeceras:array=[]', 'timeout:int=15'], 'r' => 'array', 'd' => 'Petición POST con datos de formulario', 'k' => ['post', 'http post', 'enviar formulario']],
+                        ['nombre' => 'postJson', 'p' => ['url:string', 'datos:array', 'cabeceras:array=[]', 'timeout:int=15'], 'r' => 'array', 'd' => 'Petición POST con body JSON', 'k' => ['post json', 'json api', 'api call']],
+                        ['nombre' => 'enviar', 'p' => ['metodo:string', 'url:string', 'opciones:array=[]'], 'r' => 'array', 'd' => 'Petición HTTP genérica (GET, POST, PUT, DELETE, HEAD, PATCH)', 'k' => ['enviar request', 'http request', 'curl']],
+                        ['nombre' => 'paralelo', 'p' => ['peticiones:array', 'timeout:int=15'], 'r' => 'array', 'd' => 'Múltiples peticiones HTTP en paralelo (curl_multi)', 'k' => ['paralelo', 'multi request', 'concurrente', 'batch']],
+                        ['nombre' => 'codigoComoTexto', 'p' => ['codigo:int'], 'r' => 'string', 'd' => 'Texto descriptivo del código HTTP', 'k' => ['codigo http', 'http status text']],
+                        ['nombre' => 'verificarDisponible', 'p' => [], 'r' => 'bool', 'd' => 'Verifica si cURL está disponible', 'k' => ['curl disponible', 'curl check']],
+                    ],
+                ],
+            ],
+            'rendimiento' => [
+                [
+                    'helper' => 'AyudanteRendimiento',
+                    'alias' => 'Rendimiento',
+                    'descripcion' => 'Benchmarking y perfilado de rendimiento',
+                    'metodos' => [
+                        ['nombre' => 'iniciar', 'p' => ['nombre:string'], 'r' => 'void', 'd' => 'Inicia medición de tiempo y memoria', 'k' => ['iniciar medicion', 'start benchmark']],
+                        ['nombre' => 'detener', 'p' => ['nombre:string'], 'r' => 'array', 'd' => 'Detiene medición y devuelve resultado', 'k' => ['detener medicion', 'stop benchmark', 'resultado']],
+                        ['nombre' => 'medir', 'p' => ['callback:callable', 'nombre:string=', 'iteraciones:int=1'], 'r' => 'array', 'd' => 'Ejecuta callback midiendo tiempo y memoria', 'k' => ['medir funcion', 'benchmark', 'profile']],
+                        ['nombre' => 'comparar', 'p' => ['escenarios:array', 'iteraciones:int=100'], 'r' => 'array', 'd' => 'Compara múltiples implementaciones', 'k' => ['comparar rendimiento', 'A/B test', 'performance compare']],
+                        ['nombre' => 'reporte', 'p' => [], 'r' => 'array', 'd' => 'Reporte completo de todas las mediciones', 'k' => ['reporte rendimiento', 'performance report']],
+                        ['nombre' => 'formatearTexto', 'p' => [], 'r' => 'string', 'd' => 'Reporte formateado como texto legible', 'k' => ['reporte texto', 'formatear benchmark']],
+                        ['nombre' => 'loggear', 'p' => ['archivo:string='], 'r' => 'bool', 'd' => 'Guarda reporte en archivo de log', 'k' => ['log rendimiento', 'guardar benchmark']],
+                        ['nombre' => 'limpiar', 'p' => [], 'r' => 'void', 'd' => 'Limpia todas las mediciones en memoria', 'k' => ['limpiar mediciones', 'reset benchmark']],
+                        ['nombre' => 'cabeceras', 'p' => [], 'r' => 'array', 'd' => 'Cabeceras HTTP con datos de rendimiento (X-Lite-Tiempo, etc)', 'k' => ['cabeceras rendimiento', 'performance headers']],
+                    ],
+                ],
+            ],
+            'usuario' => [
+                [
+                    'helper' => 'AyudanteOperador',
+                    'alias' => 'OperadorH',
+                    'descripcion' => 'Información y validación del operador/usuario en sesión',
+                    'metodos' => [
+                        ['nombre' => 'estadoEtiqueta', 'p' => ['estado:int'], 'r' => 'string', 'd' => 'HTML con etiqueta visual del estado (Activo/Suspendido)', 'k' => ['etiqueta estado', 'status badge']],
+                        ['nombre' => 'estadoTexto', 'p' => ['estado:int'], 'r' => 'string', 'd' => 'Texto del estado: Activo o Suspendido', 'k' => ['texto estado', 'status text']],
+                        ['nombre' => 'nombreRol', 'p' => ['idRol:int'], 'r' => 'string', 'd' => 'Nombre del rol desde su ID', 'k' => ['nombre rol', 'role name']],
+                        ['nombre' => 'estaActivo', 'p' => ['idOperador:int|null=null'], 'r' => 'bool', 'd' => 'Verifica si operador (actual o por ID) está activo', 'k' => ['operador activo', 'usuario activo']],
+                        ['nombre' => 'tienePermiso', 'p' => ['clave:string'], 'r' => 'bool', 'd' => 'Verifica si operador actual tiene permiso', 'k' => ['tiene permiso', 'check rbac']],
+                        ['nombre' => 'nombreActual', 'p' => [], 'r' => 'string', 'd' => 'Nombre del operador en sesión', 'k' => ['nombre operador', 'usuario actual']],
+                        ['nombre' => 'idActual', 'p' => [], 'r' => 'int', 'd' => 'ID del operador en sesión (0 si no autenticado)', 'k' => ['id operador actual', 'user id']],
+                        ['nombre' => 'rolActual', 'p' => [], 'r' => 'int', 'd' => 'ID del rol del operador en sesión', 'k' => ['rol actual', 'rol usuario']],
+                        ['nombre' => 'permisosActuales', 'p' => [], 'r' => 'array', 'd' => 'Matriz de permisos del operador actual', 'k' => ['permisos usuario', 'matriz permisos']],
+                        ['nombre' => 'permisoRequerido', 'p' => ['clave:string'], 'r' => 'void', 'd' => 'Lanza excepción si no tiene permiso específico', 'k' => ['requiere permiso', 'permiso necesario']],
+                    ],
+                ],
+            ],
+            'monitor' => [
+                [
+                    'helper' => 'AyudanteMonitor',
+                    'alias' => 'Monitor',
+                    'descripcion' => 'Estadísticas de rendimiento desde archivo de log',
+                    'metodos' => [
+                        ['nombre' => 'inicializar', 'p' => ['archivoLog:string='], 'r' => 'void', 'd' => 'Configura la ruta del archivo de log', 'k' => ['inicializar monitor', 'set log path']],
+                        ['nombre' => 'obtenerEstadisticas', 'p' => [], 'r' => 'array', 'd' => 'Estadísticas completas: promedio, p99, p95, distribución, lentos', 'k' => ['estadisticas', 'metricas', 'dashboard rendimiento']],
+                        ['nombre' => 'obtenerUltimos', 'p' => [], 'r' => 'array', 'd' => 'Últimos 10 registros de rendimiento', 'k' => ['ultimos registros', 'recent']],
+                        ['nombre' => 'logPath', 'p' => [], 'r' => 'string', 'd' => 'Ruta actual del archivo de log', 'k' => ['ruta log', 'log file path']],
+                    ],
+                ],
+            ],
+            'utilidades' => [
+                [
+                    'helper' => 'AyudanteGeneral',
+                    'alias' => 'General',
+                    'descripcion' => 'Utilidades misceláneas que no encajan en otras categorías',
+                    'metodos' => [
+                        ['nombre' => 'tieneValor', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Verifica si variable tiene contenido no vacío', 'k' => ['tiene valor', 'not empty', 'is set']],
+                        ['nombre' => 'noEstaVacio', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Alias de tieneValor', 'k' => ['no vacio', 'is not empty']],
+                        ['nombre' => 'estaVacio', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Alias inverso de tieneValor', 'k' => ['esta vacio', 'is empty']],
+                        ['nombre' => 'obtenerValor', 'p' => ['fuente:array', 'clave:string', 'defecto:mixed=null'], 'r' => 'mixed', 'd' => 'Valor de array por clave con fallback', 'k' => ['obtener array', 'array get']],
+                        ['nombre' => 'desde', 'p' => ['fuente:array', 'clave:string', 'defecto:mixed=null'], 'r' => 'mixed', 'd' => 'Alias de obtenerValor', 'k' => ['desde array']],
+                        ['nombre' => 'generarToken', 'p' => ['longitud:int=32'], 'r' => 'string', 'd' => 'Token hexadecimal aleatorio seguro', 'k' => ['generar token', 'random token', 'hex']],
+                        ['nombre' => 'clonar', 'p' => ['objeto:object'], 'r' => 'object', 'd' => 'Clona un objeto', 'k' => ['clonar objeto', 'clone']],
+                        ['nombre' => 'esMetodo', 'p' => ['objeto:object', 'metodo:string'], 'r' => 'bool', 'd' => 'Verifica si objeto tiene un método', 'k' => ['existe metodo', 'method exists']],
+                        ['nombre' => 'tienePropiedad', 'p' => ['objeto:object', 'propiedad:string'], 'r' => 'bool', 'd' => 'Verifica si objeto tiene una propiedad', 'k' => ['tiene propiedad', 'property exists']],
+                        ['nombre' => 'tipoDe', 'p' => ['objeto:object'], 'r' => 'string', 'd' => 'Nombre de la clase del objeto', 'k' => ['tipo objeto', 'get class', 'class name']],
+                        ['nombre' => 'esObjeto', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Verifica si es un objeto', 'k' => ['es objeto', 'is object']],
+                        ['nombre' => 'esArreglo', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Verifica si es un array', 'k' => ['es arreglo', 'is array']],
+                        ['nombre' => 'esString', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Verifica si es string', 'k' => ['es string', 'is string']],
+                        ['nombre' => 'esNumerico', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Verifica si es numérico', 'k' => ['es numerico', 'is numeric']],
+                        ['nombre' => 'esBooleano', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Verifica si es booleano', 'k' => ['es booleano', 'is bool']],
+                        ['nombre' => 'aBooleano', 'p' => ['valor:mixed'], 'r' => 'bool', 'd' => 'Convierte a booleano ("si", "1", true → true)', 'k' => ['convertir bool', 'to boolean']],
+                        ['nombre' => 'aEntero', 'p' => ['valor:mixed', 'defecto:int=0'], 'r' => 'int', 'd' => 'Convierte a entero con fallback', 'k' => ['convertir int', 'to integer']],
+                        ['nombre' => 'aFlotante', 'p' => ['valor:mixed', 'defecto:float=0.0'], 'r' => 'float', 'd' => 'Convierte a float con fallback', 'k' => ['convertir float', 'to float']],
+                        ['nombre' => 'aString', 'p' => ['valor:mixed'], 'r' => 'string', 'd' => 'Convierte a string (null→"", bool→"1"/"0", array→json)', 'k' => ['convertir string', 'to string']],
+                        ['nombre' => 'aJson', 'p' => ['valor:mixed', 'pretty:bool=false'], 'r' => 'string', 'd' => 'Serializa a JSON (opcional: pretty print)', 'k' => ['a json', 'to json', 'serializar']],
+                        ['nombre' => 'desdeJson', 'p' => ['json:string', 'defecto:mixed=null'], 'r' => 'mixed', 'd' => 'Deserializa JSON a array/mixed', 'k' => ['desde json', 'from json', 'parse json', 'decodificar']],
+                        ['nombre' => 'esJson', 'p' => ['texto:string'], 'r' => 'bool', 'd' => 'Verifica si un string es JSON válido', 'k' => ['es json', 'valid json', 'json valido']],
+                        ['nombre' => 'moneda', 'p' => ['monto:float|int', 'simbolo:string=$', 'separadorMiles:string=,', 'separadorDecimal:string=.'], 'r' => 'string', 'd' => 'Formatea número como moneda', 'k' => ['formato moneda', 'currency', 'dinero']],
+                        ['nombre' => 'numero', 'p' => ['numero:int|float', 'separadorMiles:string=,', 'separadorDecimal:string=.'], 'r' => 'string', 'd' => 'Formatea número con separadores', 'k' => ['formato numero', 'number format', 'miles']],
+                        ['nombre' => 'truncarNumero', 'p' => ['numero:float', 'decimales:int=0'], 'r' => 'float', 'd' => 'Trunca número sin redondear', 'k' => ['truncar', 'floor decimal']],
+                        ['nombre' => 'redondear', 'p' => ['numero:float', 'decimales:int=0', 'modo:string=normal'], 'r' => 'float', 'd' => 'Redondea número (modos: normal, arriba, abajo)', 'k' => ['redondear', 'round', 'ceil', 'floor']],
+                        ['nombre' => 'bytesLegibles', 'p' => ['bytes:int'], 'r' => 'string', 'd' => 'Convierte bytes a formato legible (B, KB, MB, GB, TB)', 'k' => ['bytes legibles', 'human size', 'file size']],
+                        ['nombre' => 'dormir', 'p' => ['segundos:int'], 'r' => 'void', 'd' => 'Pausa la ejecución N segundos', 'k' => ['sleep', 'esperar', 'delay']],
+                        ['nombre' => 'dormirMilisegundos', 'p' => ['milisegundos:int'], 'r' => 'void', 'd' => 'Pausa la ejecución N milisegundos', 'k' => ['usleep', 'esperar ms', 'micro delay']],
+                        ['nombre' => 'unaVez', 'p' => ['clave:string', 'funcion:callable'], 'r' => 'mixed', 'd' => 'Ejecuta función solo una vez, cachea resultado', 'k' => ['una vez', 'singleton fn', 'once']],
+                        ['nombre' => 'resetUnaVez', 'p' => ['clave:string='], 'r' => 'void', 'd' => 'Resetea cache de unaVez', 'k' => ['reset once', 'limpiar singletons']],
+                        ['nombre' => 'dd', 'p' => ['...valores:mixed'], 'r' => 'void', 'd' => 'Dump and die — debug con var_dump + exit', 'k' => ['debug', 'dump', 'var_dump', 'die']],
+                        ['nombre' => 'dump', 'p' => ['...valores:mixed'], 'r' => 'void', 'd' => 'Debug sin morir — var_dump sin exit', 'k' => ['debug sin morir', 'dump no die']],
+                    ],
+                ],
+            ],
+        ];
+    }
+}

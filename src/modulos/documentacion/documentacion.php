@@ -9,8 +9,31 @@ $secciones = [];
 $archivosSecciones = glob(__DIR__ . '/secciones/*.php');
 if (is_array($archivosSecciones)) {
     foreach ($archivosSecciones as $archivo) {
+        if (basename($archivo) === 'mcp_tools.php') {
+            $secciones[] = [
+                'id' => 'entorno',
+                'titulo' => 'Entorno',
+                'icono' => '⏳',
+                'etiquetas' => 'entorno configuracion php python crewai mcp agentes',
+                'descripcion' => 'Cargando informacion del entorno...',
+                'contenido' => '<p class="texto-suave alineacion-centrada"><span class="indicador-cargando">↻</span> Cargando entorno...</p>',
+                '_cargando' => true,
+            ];
+            continue;
+        }
+        $inicio = microtime(true);
         $secciones[] = require $archivo;
+        $tiempo = round((microtime(true) - $inicio) * 1000, 1);
+        if ($tiempo > 5) {
+            error_log('[TIEMPO_DOC] ' . basename($archivo) . ': ' . $tiempo . 'ms');
+        }
     }
+}
+
+if (($_GET['seccion'] ?? '') === 'entorno') {
+    header('Content-Type: application/json');
+    echo json_encode(require __DIR__ . '/secciones/mcp_tools.php');
+    exit;
 }
 
 $porPaginaDoc = 12;
@@ -37,7 +60,7 @@ if (!$esAjax) {
         <?php foreach ($secciones as $i => $sec):
             $enPaginaActual = $i >= $inicioDoc && $i < $inicioDoc + $porPaginaDoc;
         ?>
-        <article class="tarjeta-seccion-doc" data-seccion-id="<?= $sec['id'] ?>" data-etiquetas="<?= h($sec['etiquetas']) ?>" data-titulo="<?= h($sec['titulo']) ?>" data-contenido="<?= h(strip_tags($sec['contenido'])) ?>" data-descripcion="<?= h($sec['descripcion']) ?>" data-pagina="<?= (int)($i / $porPaginaDoc) + 1 ?>" style="<?= $enPaginaActual ? '' : 'display:none' ?>" role="button" tabindex="0" aria-label="Abrir documentacion de <?= h($sec['titulo']) ?>">
+        <article class="tarjeta-seccion-doc" data-seccion-id="<?= $sec['id'] ?>" data-etiquetas="<?= h($sec['etiquetas']) ?>" data-titulo="<?= h($sec['titulo']) ?>" data-contenido="<?= h(strip_tags($sec['contenido'])) ?>" data-descripcion="<?= h($sec['descripcion']) ?>" data-pagina="<?= (int)($i / $porPaginaDoc) + 1 ?><?= !empty($sec['_cargando']) ? '" data-cargando="1' : '' ?>" style="<?= $enPaginaActual ? '' : 'display:none' ?>" role="button" tabindex="0" aria-label="Abrir documentacion de <?= h($sec['titulo']) ?>">
             <div class="envoltura-icono-modulo">
                 <span class="icono-documentacion"><?= $sec['icono'] ?></span>
             </div>
@@ -53,6 +76,7 @@ if (!$esAjax) {
 </section>
 
 <?php foreach ($secciones as $sec): ?>
+<?php if (!empty($sec['_cargando'])) continue; ?>
 <div id="modal-<?= $sec['id'] ?>" class="modal-superposicion modal-documentacion" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-<?= $sec['id'] ?>" hidden>
     <div class="modal-contenido modal-documentacion-contenido">
         <div class="modal-cabecera">

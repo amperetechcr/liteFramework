@@ -200,7 +200,7 @@
             return setTimeout(inicializarLista, 100);
         }
         lista = new window.ListaFiltrable({
-            baseUrl: '/generadorPdf',
+            baseUrl: '/generador-pdf',
             containerId: 'contenedor-lista-documentos',
             paginationSelector: '.paginacion',
             contadorId: 'contador-documentos',

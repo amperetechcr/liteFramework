@@ -107,13 +107,37 @@ class EntornoCompleto
             return self::$pythonEnvs;
         }
 
+        $cacheArchivo = __DIR__ . '/../../storage/cache/entorno_python.json';
+        $ttl = 30;
+
+        if (file_exists($cacheArchivo) && (time() - filemtime($cacheArchivo)) < $ttl) {
+            $contenido = file_get_contents($cacheArchivo);
+            if ($contenido !== false) {
+                $data = json_decode($contenido, true) ?: [];
+                self::$pythonEnvs = self::formatearEnvsPython($data);
+                return self::$pythonEnvs;
+            }
+        }
+
         $python = 'C:\\Users\\Tech\\.crewai-venv\\Scripts\\python.exe';
         $helper = 'C:\\Users\\Tech\\.config\\crewai\\entorno_helper.py';
         $cmd = sprintf('"%s" "%s" 2>NUL', $python, $helper);
         $out = shell_exec($cmd);
         $data = $out ? json_decode($out, true) : [];
 
-        self::$pythonEnvs = [
+        $directorio = dirname($cacheArchivo);
+        if (!is_dir($directorio)) {
+            mkdir($directorio, 0755, true);
+        }
+        file_put_contents($cacheArchivo, json_encode($data), LOCK_EX);
+
+        self::$pythonEnvs = self::formatearEnvsPython($data);
+        return self::$pythonEnvs;
+    }
+
+    private static function formatearEnvsPython(array $data): array
+    {
+        return [
             'version_python' => $data['version_python'] ?? '?',
             'crewai_version' => $data['crewai_version'] ?? '?',
             'deepseek' => $data['deepseek'] ?? '?',
@@ -123,7 +147,6 @@ class EntornoCompleto
             'descongelados' => $data['descongelados'] ?? 0,
             '_raw' => $data,
         ];
-        return self::$pythonEnvs;
     }
 
     private static function herramientasMcp(): array

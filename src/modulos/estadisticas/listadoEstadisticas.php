@@ -21,7 +21,7 @@
              data-consulta="<?= h($est['consulta_sql']) ?>"
              data-tipo="<?= h($est['tipo_visualizacion']) ?>"
              data-columnas="<?= h($est['columnas_mostrar'] ?? '') ?>"
-             data-configuracion="<?= h($est['configuracion_visual'] ?? '') ?>">
+             data-configuracion="<?= h(is_array($est['configuracion_visual']) ? json_encode($est['configuracion_visual']) : ($est['configuracion_visual'] ?? '')) ?>">
             <div class="agrupador-flexible-filas distribucion-espaciada flex-columna-sm margen-inferior-pequeno">
                 <div class="flex-1">
                     <div class="agrupador-flexible-filas brecha-pequena">

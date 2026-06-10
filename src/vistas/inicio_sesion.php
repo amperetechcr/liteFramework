@@ -23,12 +23,7 @@ if (is_dir($dirTests)) {
     }
 }
 
-$totalSkills = 0;
-foreach ([DIRECTORIO_RAIZ . '/.agents/skills', DIRECTORIO_RAIZ . '/.opencode/skills'] as $dir) {
-    if (is_dir($dir)) {
-        $totalSkills += count(glob($dir . '/*', GLOB_ONLYDIR));
-    }
-}
+$totalSkills = 1; // REGLAS.md centralizado
 
 $mcpRuta = getenv('USERPROFILE') . '/.config/opencode/opencode.json';
 $totalMCPs = 0;

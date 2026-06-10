@@ -49,8 +49,8 @@ class DocumentoPdf extends Modelo
             $pagina,
             $porPagina,
             $where,
-            'd.id_documento, d.titulo, d.contenido_html, d.id_operador, d.fecha_creacion, d.fecha_actualizacion, o.nombre_completo',
-            'LEFT JOIN operador o ON d.id_operador = o.id_operador'
+            'documento_pdf.id_documento, documento_pdf.titulo, documento_pdf.contenido_html, documento_pdf.id_operador, documento_pdf.fecha_creacion, documento_pdf.fecha_actualizacion, o.nombre_completo',
+            'LEFT JOIN operador o ON documento_pdf.id_operador = o.id_operador'
         );
 
         $documentos = [];

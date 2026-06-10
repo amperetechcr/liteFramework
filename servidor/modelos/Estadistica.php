@@ -75,8 +75,8 @@ class Estadistica extends Modelo
             $pagina,
             $porPagina,
             $where,
-            'e.id_estadistica, e.titulo, e.descripcion, e.consulta_sql, e.tipo_visualizacion, e.columnas_mostrar, e.configuracion_visual, e.cache_ttl, e.en_dashboard, e.dashboard_orden, e.ultima_ejecucion, e.id_operador, e.fecha_creacion, e.fecha_actualizacion, o.nombre_completo',
-            'LEFT JOIN operador o ON e.id_operador = o.id_operador'
+            'estadistica.id_estadistica, estadistica.titulo, estadistica.descripcion, estadistica.consulta_sql, estadistica.tipo_visualizacion, estadistica.columnas_mostrar, estadistica.configuracion_visual, estadistica.cache_ttl, estadistica.en_dashboard, estadistica.dashboard_orden, estadistica.ultima_ejecucion, estadistica.id_operador, estadistica.fecha_creacion, estadistica.fecha_actualizacion, o.nombre_completo',
+            'LEFT JOIN operador o ON estadistica.id_operador = o.id_operador'
         );
 
         $estadisticas = [];

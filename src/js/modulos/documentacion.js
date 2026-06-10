@@ -291,4 +291,52 @@
         }
     });
 
+    // ---- Carga asincrona de seccion entorno ----
+
+    var tarjetaCargando = rejilla.querySelector('.tarjeta-seccion-doc[data-cargando="1"]');
+    if (tarjetaCargando) {
+        var seccionId = tarjetaCargando.getAttribute('data-seccion-id');
+        var rutaApi = window.rutaApi ? window.rutaApi.replace('/api', '') : (window.location.pathname.replace(/\/[^/]+$/, '') || '');
+
+        fetch(rutaApi + '/documentacion?seccion=' + seccionId)
+            .then(function (r) { return r.json(); })
+            .then(function (datos) {
+                if (!datos || !datos.id) return;
+
+                tarjetaCargando.setAttribute('data-titulo', datos.titulo);
+                tarjetaCargando.setAttribute('data-descripcion', datos.descripcion);
+                tarjetaCargando.setAttribute('data-etiquetas', datos.etiquetas);
+                tarjetaCargando.setAttribute('data-contenido', datos.contenido.replace(/<[^>]+>/g, ''));
+                tarjetaCargando.removeAttribute('data-cargando');
+                tarjetaCargando.querySelector('.icono-documentacion').textContent = datos.icono;
+                tarjetaCargando.querySelector('h3').textContent = datos.titulo;
+                tarjetaCargando.querySelector('p').textContent = datos.descripcion;
+
+                var modal = document.createElement('div');
+                modal.id = 'modal-' + datos.id;
+                modal.className = 'modal-superposicion modal-documentacion';
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+                modal.setAttribute('aria-labelledby', 'titulo-modal-' + datos.id);
+                modal.hidden = true;
+                modal.innerHTML =
+                    '<div class="modal-contenido modal-documentacion-contenido">' +
+                        '<div class="modal-cabecera">' +
+                            '<h2 id="titulo-modal-' + datos.id + '" class="margen-inferior-0">' + datos.titulo + '</h2>' +
+                            '<button type="button" class="modal-cerrar" aria-label="Cerrar modal">&times;</button>' +
+                        '</div>' +
+                        '<div class="modal-documentacion-cuerpo">' + datos.contenido + '</div>' +
+                    '</div>';
+                document.body.appendChild(modal);
+
+                modal.querySelector('.modal-cerrar').addEventListener('click', function () { modal.hidden = true; document.body.style.overflow = ''; });
+                modal.addEventListener('click', function (e) { if (e.target === modal) { modal.hidden = true; document.body.style.overflow = ''; } });
+            })
+            .catch(function () {
+                tarjetaCargando.querySelector('h3').textContent = 'Error al cargar';
+                tarjetaCargando.querySelector('p').textContent = 'No se pudo cargar la informacion del entorno.';
+                tarjetaCargando.removeAttribute('data-cargando');
+            });
+    }
+
 })();

@@ -225,6 +225,10 @@ CREATE TABLE IF NOT EXISTS `estadistica` (
     `tipo_visualizacion` VARCHAR(30) DEFAULT 'tarjetas',
     `columnas_mostrar` TEXT NULL,
     `configuracion_visual` TEXT NULL,
+    `cache_ttl` INT NOT NULL DEFAULT 300,
+    `en_dashboard` TINYINT NOT NULL DEFAULT 0,
+    `dashboard_orden` INT NOT NULL DEFAULT 0,
+    `ultima_ejecucion` DATETIME NULL DEFAULT NULL,
     `id_operador` INT NULL,
     `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `fecha_actualizacion` TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -276,4 +280,31 @@ CREATE TABLE IF NOT EXISTS `sse_evento` (
     `fecha_creacion` TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     INDEX `idx_sse_operador_evento` (`id_operador`, `tipo`),
     INDEX `idx_sse_creacion` (`fecha_creacion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Migración 007: Rate limiting
+-- =============================================
+CREATE TABLE IF NOT EXISTS `rate_limit` (
+    `id_limite` INT AUTO_INCREMENT PRIMARY KEY,
+    `clave_hash` VARCHAR(64) NOT NULL,
+    `ventana_inicio` INT UNSIGNED NOT NULL,
+    `contador` INT UNSIGNED NOT NULL DEFAULT 1,
+    UNIQUE KEY `uk_rate_limit` (`clave_hash`, `ventana_inicio`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================
+-- Migración 008: OAuth vinculo
+-- =============================================
+CREATE TABLE IF NOT EXISTS `oauth_vinculo` (
+    `id_vinculo` INT AUTO_INCREMENT PRIMARY KEY,
+    `proveedor` VARCHAR(20) NOT NULL,
+    `id_proveedor` VARCHAR(100) NOT NULL,
+    `id_operador` INT NOT NULL,
+    `fecha_vinculo` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uk_oauth_proveedor` (`proveedor`, `id_proveedor`),
+    UNIQUE KEY `uk_oauth_operador` (`id_operador`, `proveedor`),
+    CONSTRAINT `fk_oauth_operador`
+        FOREIGN KEY (`id_operador`) REFERENCES `operador` (`id_operador`)
+        ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

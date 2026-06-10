@@ -35,6 +35,9 @@ temp/
 *.swp
 *.swo
 *~
+__pycache__/
+*.result.cache
+storage/sse/
 
 # --- Logs ---
 *.log
