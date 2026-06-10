@@ -94,6 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.__liteSse = new LiteSse(metaUrl);
         window.liteSse = window.__liteSse;
         window.__liteSse.subscribir('auditoria_alerta', function (datos) {
+            // NOTA: filtrar CSRF invalido porque el SSE re-emite eventos
+            // viejos de la bitácora al reconectar, mostrando alertas falsas
+            if (datos.accion === 'Token CSRF invalido') {
+                return;
+            }
             var msg = '[' + datos.nivel + '] ' + datos.modulo + ': ' + datos.accion;
             if (datos.ip) {
                 msg += ' | IP: ' + datos.ip;
