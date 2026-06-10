@@ -43,6 +43,8 @@ class DocumentoPdf extends Modelo
             $where['titulo LIKE'] = '%' . $busqueda . '%';
         }
 
+        error_log('[DEBUG_DOCPDF] busqueda="' . $busqueda . '" pagina=' . $pagina . ' porPagina=' . $porPagina);
+
         $resultado = self::paginar(
             $pagina,
             $porPagina,

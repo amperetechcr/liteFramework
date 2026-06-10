@@ -9,7 +9,7 @@ function tarjetaArchivo(Archivo $a): string {
     elseif (strpos($mime, 'zip') !== false || strpos($mime, 'rar') !== false || strpos($mime, 'tar') !== false || strpos($mime, 'gzip') !== false || strpos($mime, '7z') !== false) $tipo = 'comprimido';
     elseif (strpos($mime, 'dosexec') !== false || strpos($mime, 'msdownload') !== false || strpos($mime, 'executable') !== false || strpos($mime, 'x-msi') !== false) $tipo = 'ejecutable';
 
-    if ($a->esImagen()) $icono = '<img src="' . htmlspecialchars($a->enlaceDescarga()) . '" alt="' . htmlspecialchars($a->nombre_original) . '">';
+    if ($a->esImagen()) $icono = '<img src="' . htmlspecialchars($a->enlaceDescarga()) . '" alt="' . htmlspecialchars($a->nombre_original) . '" style="width:100%;height:100%;object-fit:contain" loading="lazy">';
     else $icono = '<span>' . ([
         'video' => '🎬', 'audio' => '🎵', 'comprimido' => '📦', 'documento' => '📝',
         'ejecutable' => '⚙', 'imagen' => '🖼', 'base' => '📄'

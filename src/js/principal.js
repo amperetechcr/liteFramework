@@ -13,17 +13,7 @@ import './ui/confirmaciones.js';
 
 var COLA_REINTENTOS = [];
 
-function crearBannerOffline()
-{
-    var b = document.createElement('div');
-    b.id = 'banner-offline';
-    b.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;z-index:999999;background:var(--color-peligro,#dc2626);color:#fff;text-align:center;padding:8px 16px;font-size:14px;';
-    b.textContent = 'Sin conexion. Los cambios se guardaran cuando recuperes la conexion.';
-    document.body.prepend(b);
-    return b;
-}
-
-var bannerOffline = crearBannerOffline();
+var bannerOffline = document.getElementById('banner-offline');
 
 window.addEventListener('online', function () {
     bannerOffline.style.display = 'none';
@@ -70,18 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     iniciarManejoGlobalErrores();
     inicializarCliente();
     aplicarClasesCliente();
-    inicializarTamano();
-    inicializarRadio();
-    inicializarAnimacion();
-    inicializarTrazo();
-    inicializarGrosor();
-    inicializarSombra();
-    inicializarFuente();
-    inicializarEspaciado();
-    inicializarPaleta();
-    inicializarEstilo();
-    inicializarFondo();
-    inicializarTextura();
     inicializarTema();
     mostrarErroresPorURL();
     SeguridadSistema.inicializarProtocolos();

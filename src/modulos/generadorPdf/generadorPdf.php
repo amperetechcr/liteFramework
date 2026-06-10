@@ -20,6 +20,7 @@ try {
     $paginador = Paginador::crear($totalDocumentos, $porPagina);
 
 } catch (PDOException $e) {
+    error_log('[DEBUG_DOCPDF_PDO] ' . $e->getMessage() . ' | code=' . $e->getCode() . ' | ' . $e->getFile() . ':' . $e->getLine());
     RegistroAuditoria::error('DocumentosPDF', 'Error al cargar listado', [
         'error' => $e->getMessage(),
     ]);

@@ -617,10 +617,12 @@ class Modelo
         $clausulaWhere = !empty($condiciones) ? 'WHERE ' . implode(' AND ', $condiciones) : '';
 
         $sqlTotal = "SELECT COUNT(*) FROM {$tabla} {$joins} {$clausulaWhere}";
+        error_log('[DEBUG_PAGINAR_COUNT] ' . $sqlTotal . ' | params=' . json_encode($parametros));
         $stmtTotal = $bd->prepare($sqlTotal);
         \assert($stmtTotal !== false);
         $stmtTotal->execute($parametros);
         $total = (int)$stmtTotal->fetchColumn();
+        error_log('[DEBUG_PAGINAR_COUNT] total=' . $total);
 
         $totalPaginas = max(1, (int)ceil($total / $porPagina));
         if ($pagina > $totalPaginas) {
@@ -629,6 +631,7 @@ class Modelo
         $inicio = ($pagina - 1) * $porPagina;
 
         $sql = "SELECT {$select} FROM {$tabla} {$joins} {$clausulaWhere} {$groupBy} ORDER BY " . self::sanitizarIdentificadorSql(static::$idColumna) . " DESC LIMIT :limite OFFSET :inicio";
+        error_log('[DEBUG_PAGINAR_DATA] ' . $sql . ' | params=' . json_encode($parametros));
         $consulta = $bd->prepare($sql);
         \assert($consulta !== false);
         foreach ($parametros as $clave => $valor) {

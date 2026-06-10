@@ -350,13 +350,13 @@
 
 :root.fuente-sans,
 .fuente-sans {
-    --fuente-base: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --fuente-base: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --fuente-titulos: var(--fuente-base);
 }
 
 :root.fuente-mono,
 .fuente-mono {
-    --fuente-base: "JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", monospace;
+    --fuente-base: "Cascadia Code", "Fira Code", "Courier New", monospace;
     --fuente-titulos: var(--fuente-base);
 }
 
@@ -368,14 +368,14 @@
 
 :root.fuente-humanista,
 .fuente-humanista {
-    --fuente-base: "Fira Sans", "Nunito Sans", "PT Sans", system-ui, sans-serif;
-    --fuente-titulos: "Fira Sans", "Nunito Sans", system-ui, sans-serif;
+    --fuente-base: "PT Sans", system-ui, sans-serif;
+    --fuente-titulos: "PT Sans", system-ui, sans-serif;
 }
 
 :root.fuente-decorativa,
 .fuente-decorativa {
-    --fuente-base: "Playfair Display", "DM Serif Display", "Lora", serif;
-    --fuente-titulos: "Playfair Display", "DM Serif Display", Georgia, serif;
+    --fuente-base: Georgia, serif;
+    --fuente-titulos: Georgia, serif;
 }
 
 /* =========================================

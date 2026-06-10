@@ -15,7 +15,7 @@ $ultimosErrores = [];
 $resumenAuditoria = null;
 
 // Auto diagnostico al cargar
-$ctx = ContextoError::capturar(null, 'diagnostico_auto');
+$ctx = ContextoError::capturar('diagnostico_auto', 'Diagnóstico automático del sistema', __FILE__, __LINE__);
 $resultadoDiagnostico = DiagnosticoError::diagnosticar($ctx);
 $infoSistema = $ctx->diagnosticoSistema;
 
@@ -142,7 +142,7 @@ if ($esAjax) {
         <div class="diagnostico-card">
             <div class="diagnostico-card-header">Auditoria</div>
             <div class="diagnostico-card-body">
-                <?php $totalErrores = $resumenAuditoria['total_errores'] ?? ($ultimosErrores ? count($ultimosErrores) : 0); ?>
+                <?php $totalErrores = $resumenAuditoria['total'] ?? ($ultimosErrores ? count($ultimosErrores) : 0); ?>
                 <div class="diagnostico-item"><span class="diag-label">Errores (24h)</span><span class="diag-val"><?= (int)$totalErrores ?></span></div>
                 <div class="diagnostico-item"><span class="diag-label">Niveles</span><span class="diag-val"><?= implode(', ', RegistroAuditoria::obtenerNiveles()) ?></span></div>
             </div>

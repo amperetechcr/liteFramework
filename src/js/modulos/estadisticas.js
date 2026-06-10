@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    console.log('[DEBUG] estadisticas.js loaded', { url: window.location.href, partial: new URLSearchParams(window.location.search).get('partial') });
+
     var formulario = document.getElementById('formularioEstadistica');
     var campoTitulo = document.getElementById('titulo');
     var campoDescripcion = document.getElementById('descripcion');

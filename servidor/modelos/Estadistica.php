@@ -69,6 +69,8 @@ class Estadistica extends Modelo
             $where['e.titulo LIKE'] = '%' . $busqueda . '%';
         }
 
+        error_log('[DEBUG_ESTADISTICA] busqueda="' . $busqueda . '" pagina=' . $pagina . ' porPagina=' . $porPagina);
+
         $resultado = self::paginar(
             $pagina,
             $porPagina,
@@ -81,6 +83,8 @@ class Estadistica extends Modelo
         foreach ($resultado['datos'] as $modelo) {
             $estadisticas[] = $modelo->aArreglo();
         }
+
+        error_log('[DEBUG_ESTADISTICA] resultados=' . count($estadisticas) . ' total=' . $resultado['total']);
 
         return [
             'estadisticas' => $estadisticas,

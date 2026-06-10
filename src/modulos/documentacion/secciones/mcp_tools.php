@@ -143,8 +143,3 @@ function tarjeta(string $label, string $valor, string $color = ''): string
         . '<p class="texto-base" style="' . $estilo . '">' . htmlspecialchars($valor) . '</p>'
         . '</article>';
 }
-
-function h(string $s): string
-{
-    return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
-}

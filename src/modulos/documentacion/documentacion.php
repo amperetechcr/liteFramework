@@ -6,8 +6,11 @@ if ($esAjax) {
 }
 
 $secciones = [];
-foreach (glob(__DIR__ . '/secciones/*.php') as $archivo) {
-    $secciones[] = require $archivo;
+$archivosSecciones = glob(__DIR__ . '/secciones/*.php');
+if (is_array($archivosSecciones)) {
+    foreach ($archivosSecciones as $archivo) {
+        $secciones[] = require $archivo;
+    }
 }
 
 $porPaginaDoc = 12;

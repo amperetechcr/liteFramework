@@ -21,6 +21,7 @@ try {
     $paginaActual = $resultado['pagina'];
     $paginador = Paginador::crear($totalEstadisticas, $porPagina);
 } catch (PDOException $e) {
+    error_log('[DEBUG_ESTADISTICAS_PDO] ' . $e->getMessage() . ' | code=' . $e->getCode() . ' | file=' . $e->getFile() . ':' . $e->getLine());
     RegistroAuditoria::error('Estadisticas', 'Error al cargar listado', [
         'error' => $e->getMessage(),
     ]);
@@ -158,6 +159,7 @@ if (!$esAjax) {
 <?php if (!$esAjax): require DIRECTORIO_RAIZ . '/src/plantillas/pie.php'; endif;
 
 } catch (\Throwable $e) {
+    error_log('[DEBUG_ESTADISTICAS_THROWABLE] ' . get_class($e) . ': ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine());
     \LiteFramework\Seguridad\RegistroAuditoria::error('Estadisticas', 'Error al cargar modulo', [
         'mensaje' => $e->getMessage(),
         'archivo' => $e->getFile(),

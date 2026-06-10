@@ -11,7 +11,7 @@ export function obtenerTokenCSRF()
     var meta = document.querySelector('meta[name="csrf-token"]') ||
         document.querySelector('input[name="csrf_token"]') ||
         document.querySelector('input[name="token_peticion"]');
-    return meta ? meta.value : '';
+    return meta ? (meta.content || meta.value || '') : '';
 }
 
 export function notificar(mensaje, tipo)

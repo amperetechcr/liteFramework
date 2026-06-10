@@ -63,11 +63,16 @@ foreach ($cssFiles as $f): $path = $cssDir . '/' . $f . '.css'; $v = file_exists
     <script>
     window.VALORES_UI = <?= json_encode($GLOBALS['configUI']) ?>;
     </script>
+    <script>
+    (function(){var r=document.documentElement,c=r.className;c=c.replace(/\b(?:paleta|estilo|fondo|textura|fuente|espaciado|tamano|radio|animacion|trazo|grosor|sombra)-\S+/g,'').trim();var map={paleta:'indigo',estilo:'moderno',fondo:'blanco',textura:'ninguna',fuente:'sistema',espaciado:'normal',tamano:'normal',radio:'normal',animacion:'normal',trazo:'normal',grosor:'normal',sombra:'normal'};for(var k in map){var v;try{v=localStorage.getItem(k+'-lite-framework')}catch(e){}v=v||map[k];if(v!=='normal'&&v!=='sistema'&&v!=='ninguna')c+=' '+k+'-'+v}try{var t=localStorage.getItem('tema-lite-framework')}catch(e){}if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'oscuro':'claro';c+=' forzar-iluminacion-'+(t==='oscuro'?'oscura':'clara');r.className=c.trim()})();
+    </script>
 </head>
 <body
     data-error="<?= htmlspecialchars($codigoError ?? '', ENT_QUOTES, 'UTF-8') ?>"
     data-mensaje="<?= htmlspecialchars($codigoMensaje ?? '', ENT_QUOTES, 'UTF-8') ?>"
 >
+    <div id="banner-offline" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999999;background:var(--color-peligro,#dc2626);color:#fff;text-align:center;padding:8px 16px;font-size:14px">Sin conexion. Los cambios se guardaran cuando recuperes la conexion.</div>
+
     <a href="#contenido-principal" class="enlace-salto">Saltar al contenido principal</a>
 
     <div class="contenedor-principal envoltura-principal" id="envoltura-principal">

@@ -61,15 +61,17 @@ function inicializarTema()
         }
     }
 
-    const temaGuardado = localStorage.getItem('tema-lite-framework');
+    if (!raiz.classList.contains('forzar-iluminacion-clara') && !raiz.classList.contains('forzar-iluminacion-oscura')) {
+        const temaGuardado = localStorage.getItem('tema-lite-framework');
 
-    if (temaGuardado === 'oscuro') {
-        aplicarTema(true);
-    } else if (temaGuardado === 'claro') {
-        aplicarTema(false);
-    } else {
-        const oscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        aplicarTema(oscuro);
+        if (temaGuardado === 'oscuro') {
+            aplicarTema(true);
+        } else if (temaGuardado === 'claro') {
+            aplicarTema(false);
+        } else {
+            const oscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            aplicarTema(oscuro);
+        }
     }
 
     var alternador = document.getElementById('alternador-tema');
@@ -463,7 +465,7 @@ function csrfToken()
     }
     var meta = document.querySelector('meta[name="csrf-token"]') ||
         document.querySelector('input[name="token_peticion"]');
-    return meta ? meta.value : '';
+    return meta ? (meta.content || meta.value || '') : '';
 }
 
 function actualizarTokenCSRF(nuevoToken)
