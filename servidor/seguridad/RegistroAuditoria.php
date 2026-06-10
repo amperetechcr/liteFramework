@@ -64,6 +64,9 @@ class RegistroAuditoria
 
     private static function registrar(string $nivel, string $modulo, string $accion, mixed $detalle = null): void
     {
+        if (defined('APP_ENTORNO_TEST')) {
+            $nivel = self::NIVEL_INFO;
+        }
         if (!self::$bitacoraHabilitada) {
             return;
         }

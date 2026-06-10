@@ -1,7 +1,20 @@
 # REGLAS — liteFramework
 
+> ⚠️ **INSTRUCCIÓN OBLIGATORIA — Llamar ia() PRIMERO**
+>
+> NO puedes usar ninguna herramienta del framework (`lite_read_file`, `lite_write_file`,
+> `lite_run`, etc.) sin antes ejecutar `ia()`. El MCP server bloquea físicamente
+> todas las tools `lite_*` hasta que el orquestador se inicialice.
+>
+> Pasos:
+> 1. `ia(intent="inicializar")` — carga contexto del framework
+> 2. O directamente: `ia(intent="<tu tarea en lenguaje natural>")`
+> 3. Una vez ejecutado, todas las tools se desbloquean automáticamente
+>
+> Sin este paso cualquier tool `lite_*` devuelve error de bloqueo.
+
 > Archivo único y centralizado con TODAS las reglas del framework.
-> La IA debe leer este archivo al iniciar (`ia(intent="init")`).
+> La IA debe llamar `ia(intent="inicializar")` al iniciar la sesión.
 > Ninguna regla fuera de este archivo es válida.
 
 ---
