@@ -311,4 +311,279 @@ $consola->registrar('correo:test', 'Envía un correo de prueba', function (array
     return $exito ? 0 : 1;
 }, ['<destinatario@correo.com>']);
 
+// ─── diagnóstico ───
+$consola->registrar('diagnostico:ejecutar', 'Diagnostica el sistema (BD, archivos, seguridad, PHP)', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+
+    $ctx = \LiteFramework\Servicios\ContextoError::capturar(
+        'diagnostico', 'Diagnóstico solicitado por IA', __FILE__, __LINE__
+    );
+    $resultado = \LiteFramework\Servicios\DiagnosticoError::diagnosticar($ctx);
+
+    $sistema = $ctx->diagnosticoSistema;
+
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'sistema' => $sistema,
+            'mysql' => $ctx->estadoMySQL,
+            'diagnosticos' => $resultado['diagnosticos'] ?? [],
+            'tieneRemedio' => $resultado['tieneRemedio'] ?? false,
+            'reparaciones' => $resultado['reparaciones'] ?? [],
+            'sugerencias' => $resultado['sugerencias'] ?? [],
+        ], 'diagnostico:ejecutar');
+        return 0;
+    }
+    echo "=== Diagnóstico del Sistema ===\n";
+    echo "PHP: {$sistema['php_version']} | Memoria: {$sistema['memoria_usada_mb']}MB/{$sistema['memoria_limite']}\n";
+    echo "MySQL: {$ctx->estadoMySQL}\n";
+    echo "Disco: {$sistema['disco_libre_mb']}MB libres de {$sistema['disco_total_mb']}MB\n";
+    foreach ($resultado['diagnosticos'] ?? [] as $d) {
+        echo "[{$d['verificador']}] {$d['tipo']}: {$d['detalle']}\n";
+    }
+    if (empty($resultado['diagnosticos'])) {
+        echo "No se detectaron problemas.\n";
+    }
+    echo "\nSugerencias:\n";
+    foreach ($resultado['sugerencias'] ?? [] as $s) {
+        echo "  - {$s}\n";
+    }
+    return 0;
+});
+
+$consola->registrar('diagnostico:remediar', 'Ejecuta reparación automática para un problema', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    if (!\LiteFramework\Seguridad\ControlAccesoRBAC::esManager()) {
+        $consola = Consola::instance();
+        if ($consola && $consola->estaEnModoJson()) {
+            $consola->jsonError('Workers no pueden ejecutar reparaciones', 'ERR_PERMISO', 403);
+        }
+        echo "ERROR: Solo los agentes Manager pueden ejecutar reparaciones." . PHP_EOL;
+        return 1;
+    }
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $tipo = $args[0] ?? '';
+    $params = [];
+
+    for ($i = 1; $i < count($args); $i++) {
+        if (str_starts_with($args[$i], '--')) {
+            $parts = explode('=', substr($args[$i], 2), 2);
+            $params[$parts[0]] = $parts[1] ?? true;
+        }
+    }
+
+    if (!$tipo) {
+        if ($modoJson) {
+            $consola?->jsonError('Se requiere <tipo> (ej: directorio_no_creable)', 'ERR_ARG', 400);
+        }
+        echo "Uso: consola diagnostico:remediar <tipo> [--clave=valor]\n";
+        return 1;
+    }
+
+    $resultado = \LiteFramework\Servicios\RemediadorError::ejecutarReparacion($tipo, $params);
+    if ($modoJson) {
+        $consola?->jsonOut($resultado, 'diagnostico:remediar');
+        return !empty($resultado['exito']) ? 0 : 1;
+    }
+    echo !empty($resultado['exito'])
+        ? "Reparación aplicada: {$resultado['mensaje']}\n"
+        : "Error: {$resultado['mensaje']}\n";
+    return !empty($resultado['exito']) ? 0 : 1;
+}, ['<tipo>', '[--param=valor...]']);
+
+// ─── operadores ───
+$consola->registrar('operador:list', 'Lista operadores del sistema', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $operadores = \LiteFramework\Modelos\Operador::todos('id_operador DESC');
+    $data = array_map(fn($o) => [
+        'id' => $o->id_operador,
+        'nombre' => $o->nombre_completo,
+        'email' => $o->correo_electronico,
+        'rol' => $o->rol()?->nombre_rol ?? '?',
+        'activo' => $o->estaActivo(),
+    ], $operadores);
+    if ($modoJson) {
+        $consola?->jsonOut(['operadores' => $data, 'total' => count($data)], 'operador:list');
+        return 0;
+    }
+    foreach ($data as $op) {
+        $icono = $op['activo'] ? 'ACTIVO' : 'SUSP';
+        echo "{$op['id']} {$icono} {$op['nombre']} <{$op['email']}> [{$op['rol']}]\n";
+    }
+    return 0;
+});
+
+$consola->registrar('operador:crear', 'Crea un operador en el sistema', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    if (!\LiteFramework\Seguridad\ControlAccesoRBAC::esManager()) {
+        if ($modoJson) { $consola?->jsonError('Solo managers pueden crear operadores', 'ERR_PERMISO', 403); }
+        echo "ERROR: Solo managers pueden crear operadores.\n"; return 1;
+    }
+    $nombre = $args[0] ?? '';
+    $email = $args[1] ?? '';
+    $clave = $args[2] ?? '';
+    $idRol = 0;
+    for ($i = 3; $i < count($args); $i++) {
+        if (str_starts_with($args[$i], '--rol=')) { $idRol = (int)substr($args[$i], 6); }
+    }
+    if (!$nombre || !$email || !$clave) {
+        if ($modoJson) { $consola?->jsonError('Faltan argumentos: <nombre> <email> <clave>', 'ERR_ARG', 400); }
+        echo "Uso: consola operador:crear <nombre> <email> <clave> [--rol=N]\n"; return 1;
+    }
+    $validacion = \LiteFramework\Seguridad\PoliticaContrasena::validar($clave);
+    if ($validacion !== true) {
+        if ($modoJson) { $consola?->jsonError($validacion, 'ERR_VAL', 400); }
+        echo "ERROR: $validacion\n"; return 1;
+    }
+    if (\LiteFramework\Modelos\Operador::donde('correo_electronico', $email)->primero()) {
+        if ($modoJson) { $consola?->jsonError('El correo ya esta registrado', 'ERR_DUP', 409); }
+        echo "ERROR: El correo $email ya esta registrado.\n"; return 1;
+    }
+    if ($idRol <= 0) { $idRol = 1; }
+    $hash = \LiteFramework\Seguridad\SanitizadorEntrada::encriptarClaveOperador($clave);
+    $nuevo = \LiteFramework\Modelos\Operador::crear([
+        'nombre_completo' => $nombre,
+        'correo_electronico' => $email,
+        'clave_acceso' => $hash,
+        'id_rol' => $idRol,
+        'estado_cuenta' => 1,
+    ]);
+    if ($modoJson) {
+        $consola?->jsonOut(['id' => $nuevo->id_operador, 'email' => $email, 'rol_id' => $idRol], 'operador:crear');
+        return 0;
+    }
+    echo "Operador creado: ID {$nuevo->id_operador} <{$email}>\n";
+    return 0;
+}, ['<nombre>', '<email>', '<clave>', '[--rol=1]']);
+
+$consola->registrar('operador:estado', 'Activa (1) o suspende (0) un operador', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    if (!\LiteFramework\Seguridad\ControlAccesoRBAC::esManager()) {
+        if ($modoJson) { $consola?->jsonError('Solo managers', 'ERR_PERMISO', 403); }
+        echo "ERROR: Solo managers.\n"; return 1;
+    }
+    $id = (int)($args[0] ?? 0);
+    $activo = ($args[1] ?? '1') === '1' || $args[1] === '1';
+    $op = \LiteFramework\Modelos\Operador::buscar($id);
+    if (!$op) {
+        if ($modoJson) { $consola?->jsonError("Operador $id no encontrado", 'ERR_NOTFOUND', 404); }
+        echo "ERROR: Operador $id no encontrado.\n"; return 1;
+    }
+    $activo ? $op->activar() : $op->suspender();
+    if ($modoJson) {
+        $consola?->jsonOut(['id' => $id, 'activo' => $activo], 'operador:estado');
+        return 0;
+    }
+    echo $activo ? "Operador $id activado.\n" : "Operador $id suspendido.\n";
+    return 0;
+}, ['<id>', '<1|0>']);
+
+// ─── crud genérico ───
+$consola->registrar('crud', 'CRUD sobre cualquier tabla de la BD', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $tabla = preg_replace('/[^a-zA-Z_\x80-\xff]/', '', $args[0] ?? '');
+    $accion = $args[1] ?? 'listar';
+    $dataJson = '';
+    $idFiltro = 0;
+    for ($i = 2; $i < count($args); $i++) {
+        if (str_starts_with($args[$i], '--data=')) { $dataJson = substr($args[$i], 7); }
+        if (str_starts_with($args[$i], '--id=')) { $idFiltro = (int)substr($args[$i], 5); }
+    }
+    if (!$tabla) {
+        if ($modoJson) { $consola?->jsonError('Falta <tabla>', 'ERR_ARG', 400); }
+        echo "Uso: consola crud <tabla> <accion> [--data=json] [--id=N]\n"; return 1;
+    }
+    $bd = \LiteFramework\Config\ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+    $pkCol = 'id';
+    try {
+        $pkStmt = $bd->prepare("SHOW KEYS FROM `$tabla` WHERE Key_name = 'PRIMARY'");
+        $pkStmt->execute();
+        $pkRow = $pkStmt->fetch(PDO::FETCH_ASSOC);
+        if ($pkRow && !empty($pkRow['Column_name'])) { $pkCol = $pkRow['Column_name']; }
+    } catch (\Throwable) { $pkCol = 'id'; }
+    try {
+        if ($accion === 'listar') {
+            $stmt = $bd->query("SELECT * FROM `$tabla` LIMIT 100");
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($modoJson) { $consola?->jsonOut(['tabla' => $tabla, 'pk' => $pkCol, 'filas' => count($rows), 'datos' => $rows], 'crud'); }
+            else { echo json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n"; }
+        } elseif ($accion === 'leer') {
+            if (!$idFiltro) { throw new \Exception('--id=N requerido para leer'); }
+            $stmt = $bd->prepare("SELECT * FROM `$tabla` WHERE `$pkCol` = ?");
+            $stmt->execute([$idFiltro]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($modoJson) { $consola?->jsonOut(['tabla' => $tabla, $pkCol => $idFiltro, 'fila' => $row ?: null], 'crud'); }
+            else { echo json_encode($row, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n"; }
+        } elseif ($accion === 'crear') {
+            $data = json_decode($dataJson, true) ?: [];
+            if (!$data) { throw new \Exception('--data=json requerido'); }
+            $cols = implode('`, `', array_keys($data));
+            $vals = implode(', ', array_fill(0, count($data), '?'));
+            $stmt = $bd->prepare("INSERT INTO `$tabla` (`$cols`) VALUES ($vals)");
+            $stmt->execute(array_values($data));
+            $id = $bd->lastInsertId();
+            if ($modoJson) { $consola?->jsonOut(['tabla' => $tabla, 'insertado' => $id], 'crud'); }
+            else { echo "Insertado ID $id en $tabla\n"; }
+        } elseif ($accion === 'actualizar') {
+            $data = json_decode($dataJson, true) ?: [];
+            if (!$data || !$idFiltro) { throw new \Exception('--data=json e --id=N requeridos'); }
+            $sets = implode(', ', array_map(fn($k) => "`$k` = ?", array_keys($data)));
+            $stmt = $bd->prepare("UPDATE `$tabla` SET $sets WHERE `$pkCol` = ?");
+            $stmt->execute([...array_values($data), $idFiltro]);
+            if ($modoJson) { $consola?->jsonOut(['tabla' => $tabla, 'actualizados' => $stmt->rowCount()], 'crud'); }
+            else { echo "Actualizados {$stmt->rowCount()} registros en $tabla\n"; }
+        } elseif ($accion === 'eliminar') {
+            if (!$idFiltro) { throw new \Exception('--id=N requerido'); }
+            $stmt = $bd->prepare("DELETE FROM `$tabla` WHERE `$pkCol` = ?");
+            $stmt->execute([$idFiltro]);
+            if ($modoJson) { $consola?->jsonOut(['tabla' => $tabla, 'eliminados' => $stmt->rowCount()], 'crud'); }
+            else { echo "Eliminados {$stmt->rowCount()} registros de $tabla\n"; }
+        } else {
+            throw new \Exception("Accion no valida: $accion (use: listar, leer, crear, actualizar, eliminar)");
+        }
+    } catch (\Throwable $e) {
+        if ($modoJson) { $consola?->jsonError($e->getMessage(), 'ERR_CRUD', 400); }
+        else { echo "ERROR: {$e->getMessage()}\n"; }
+        return 1;
+    }
+    return 0;
+}, ['<tabla>', '<accion>', '[--data=json]', '[--id=N]']);
+
+// ─── sse ───
+$consola->registrar('sse:enviar', 'Envia notificacion SSE en tiempo real a uno o todos los operadores', function (array $args): int {
+    \LiteFramework\Seguridad\ControlAccesoRBAC::requiereTokenIA();
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $operadorId = (int)($args[0] ?? 0);
+    $tipo = $args[1] ?? 'notificacion';
+    $datos = [];
+    if (isset($args[2])) {
+        $datos = json_decode($args[2], true) ?? ['texto' => $args[2]];
+    }
+    try {
+        if ($operadorId > 0) {
+            \LiteFramework\Seguridad\SseGestor::emitir($operadorId, $tipo, $datos);
+        } else {
+            \LiteFramework\Seguridad\SseGestor::emitirATodos($tipo, $datos);
+        }
+        if ($modoJson) { $consola?->jsonOut(['enviado' => true, 'a_todos' => $operadorId === 0], 'sse:enviar'); }
+        else { echo $operadorId > 0 ? "SSE enviado a operador $operadorId\n" : "SSE enviado a todos\n"; }
+    } catch (\Throwable $e) {
+        if ($modoJson) { $consola?->jsonError($e->getMessage(), 'ERR_SSE', 500); }
+        else { echo "ERROR SSE: {$e->getMessage()}\n"; }
+        return 1;
+    }
+    return 0;
+}, ['<operador_id|0=todos>', '<tipo>', '[<datos_json|texto>]']);
+
 $consola->ejecutar($argv);

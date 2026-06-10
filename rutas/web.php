@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use LiteFramework\Nucleo\Enrutador;
 use LiteFramework\Controladores\AutenticacionControlador;
@@ -189,6 +189,10 @@ $enrutador->get('/generador-proyecto', function () {
     (new ModuloControlador())->indice('generadorProyecto');
 })->interceptor(AutenticacionInterceptor::class)->nombre('generadorProyecto');
 
+$enrutador->get('/oficina', function () {
+    (new ModuloControlador())->indice('visualizador');
+})->interceptor(AutenticacionInterceptor::class)->nombre('oficina');
+
 $enrutador->get('/migraciones', function () {
     (new ModuloControlador())->indice('migraciones');
 })->interceptor(AutenticacionInterceptor::class)->nombre('migraciones');
@@ -371,6 +375,13 @@ $enrutador->get('/api/refrescar-token', function () {
     $token = class_exists('SeguridadServidor') ? SeguridadServidor::generarTokenAntiFalsificacion() : '';
     echo json_encode(['nuevo_token' => $token]);
 })->nombre('api.refrescar_token');
+
+$enrutador->post('/api/crewai', function () {
+    $ctrl = new \LiteFramework\Api\Controladores\CrewaiApiControlador();
+    [$codigo, $respuesta] = $ctrl->emitirEvento();
+    http_response_code($codigo);
+    echo json_encode($respuesta);
+})->nombre('api.crewai');
 
 $enrutador->post('/api/diagnostico/reparar', function () {
     header('Content-Type: application/json');

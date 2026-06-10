@@ -22,36 +22,53 @@ echo "[SSE Daemon] Procesando eventos cada 1s...\n\n";
 
 $ultimoId = 0;
 if (file_exists($archivoUltimoId)) {
-    $ultimoId = (int)file_get_contents($archivoUltimoId);
+    $ultimoId = (int) file_get_contents($archivoUltimoId);
     echo "[SSE Daemon] Reanudando desde ID {$ultimoId}\n";
 }
 
 /** @phpstan-ignore-next-line - bucle infinito intencional para daemon */
 while (true) {
     try {
-        $bd = \LiteFramework\Config\ConexionBaseDatos::obtenerInstancia()->obtenerConector();
-        $stmt = $bd->prepare("
-            SELECT id_evento, id_operador, tipo, datos
-            FROM sse_evento
-            WHERE id_evento > :ultimo
-            ORDER BY id_evento ASC
-            LIMIT 200
-        ");
-        $stmt->execute([':ultimo' => $ultimoId]);
-        $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $bd = \LiteFramework\Config\ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+            $stmt = $bd->prepare("
+                SELECT id_evento, id_operador, tipo, datos
+                FROM sse_evento
+                WHERE id_evento > :ultimo
+                ORDER BY id_evento ASC
+                LIMIT 200
+            ");
+            $stmt->execute([':ultimo' => $ultimoId]);
+            $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            $msg = $e->getMessage();
+            $code = $e->getCode();
+            if (
+                str_contains($msg, 'gone away')
+                || $code === 2006
+                || $code === 'HY000'
+                || str_contains($msg, 'MySQL server has gone away')
+            ) {
+                echo "[SSE Daemon] Conexion perdida. Reconectando...\n";
+                \LiteFramework\Config\ConexionBaseDatos::resetearInstancia();
+            } else {
+                throw $e;
+            }
+            continue;
+        }
 
         if (!empty($eventos)) {
             $lineas = [];
             $maxIdEnLote = $ultimoId;
 
             foreach ($eventos as $ev) {
-                $eid = (int)$ev['id_evento'];
+                $eid = (int) $ev['id_evento'];
                 if ($eid > $maxIdEnLote) {
                     $maxIdEnLote = $eid;
                 }
                 $lineas[] = json_encode([
                     'id' => $eid,
-                    'id_operador' => (int)$ev['id_operador'],
+                    'id_operador' => (int) $ev['id_operador'],
                     'tipo' => $ev['tipo'],
                     'datos' => $ev['datos'],
                     'ts' => time(),
@@ -60,30 +77,52 @@ while (true) {
 
             $contenido = implode("\n", $lineas) . "\n";
 
-            if (@file_put_contents($archivoLog, $contenido, FILE_APPEND | LOCK_EX) === false) {
-                error_log('[SSE Daemon] Error al escribir en eventos.log');
-            } else {
-                $ultimoId = $maxIdEnLote;
-                file_put_contents($archivoUltimoId, (string)$ultimoId, LOCK_EX);
+            $fpLog = fopen($archivoLog, 'a');
+            if ($fpLog && flock($fpLog, LOCK_EX)) {
+                fwrite($fpLog, $contenido);
+                fflush($fpLog);
+                flock($fpLog, LOCK_UN);
+            } elseif ($fpLog) {
+                error_log('[SSE Daemon] Error al bloquear eventos.log');
             }
+            if ($fpLog) {
+                fclose($fpLog);
+            }
+
+            $ultimoId = $maxIdEnLote;
+            file_put_contents($archivoUltimoId, (string) $ultimoId, LOCK_EX);
 
             $stmtDel = $bd->prepare("DELETE FROM sse_evento WHERE id_evento <= :ultimo");
             $stmtDel->execute([':ultimo' => $maxIdEnLote]);
 
             $count = count($eventos);
             echo "[" . date('H:i:s') . "] Procesados {$count} eventos (ultimo ID: {$ultimoId})\n";
+
+            continue;
         }
 
-        if (file_exists($archivoLog) && filesize($archivoLog) > $maxBytes) {
-            $lineas = file($archivoLog, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
-            $total = count($lineas);
-            if ($total > 1000) {
-                $nuevas = array_slice($lineas, -1000);
-                file_put_contents($archivoLog, implode("\n", $nuevas) . "\n", LOCK_EX);
+        $tamanoLog = @filesize($archivoLog);
+        if ($tamanoLog !== false && $tamanoLog > $maxBytes) {
+            $fp = fopen($archivoLog, 'r+');
+            if ($fp && flock($fp, LOCK_EX)) {
+                $contenido = stream_get_contents($fp);
+                if ($contenido === false) {
+                    $contenido = '';
+                }
+                $lineas = explode("\n", $contenido);
+                $total = count($lineas);
+                $nuevas = $total > 1000 ? array_slice($lineas, -1000) : [];
+                ftruncate($fp, 0);
+                rewind($fp);
+                if (!empty($nuevas)) {
+                    fwrite($fp, implode("\n", $nuevas) . "\n");
+                }
+                fflush($fp);
+                flock($fp, LOCK_UN);
+                fclose($fp);
                 echo "[SSE Daemon] Log rotado: {$total} → " . count($nuevas) . " lineas\n";
-            } else {
-                file_put_contents($archivoLog, '', LOCK_EX);
-                echo "[SSE Daemon] Log rotado: vaciado\n";
+            } elseif ($fp) {
+                fclose($fp);
             }
         }
     } catch (\Throwable $e) {

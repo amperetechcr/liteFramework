@@ -35,7 +35,39 @@ class ConfiguracionSistema
         return self::obtenerCache();
     }
 
-    public static function establecer(string $clave, mixed $valor, int $versionEsperada, ?int $idOperador = null): array
+    public static function establecer(string $clave, mixed $valor, string|int $tipoOVersion = 'auto', ?string $descripcion = null, ?int $idOperador = null): array
+    {
+        if (is_int($tipoOVersion)) {
+            return self::establecerConVersion($clave, $valor, $tipoOVersion, $idOperador);
+        }
+
+        $tipoDato = $tipoOVersion !== 'auto' ? $tipoOVersion : self::inferirTipo($valor);
+        $valorSerializado = self::serializar($valor, $tipoDato);
+        $idOperador = $idOperador ?? (int)($_SESSION['operador_id'] ?? 0);
+
+        try {
+            $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
+            $sql = "UPDATE configuracion_sistema
+                    SET valor = ?, tipo_dato = ?, version = version + 1, actualizado_por = ?
+                    WHERE clave = ?";
+            $stmt = $conexion->prepare($sql);
+            \assert($stmt !== false);
+            $stmt->execute([$valorSerializado, $tipoDato, $idOperador, $clave]);
+        } catch (PDOException $e) {
+            return [
+                'estado' => 'error',
+                'mensaje' => 'Error de base de datos: ' . $e->getMessage(),
+            ];
+        }
+
+        AyudanteCache::olvidar(self::CLAVE_CACHE);
+        return [
+            'estado' => 'ok',
+            'version' => 0,
+        ];
+    }
+
+    private static function establecerConVersion(string $clave, mixed $valor, int $versionEsperada, ?int $idOperador = null): array
     {
         $tipoDato = self::inferirTipo($valor);
         $valorSerializado = self::serializar($valor, $tipoDato);
