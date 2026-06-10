@@ -116,6 +116,15 @@ class GestorEntorno
         if (!defined('AI_AGENT_ROLE')) {
             define('AI_AGENT_ROLE', 'worker');
         }
+        if (!defined('CREWAI_PYTHON')) {
+            define('CREWAI_PYTHON', '');
+        }
+        if (!defined('CREWAI_CONFIG')) {
+            define('CREWAI_CONFIG', '');
+        }
+        if (!defined('MCP_SERVER_PORT')) {
+            define('MCP_SERVER_PORT', '5003');
+        }
     }
 
     public static function obtener(string $clave, mixed $defecto = null): mixed

@@ -422,6 +422,12 @@ $enrutador->get('/api/rendimiento', function () {
     echo json_encode($stats);
 })->nombre('api.rendimiento');
 
+// API: entorno completo
+$enrutador->get('/api/entorno', function () {
+    header('Content-Type: application/json');
+    echo json_encode(\LiteFramework\Config\EntornoCompleto::obtenerTodo(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+})->nombre('api.entorno');
+
 // API: estadisticas dashboard
 $enrutador->get('/api/estadisticas/dashboard', function () {
     header('Content-Type: application/json');
