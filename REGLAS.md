@@ -30,11 +30,10 @@
 - **No asumir sin trazar.**
 
 ### 1.5 Regla #4 — Verificación automática post-cambio
-- Después de COMPLETAR cualquier implementación (crear, editar, o eliminar archivos), la IA DEBE invocar automáticamente al verificador vía `task(subagent_type="verificador")`.
-- El verificador revisará los cambios antes de que la IA confirme que la tarea está terminada.
-- Si el verificador encuentra problemas, la IA debe corregirlos antes de responder al usuario.
+- Después de COMPLETAR cualquier implementación (crear, editar, o eliminar archivos), la IA DEBE invocar automáticamente al equipo de calidad vía `lite_mcp_lite_equipo(tipo="calidad", tarea="Revisa los cambios recientes: ejecuta git diff, lee los archivos modificados con lite_read_file, y verifica que no haya código inventado, alucinaciones, imports falsos, o inconsistencias con REGLAS.md")`.
+- El equipo `calidad` (CrewAI: qa_engineer) revisará los cambios antes de que la IA confirme que la tarea está terminada.
+- Si encuentra problemas, la IA debe corregirlos antes de responder al usuario.
 - **No esperar a que el usuario pida la revisión.**
-- El usuario también puede invocarlo manualmente con `/review` en la TUI.
 
 ---
 

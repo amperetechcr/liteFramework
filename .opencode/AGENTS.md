@@ -21,6 +21,5 @@ Si no estás 100% segura de qué tool usar:
 
 ## REGLA #4 — VERIFICACIÓN AUTOMÁTICA
 Después de completar CUALQUIER implementación (crear/editar/eliminar archivos),
-la IA DEBE invocar automáticamente task(subagent_type="verificador") para revisar
-los cambios. No esperar a que el usuario lo pida.
-El usuario también puede invocarlo manualmente con /review en la TUI.
+la IA DEBE invocar automáticamente lite_mcp_lite_equipo(tipo="calidad", tarea="...")
+para revisar los cambios. No esperar a que el usuario lo pida.
