@@ -34,6 +34,7 @@
 - El verificador revisará los cambios antes de que la IA confirme que la tarea está terminada.
 - Si el verificador encuentra problemas, la IA debe corregirlos antes de responder al usuario.
 - **No esperar a que el usuario pida la revisión.**
+- El usuario también puede invocarlo manualmente con `/review` en la TUI.
 
 ---
 

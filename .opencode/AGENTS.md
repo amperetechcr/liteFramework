@@ -23,3 +23,4 @@ Si no estás 100% segura de qué tool usar:
 Después de completar CUALQUIER implementación (crear/editar/eliminar archivos),
 la IA DEBE invocar automáticamente task(subagent_type="verificador") para revisar
 los cambios. No esperar a que el usuario lo pida.
+El usuario también puede invocarlo manualmente con /review en la TUI.
