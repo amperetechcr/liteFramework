@@ -19,5 +19,7 @@ Si no estás 100% segura de qué tool usar:
 - Tarea compleja...        → lite_equipo(tipo, tarea)
 - No sabes...              → ia(intent="...")
 
-## REGLA #4 — VERIFICACIÓN
-Después de hacer cambios, invoca @verificador para revisar tu trabajo.
+## REGLA #4 — VERIFICACIÓN AUTOMÁTICA
+Después de completar CUALQUIER implementación (crear/editar/eliminar archivos),
+la IA DEBE invocar automáticamente task(subagent_type="verificador") para revisar
+los cambios. No esperar a que el usuario lo pida.

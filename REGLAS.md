@@ -1,31 +1,17 @@
 # REGLAS — liteFramework
 
-> ⚠️ **INSTRUCCIÓN OBLIGATORIA — Llamar ia() PRIMERO**
->
-> NO puedes usar ninguna herramienta del framework (`lite_read_file`, `lite_write_file`,
-> `lite_run`, etc.) sin antes ejecutar `ia()`. El MCP server bloquea físicamente
-> todas las tools `lite_*` hasta que el orquestador se inicialice.
->
-> Pasos:
-> 1. `ia(intent="inicializar")` — carga contexto del framework
-> 2. O directamente: `ia(intent="<tu tarea en lenguaje natural>")`
-> 3. Una vez ejecutado, todas las tools se desbloquean automáticamente
->
-> Sin este paso cualquier tool `lite_*` devuelve error de bloqueo.
-
-> Archivo único y centralizado con TODAS las reglas del framework.
-> La IA debe llamar `ia(intent="inicializar")` al iniciar la sesión.
-> Ninguna regla fuera de este archivo es válida.
+> ⚠ **INSTRUCCIÓN — Llamar ia() PRIMERO**
+> Sin ia() las tools lite_* están bloqueadas físicamente.
+> Usar: ia(intent="inicializar") o ia(intent="<tarea>").
+> Archivo único con TODAS las reglas. Ninguna fuera de este archivo es válida.
 
 ---
 
 ## 1. Reglas Fundamentales
 
 ### 1.1 Filosofía
-- Framework PHP 8.2+ zero-dependency diseñado para que la IA escriba todo el código.
-- El humano solo da instrucciones en lenguaje natural. La IA conoce el 100% del código base.
-- **No hay vendor/, no hay dependencias externas, no hay cajas negras.**
-- **Sin Composer, sin npm.**
+- Framework PHP 8.2+ zero-dependency.
+- **Sin vendor/, Composer, npm ni dependencias externas.**
 - Sentry, SMTP, Logger son implementaciones propias.
 
 ### 1.2 Regla #1 — Revertir si falla
@@ -39,14 +25,15 @@
 - **No se aceptan baselines ni skips.**
 
 ### 1.4 Regla #3 — Trazar antes de tocar
-- Antes de tocar cualquier archivo, asumir que NO se entiende cómo funciona.
-- La respuesta por defecto a "¿Entiendo cómo funciona esto realmente o solo estoy asumiendo?" es **siempre** "estoy asumiendo".
-- Antes de escribir código:
-  1. Leer el archivo completo
-  2. Identificar todos los imports, dependencias y consumidores
-  3. Explicar por qué el diseño actual es como es
-  4. Solo entonces proponer cambio
+- Antes de tocar código, **asumir que NO se entiende** el archivo.
+- Pre-cambio: leer completo, identificar imports/dependencias/consumidores, explicar el diseño actual, solo entonces proponer.
 - **No asumir sin trazar.**
+
+### 1.5 Regla #4 — Verificación automática post-cambio
+- Después de COMPLETAR cualquier implementación (crear, editar, o eliminar archivos), la IA DEBE invocar automáticamente al verificador vía `task(subagent_type="verificador")`.
+- El verificador revisará los cambios antes de que la IA confirme que la tarea está terminada.
+- Si el verificador encuentra problemas, la IA debe corregirlos antes de responder al usuario.
+- **No esperar a que el usuario pida la revisión.**
 
 ---
 
@@ -150,17 +137,13 @@
 - API POST retorna `[httpStatus, responseData]`.
 
 ### 3.7 Paginación — REGLA CRÍTICA
-- **NUNCA** usar ORM chain con `limite()` + `saltar()` → Error 500 por estado estático compartido.
-- **SIEMPRE** usar PDO directo para paginación.
-- **NO** llamar `$pag->paginaActual()` como método → Error 500.
-- Usar propiedades públicas: `$pag->paginaActual`, `$pag->porPagina`, `$pag->totalPaginas`, `$pag->totalRegistros`, `$pag->offset()`.
-- Patrón obligatorio para paginación:
-  1. `ConexionBaseDatos::obtenerInstancia()->obtenerConector()`
-  2. `$con->query("SELECT COUNT(*) FROM tabla")->fetchColumn()`
-  3. `Paginador::crear($total, 20)`
-  4. `$con->prepare("SELECT * FROM tabla ORDER BY fecha DESC LIMIT :lim OFFSET :off")`
-  5. Bind con `PDO::PARAM_INT`
-  6. Execute, fetch con `PDO::FETCH_ASSOC`, hydratar con `new MiModelo($f)`
+- ⚠ **NUNCA** ORM chain con `limite()+saltar()` (Error 500). Usar **PDO directo**.
+- ⚠ **NO** `$pag->paginaActual()` como método. Usar propiedades: `paginaActual`, `porPagina`, `totalPaginas`, `totalRegistros`, `offset()`.
+- Patrón:
+  1. `$con = ConexionBaseDatos::obtenerInstancia()->obtenerConector()`
+  2. `$con->query("COUNT(*)")->fetchColumn()` → `Paginador::crear($total, 20)`
+  3. `$con->prepare("SELECT ... LIMIT :lim OFFSET :off")` con `PDO::PARAM_INT`
+  4. `execute()`, `fetchAll(PDO::FETCH_ASSOC)`, hydratar con `new MiModelo($f)`
 
 ### 3.8 Configuración Dinámica
 - Flujo: `.env` → tabla `configuracion_sistema` → `ConfiguracionSistema::obtener()` (cache 30s) → `GeneradorIniServidor::regenerar()` → `.user.ini`.
@@ -280,23 +263,19 @@
 - Coincidir complejidad de implementación con visión estética.
 
 ### 6.2 Accesibilidad WCAG A/AA
-- **1.1 Text alternatives**: todo `<img>` requiere `alt`. Icon buttons necesitan `aria-label`.
-- **1.4.3 Color contrast**: texto normal <18px = 4.5:1 mínimo. Grande >=18px = 3:1 mínimo. UI components = 3:1 mínimo.
-- **No usar solo color** para convey información — agregar icono + texto.
-- **2.1 Keyboard**: toda funcionalidad accesible por teclado. Sin keyboard traps.
-- **2.4.7 Focus visible**: nunca `outline: none` sin `:focus-visible` alternativo con 2px solid.
-- **2.4.1 Skip links**: proveer `#salto-contenido`.
-- **2.5.8 Target size**: elementos interactivos mínimo 24x24 CSS pixels.
-- **2.5.7 Dragging**: drag debe tener alternativa single-pointer.
-- **2.2 Timing**: permitir extender time limits.
-- **2.3 Motion**: respetar `prefers-reduced-motion: reduce`.
-- **3.1.1 Page language**: `<html lang="...">`.
-- **3.2.3 Consistent navigation**: navegación consistente en todas las páginas.
-- **3.3.2 Form labels**: todo `<input>` con `<label>` asociado.
-- **3.3.1/3.3.3 Error handling**: `role="alert"`, `aria-invalid`, focus en primer error.
-- **3.3.7 Redundant entry**: no forzar re-ingreso de datos ya provistos.
-- **3.3.8 Accessible authentication**: login no debe depender solo de cognitive function tests. Ofrecer paste/autofill, passkey, SSO.
-- **4.1.2 ARIA**: preferir HTML nativo sobre ARIA.
+- **1.1 Imágenes/iconos**: `alt` en `<img>`, `aria-label` en icon buttons.
+- **1.4.3 Contraste**: normal <18px ≥4.5:1, grande ≥3:1, UI ≥3:1. No solo color — añadir icono+texto.
+- **2.1 Teclado**: toda funcionalidad accesible, sin keyboard traps.
+- **2.4.7 Focus**: nunca `outline:none` sin `:focus-visible` alternativo (2px solid).
+- **2.4.1 Skip links**: `#salto-contenido`.
+- **2.5.8 Target ≥24×24px** / **2.5.7 Drag** con alternativa single-pointer.
+- **2.2 Timing extensible** / **2.3 Motion** respeta `prefers-reduced-motion`.
+- **3.1.1 `<html lang>`** / **3.2.3 Navegación consistente**.
+- **3.3.2 Labels**: todo `<input>` con `<label>`.
+- **3.3.1/3.3.3 Errores**: `role="alert"`, `aria-invalid`, focus en primero.
+- **3.3.7 Redundant entry**: no forzar re-ingreso.
+- **3.3.8 Auth**: no solo tests cognitivos. Ofrecer paste/autofill, passkey, SSO.
+- **4.1.2 Preferir HTML nativo sobre ARIA**.
 - **4.1.3 Live regions**: `aria-live` para cambios dinámicos.
 
 ---
@@ -313,17 +292,13 @@
 - En Windows: usar `cmd /c` para ejecutar tests (PowerShell 5.1 no maneja `\r` de PHPUnit 11).
 
 ### 7.2 API Testing
-- Response contract MUST: `estado_operacion`, `mensaje_error`, `codigo_error`, `nuevo_token` (64 chars), `datos`, `redireccion`.
-- Login: success → `nuevo_token` presente + datos operador + session cookie.
-- Login: wrong password → `credenciales_invalidas`; suspended → `cuenta_suspendida`; rate limited → `muchos_intentos`.
-- CSRF: sin token → `token_invalido`; wrong token → `token_invalido`; expired → `token_invalido`; `nuevo_token` rotado.
-- RBAC: testear cada acción con cada rol contra matriz de permisos.
-- CRUD whitelist: solo `operador`, `documento_pdf`, `estadistica`, `archivo`.
+- Response: `estado_operacion`, `mensaje_error`, `codigo_error`, `nuevo_token` (64ch), `datos`, `redireccion`.
+- Login: success → token+datos+cookie; bad pwd → `credenciales_invalidas`; suspendido → `cuenta_suspendida`; rate-limit → `muchos_intentos`.
+- CSRF: sin/wrong/expired → `token_invalido`. Token rotado post-validación.
+- RBAC: testear cada acción×rol contra matriz.
+- CRUD whitelist: `operador`, `documento_pdf`, `estadistica`, `archivo`.
 - Rate limiting: N requests rápidos → `muchos_intentos`.
-- SQL injection: testear caracteres especiales.
-- XSS: testear `<script>` tags.
-- Session fixation: session ID debe cambiar en login.
-- Errores no deben exponer información sensible.
+- SQL injection, XSS (`<script>`), session fixation, sin info sensible en errores.
 
 ### 7.3 UI Testing (vía OpenClaw Browser)
 - Todos los módulos deben cargar vía SPA sin recarga completa.
@@ -374,38 +349,42 @@
 ## 9. Reglas del Orquestador y CrewAI
 
 ### 9.1 Arquitectura de 3 Niveles
-- **N3: ORQUESTADOR** — 1 LLM, planea y decide.
-- **N2: TACTICO** — Manager PM + 1-3 sub-agentes, hierarchical.
+- **N3: ORQUESTADOR** — 1 LLM, planea y decide. Usar `equipoRapido()` como default.
+- **N2: TACTICO** — Manager PM + 1-3 sub-agentes (hierarchical) O equipoRapido con N agentes paralelos (sin manager).
 - **N1: MECANICO** — 0 LLM, Python/PHP directo, instantáneo.
 - No mezclar niveles. Cada tool pertenece a UN nivel.
+- **REGLA CRITICA:** Preferir N1 sobre N2, N2 sobre N3. N3 solo para tareas complejas.
 
 ### 9.2 Orquestador
-- `kickoff()` crea 1 Crew con 1 solo agente: `orquestador`.
-- El orquestador decide qué tools tácticas llamar.
-- Ningún otro agente ve el prompt completo del usuario.
-- Pasos del orquestador:
-  1. Analizar prompt y decidir equipo necesario.
-  2. Empezar con `lite_equipo(tipo='analisis', ...)`.
-  3. Equipos dinámicos: `lite_equipo(tipo='custom', agentes='a,b,c', ...)`.
-  4. Instruir a agentes a usar `lite_filtrar` antes de leer archivos para reducir tokens.
-  5. Armar equipo perfecto para CADA tarea.
-  6. Si es compleja, ejecutar múltiples equipos en secuencia.
-  7. PM puede re-invocar `lite_equipo` para especialistas adicionales.
-  8. Después de CADA tool call: `lite_sse_enviar(...)` para actualizar visualizador.
-  9. Consolidar todo en respuesta estructurada.
+- `kickoff()` → 1 Crew con agente `orquestador`. Decide qué tools tácticas llamar.
+- `equipoRapido(tarea, [especialistas])` → **MODO DEFAULT.** Delega en paralelo a N agentes SIN manager. Usar SIEMPRE que la tarea tenga fases independientes. No crea PM.
+- `checkpoint(iteracion, cada=4)` → true cada N iteraciones. El orquestador debe intervenir en cada checkpoint para redistribuir carga.
+- Pasos:
+  1. Analizar prompt y decidir si usar `equipoRapido` (paralelo, default) o `lite_equipo` (PM+sub-agentes, solo si requiere coordinación centralizada).
+  2. `equipoRapido(tarea, [analista, backend, frontend])` para tareas divisibles.
+  3. `lite_equipo(tipo='analisis', ...)` solo cuando las subtareas NO puedan ejecutarse en paralelo.
+  4. Instruir SIEMPRE `lite_filtrar` antes de leer archivos (reduce tokens ~40%).
+  5. Cada 4 iteraciones: ejecutar `checkpoint(iteracion)` → si el PM no delegó, cancelar y usar `equipoRapido`.
+  6. `lite_sse_enviar(...)` tras CADA tool call.
+  7. Consolidar respuesta estructurada.
 
 ### 9.3 Agentes (29 disponibles)
 - Solo `pm` y `tech_lead` tienen `allow_delegation=True`.
-- `max_iter`: pm=8, orquestador=3, resto=5.
-- PM recibe siempre `max_iter = subagent_iter + 2`.
+- `max_iter`: pm=4, orquestador=3, sub-agentes=6, resto=5.
+- PM recibe `max_iter = min(4, subagent_iter + 2)`.
+- **PM: Tools RESTRINGIDAS.** El PM solo tiene `lite_call`, `lite_equipo`, `lite_filtrar`. NUNCA tiene `lite_read_file`, `lite_write_file`, `lite_edit`, `lite_grep`. Si necesita leer o escribir, DEBE delegar vía `lite_call`.
+- **PM: NUNCA ejecutar tools directas.** Delegar a sub-agentes. Si necesitas leer un archivo → que el especialista lo lea. Si necesitas escribir código → que backend_dev lo escriba. Tu trabajo es gestionar, no ejecutar.
+- Orquestador: max_iter=3, solo tools de orquestación (`lite_equipo`, `lite_sse_enviar`, `equipoRapido`, `checkpoint`).
+- Sub-agentes: max_iter=6 (suficiente para tareas completas sin depender del PM).
 - MCPs mínimos por agente (cada agente solo los que necesita).
 - `lite_call` disponible para agents con tools: tech_lead, arquitecto, frontend_dev, backend_dev, fullstack_dev, owner, pm_asistente, opencode_bridge, orquestador.
 
 ### 9.4 Equipos (Crews)
-- `process="hierarchical"` con <=2 sub-agentes. Más de 3 = lento.
-- `process="sequential"` para <=3 agentes sin manager.
+- `process="hierarchical"` con <=2 sub-agentes. Más de 3 = lento. EVITAR. Preferir `sequential` o `equipoRapido`.
+- `process="sequential"` para <=3 agentes sin manager. Usar cuando las tareas son secuenciales por naturaleza.
 - `manager_agent=pm` NO incluirlo en `agents[]`.
 - `planning=False`, `max_rpm=15`, `cache=True`.
+- Si se usa hierarchical, PM debe tener SOLO `lite_call` + `lite_equipo` (sin tools de ejecución directa).
 - `max_iter` por tipo: kickoff=5, desarrollo=6, analisis=5, revision_diseno=4, seguridad=4, frontend=5, backend=5, completo=6, datos=5, investigacion=6, legal=3, negocio=4, contenido=4, calidad=4, despliegue=4, limpieza=4, ui=5, infraestructura=4, documentacion=4.
 
 ### 9.5 SSE
@@ -425,8 +404,8 @@
 - NO usar `mcp.run()`.
 - `PYTHONIOENCODING=utf-8` en 3 lugares: opencode.json, mcp_server.py, cada script.
 
-### 10.2 Tools MCP (34 disponibles)
-- **N1 Mecánicas (6):** lite_read_file, lite_write_file, lite_list_dir, lite_read_dir_tree, lite_run, lite_ping. 0 LLM, ~0ms.
+### 10.2 Tools MCP (37 disponibles)
+- **N1 Mecánicas (9):** lite_read_file, lite_write_file, lite_list_dir, lite_read_dir_tree, lite_run, lite_grep, lite_glob, lite_edit, lite_ping. 0 LLM, ~0ms.
 - **N2 CLI (24):** migrar, modulo:generar, proyecto:crear, pruebas, auditoria, mantenimiento, lock, correo, operador, crud, sse, freeze, diagnostico, iteraciones, ia:orquestar. ~50-80ms.
 - **N2 Tácticas (3):** lite_equipo (kickoff, design_review, develop). ~30-60s.
 - **Tool #1 `ia`:** orquestador universal. USAR SIEMPRE PRIMERO.
@@ -444,19 +423,19 @@
 - `lite_filtrar(consulta='...', archivo='...')` o `lite_filtrar(consulta='...', texto='...')`.
 
 ### 10.6 lite_freeze — Niveles de Protección
-- `total`: ningún cambio sin autorización explícita del usuario.
-- `menor`: solo cambios que NO alteren estructura/lógica (typos, logging, comentarios).
-- `plan`: requiere presentar plan de refactor al usuario primero.
-- Checklist pre-modificación:
-  - Ejecutar `lite_freeze(accion="check", archivo="X")` — ¿está congelado?
-  - Si SÍ: respetar nivel.
-  - Si NO: investigar por qué. Ejecutar `lite_freeze(accion="analizar")`.
-  - Después de modificar: `lite_freeze(accion="verificar")`.
-  - Si el cambio es estable: `lite_freeze(accion="congelar", ...)`.
+- `total`: sin autorización explícita; `menor`: solo typos/logging; `plan`: requiere plan aprobado.
+- Checklist: `lite_freeze(accion="check")` → ¿congelado?
+  - Sí: respetar nivel. No: investigar (`accion="analizar"`).
+  - Post-cambio: `accion="verificar"`. Si estable: `accion="congelar"`.
 
 ### 10.7 NO usar WSL para MCP servers
 - WSL-based MCPs son lentos (~1s+) y pueden colgarse.
 - Usar: HTTP MCPs, npx MCPs, o Python directo.
+
+### 10.8 Enforcement — Tools Nativas vs MCP
+- **Permanente (enforcer.mjs):** write, edit, bash, read, grep, glob, apply_patch bloqueadas siempre.
+- **Hasta `ia()` (MCP):** `lite_read_file`, `lite_write_file`, `lite_edit`, `lite_grep`, `lite_glob`, `lite_run` bloqueadas.
+- La IA solo opera vía `lite_*`, y estas solo se desbloquean con `ia()`.
 
 ---
 
@@ -468,23 +447,6 @@
 - Regla general: si un archivo no está en frozen.json, investigar antes de modificar.
 
 ---
-
-## 12. Recordatorios IA
-
-1. **Type hints SIEMPRE**: `function foo(string $param): array` — parámetros y retorno. Sin excepción.
-2. **Español siempre**: variables, comentarios, docs, commits.
-3. **Sin dependencias externas**: no Composer, no npm.
-4. **Clase nueva → `autoload.php`**: agregar clase + alias.
-5. **Ruta nueva → `web.php`**: antes de `Enrutador::registrarInstancia()`.
-6. **Prepared statements SIEMPRE**: nunca concatenar SQL.
-7. **`h($var)` en toda salida HTML**: XSS prevention.
-8. **Validar servidor aunque valide cliente**: doble validación.
-9. **Auditar ops importantes**: `RegistroAuditoria`.
-10. **Sin secrets en código**: `.env` + `GestorEntorno`.
-11. **`session_regenerate_id(true)` post-login**: session fixation prevention.
-12. **Paginación: NUNCA ORM chain con `limite()/saltar()`**: PDO directo.
-13. **CSRF en toda petición POST**: header `X-CSRF-Token` o body `token_peticion`.
-14. **`SENTRY_DSN` en `.env`**: habilita reportero automático de errores.
 
 ### Protocolo de Depuración (NO SALTAR PASOS)
 1. Tests (`cmd /c`) — el código debe pasar.
