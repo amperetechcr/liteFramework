@@ -21,7 +21,7 @@ Si no estás 100% segura de qué tool usar:
 
 ## REGLA #4 — VERIFICACIÓN AUTOMÁTICA (N1)
 Después de completar CUALQUIER implementación, la IA DEBE auto-verificar:
-  1. lite_run(git diff --stat) para listar cambios
-  2. lite_run(git diff) para ver diff
+  1. bash(git diff --stat) para listar cambios
+  2. bash(git diff) para ver diff
   3. lite_read_file(path) para cada archivo modificado
   4. Reportar y corregir cualquier alucinación/código inventado/inconsistencia

@@ -31,14 +31,13 @@
 
 ### 1.5 Regla #4 — Verificación automática post-cambio
 - Después de COMPLETAR cualquier implementación (crear, editar, o eliminar archivos), la IA DEBE auto-verificar sus propios cambios antes de responder.
-- Pasos obligatorios:
-  1. `lite_run(command="git diff --stat")` — listar archivos modificados
-  2. `lite_run(command="git diff")` — ver diff completo
+- Pasos obligatorios (N1 — mecánico, 0 LLM):
+  1. `bash(git diff --stat)` — listar archivos modificados
+  2. `bash(git diff)` — ver diff completo de cada archivo
   3. `lite_read_file(path)` para CADA archivo modificado — leer contenido real
   4. Verificar: código inventado, alucinaciones, imports falsos, funciones/classes que no existen, rutas inválidas, inconsistencias con REGLAS.md
 - Si encuentra problemas, corregirlos antes de responder al usuario.
 - **No esperar a que el usuario pida la revisión.**
-- Esto es N1 (mecánico, 0 LLM) — no necesita CrewAI ni subagentes.
 
 ---
 
