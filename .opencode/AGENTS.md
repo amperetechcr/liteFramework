@@ -19,7 +19,9 @@ Si no estás 100% segura de qué tool usar:
 - Tarea compleja...        → lite_equipo(tipo, tarea)
 - No sabes...              → ia(intent="...")
 
-## REGLA #4 — VERIFICACIÓN AUTOMÁTICA
-Después de completar CUALQUIER implementación (crear/editar/eliminar archivos),
-la IA DEBE invocar automáticamente lite_mcp_lite_equipo(tipo="calidad", tarea="...")
-para revisar los cambios. No esperar a que el usuario lo pida.
+## REGLA #4 — VERIFICACIÓN AUTOMÁTICA (N1)
+Después de completar CUALQUIER implementación, la IA DEBE auto-verificar:
+  1. lite_run(git diff --stat) para listar cambios
+  2. lite_run(git diff) para ver diff
+  3. lite_read_file(path) para cada archivo modificado
+  4. Reportar y corregir cualquier alucinación/código inventado/inconsistencia

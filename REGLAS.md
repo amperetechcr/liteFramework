@@ -30,10 +30,15 @@
 - **No asumir sin trazar.**
 
 ### 1.5 Regla #4 — Verificación automática post-cambio
-- Después de COMPLETAR cualquier implementación (crear, editar, o eliminar archivos), la IA DEBE invocar automáticamente al equipo de calidad vía `lite_mcp_lite_equipo(tipo="calidad", tarea="Revisa los cambios recientes: ejecuta git diff, lee los archivos modificados con lite_read_file, y verifica que no haya código inventado, alucinaciones, imports falsos, o inconsistencias con REGLAS.md")`.
-- El equipo `calidad` (CrewAI: qa_engineer) revisará los cambios antes de que la IA confirme que la tarea está terminada.
-- Si encuentra problemas, la IA debe corregirlos antes de responder al usuario.
+- Después de COMPLETAR cualquier implementación (crear, editar, o eliminar archivos), la IA DEBE auto-verificar sus propios cambios antes de responder.
+- Pasos obligatorios:
+  1. `lite_run(command="git diff --stat")` — listar archivos modificados
+  2. `lite_run(command="git diff")` — ver diff completo
+  3. `lite_read_file(path)` para CADA archivo modificado — leer contenido real
+  4. Verificar: código inventado, alucinaciones, imports falsos, funciones/classes que no existen, rutas inválidas, inconsistencias con REGLAS.md
+- Si encuentra problemas, corregirlos antes de responder al usuario.
 - **No esperar a que el usuario pida la revisión.**
+- Esto es N1 (mecánico, 0 LLM) — no necesita CrewAI ni subagentes.
 
 ---
 
