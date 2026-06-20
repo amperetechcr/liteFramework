@@ -1,32 +1,26 @@
 # =============================================
 # LITE FRAMEWORK - .gitignore
-# =============================================
 
 # --- Entorno ---
 .env
 .env.local
 .env.production
 .env.development
-
 # --- Dependencias ---
 vendor/
 node_modules/
 bower_components/
-
 # --- Almacenamiento (archivos subidos y logs) ---
 storage/archivos/*
 !storage/archivos/.gitkeep
 storage/logs/*
 !storage/logs/.gitkeep
-
 # --- Errores en tiempo de ejecucion ---
 errors/*
 !errors/.gitkeep
-
 # --- Configuracion local del servidor ---
 .user.ini
 .user.ini.backup
-
 # --- Cache / temporales ---
 .cache/
 tmp/
@@ -38,10 +32,8 @@ temp/
 __pycache__/
 *.result.cache
 storage/sse/
-
 # --- Logs ---
 *.log
-
 # --- Sistema operativo ---
 .DS_Store
 .DS_Store?
@@ -51,7 +43,6 @@ storage/sse/
 ehthumbs.db
 Thumbs.db
 Desktop.ini
-
 # --- IDE / Editor ---
 .vscode/
 .idea/
@@ -62,18 +53,20 @@ Desktop.ini
 .project
 .classpath
 .settings/
-
 # --- Archivos comprimidos ---
 *.zip
 *.tar
 *.gz
 *.rar
-
 # --- Base de datos (dump local) ---
 *.sql
 !servidor/migraciones/*.sql
 !servidor/estructura.sql
-
 # --- PHAR ejecutables ---
 *.phar
 storage/cache/
+# Bootstrap cached tools
+# Bootstrap
+!bootstrap/opencode-config.zip
+
+bootstrap/tools/
