@@ -623,7 +623,7 @@ class AyudanteTraductor extends Helper
             ],
             'buscar_codigo' => [
                 'nombre' => 'Buscar en codigo',
-                'palabras' => ['buscar en archivos', 'encontrar', 'grep', 'search', 'referencia', 'donde se usa', 'donde aparece', 'ocurre', 'busca en los archivos', 'encuentra donde'],
+                'palabras' => ['buscar en archivos', 'encontrar', 'search', 'referencia', 'donde se usa', 'donde aparece', 'ocurre', 'busca en los archivos', 'encuentra donde'],
                 'plantilla_humano' => 'Buscar %s en el codigo',
                 'plantilla_ia' => 'buscar PATRON en archivos del proyecto',
                 'descripcion' => 'Busqueda en codigo fuente',
@@ -680,7 +680,7 @@ class AyudanteTraductor extends Helper
             // externas — herramientas MCP externas al framework
             'git' => [
                 'nombre' => 'Git',
-                'palabras' => ['git', 'commit', 'diff', 'log', 'status', 'push', 'pull', 'branch', 'merge', 'repositorio', 'cambios', 'historial'],
+                'palabras' => ['git', 'github', 'gh', 'commit', 'diff', 'log', 'status', 'push', 'pull', 'branch', 'merge', 'repositorio', 'cambios', 'historial', 'conectar con github', 'acceder a github'],
                 'plantilla_humano' => 'Ejecutar git %s',
                 'plantilla_ia' => 'ejecutar git OPERACION',
                 'descripcion' => 'Operaciones git sobre el repositorio',
@@ -776,7 +776,7 @@ class AyudanteTraductor extends Helper
             ],
             'github_grep' => [
                 'nombre' => 'Buscar en GitHub',
-                'palabras' => ['buscar en github', 'ejemplos de codigo', 'codigo en github', 'github search', 'repositorios'],
+                'palabras' => ['buscar en github', 'ejemplos de codigo', 'codigo en github', 'github search', 'repositorio', 'repositorios', 'buscar codigo', 'codigo ejemplo', 'gh_grep', 'github'],
                 'plantilla_humano' => 'Buscar codigo en GitHub: %s',
                 'plantilla_ia' => 'github grep buscar PATRON',
                 'descripcion' => 'Busqueda de codigo en GitHub',
@@ -792,7 +792,7 @@ class AyudanteTraductor extends Helper
             ],
             'fetch_pagina' => [
                 'nombre' => 'Fetch web',
-                'palabras' => ['fetch', 'obtener pagina', 'descargar contenido web', 'leer url', 'http get'],
+                'palabras' => ['fetch', 'obtener pagina', 'descargar contenido web', 'leer url', 'http get', 'contenido web', 'descargar pagina', 'obtener url'],
                 'plantilla_humano' => 'Obtener el contenido de %s',
                 'plantilla_ia' => 'fetch URL URL',
                 'descripcion' => 'Obtener contenido de una URL',

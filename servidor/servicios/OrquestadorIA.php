@@ -345,7 +345,32 @@ class OrquestadorIA
         // escanear el intento original por verbos de acción conocidos
         if ($categoriaTraductor === null || $categoriaTraductor === 'general') {
             $intentLower = mb_strtolower($intento);
-            if (preg_match('/\b(buscar|busca|grep|search|encuentra|donde)\b/', $intentLower)) {
+
+            // Detectar herramientas externas
+            if (preg_match('/\b(github|gh_grep)\b/', $intentLower)) {
+                return self::ejecutarToolExterno('github_grep', ['PATRON' => $intento], null);
+            }
+            if (preg_match('/\b(firecrawl|scrapear|crawlear)\b/', $intentLower)) {
+                $cat = str_contains($intentLower, 'crawl') ? 'firecrawl_crawl' : 'firecrawl_scrape';
+                return self::ejecutarToolExterno($cat, ['URL' => $intento], null);
+            }
+            if (preg_match('/\b(fetch|http get|leer url|descargar pagina|contenido web)\b/', $intentLower)) {
+                return self::ejecutarToolExterno('fetch_pagina', ['URL' => $intento], null);
+            }
+            if (preg_match('/\b(playwright|navegador|navegar a|abrir pagina)\b/', $intentLower)) {
+                return self::ejecutarToolExterno('browser_navegar', ['URL' => $intento], null);
+            }
+            if (preg_match('/\b(sentry|error en produccion|stacktrace)\b/', $intentLower)) {
+                return self::ejecutarToolExterno('sentry', ['ISSUE' => $intento], null);
+            }
+            if (preg_match('/\b(generar imagen|dibujar|ilustracion)\b/', $intentLower)) {
+                return self::ejecutarToolExterno('imagen', ['DESCRIPCION' => $intento], null);
+            }
+            if (preg_match('/\b(context7|libreria|documentacion de |como se usa |como usar )\b/', $intentLower)) {
+                return self::ejecutarToolExterno('context7', ['LIBRERIA' => $intento], null);
+            }
+
+            if (preg_match('/\b(buscar|busca|search|encuentra|donde)\b/', $intentLower)) {
                 $extraParams = [];
                 if (preg_match('/(?:buscar|busca|grep|search|encuentra)\s+(.+?)(?:\s+en\s+|\s+del\s+|\s+de\s+|\s*$)/i', $intento, $m)) {
                     $extraParams['PATRON'] = trim($m[1]);
