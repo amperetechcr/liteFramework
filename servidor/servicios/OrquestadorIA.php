@@ -635,6 +635,15 @@ class OrquestadorIA
                 $paramsSugeridos[$mKey] = $paramsTraductor[$tKey];
             }
         }
+        // Escribe token para desbloquear tool externa por 1 uso (enforcer re-bloquea solo)
+        $tokenDir = (getenv('USERPROFILE') ?: getenv('HOME')) . '/.crewai';
+        if (!is_dir($tokenDir)) {
+            @mkdir($tokenDir, 0755, true);
+        }
+        file_put_contents(
+            $tokenDir . '/ia_token.json',
+            json_encode(['tool' => $tool], JSON_UNESCAPED_SLASHES)
+        );
         return [
             'exito' => true,
             'modo' => 'tool_suggestion',
