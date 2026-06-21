@@ -716,4 +716,55 @@ $consola->registrar('git:sync', 'Sincroniza todo el proyecto con GitHub via SSH'
     return 0;
 });
 
+// ─── git branches ───
+$consola->registrar('git:branches', 'Lista ramas y tags del repositorio', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $gitDir = DIRECTORIO_RAIZ;
+    $branches = shell_exec("git -C {$gitDir} branch -a 2>&1");
+    $tags = shell_exec("git -C {$gitDir} tag --sort=-v:refname 2>&1");
+    $status = shell_exec("git -C {$gitDir} status --short 2>&1");
+    $log = shell_exec("git -C {$gitDir} log --oneline -5 2>&1");
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'branches' => trim($branches),
+            'tags' => trim($tags),
+            'status' => trim($status),
+            'log' => trim($log),
+        ], 'git:branches');
+        return 0;
+    }
+    echo "=== RAMAS ===\n$branches\n=== TAGS ===\n$tags\n=== STATUS ===\n$status\n=== LOG ===\n$log";
+    return 0;
+});
+
+// ─── git merge beta to stable ───
+$consola->registrar('git:release', 'Fusiona beta en main/stable y crea tag', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $gitDir = DIRECTORIO_RAIZ;
+    $tag = $args[0] ?? 'v0.0.3';
+    $target = $args[1] ?? 'main';
+    $salidas = [];
+
+    // Checkout target
+    $salidas[] = shell_exec("git -C {$gitDir} checkout {$target} 2>&1");
+    // Merge beta
+    $salidas[] = shell_exec("git -C {$gitDir} merge beta 2>&1");
+    // Tag
+    $salidas[] = shell_exec("git -C {$gitDir} tag -a {$tag} -m \"Release {$tag}\" 2>&1");
+    // Push all
+    $salidas[] = shell_exec("git -C {$gitDir} push origin {$target} 2>&1");
+    $salidas[] = shell_exec("git -C {$gitDir} push origin {$tag} 2>&1");
+    // Back to beta
+    $salidas[] = shell_exec("git -C {$gitDir} checkout beta 2>&1");
+
+    if ($modoJson) {
+        $consola?->jsonOut(['salidas' => $salidas], 'git:release');
+        return 0;
+    }
+    foreach ($salidas as $s) { echo $s . "\n"; }
+    return 0;
+}, ['[tag=v0.0.3]', '[rama=main]']);
+
 $consola->ejecutar($argv);
