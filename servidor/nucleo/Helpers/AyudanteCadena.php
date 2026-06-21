@@ -241,6 +241,7 @@ class AyudanteCadena extends Helper
      */
     public static function palabras(string|null $texto): int
     {
+        $texto = $texto ?? '';
         if (empty(trim($texto))) {
             return 0;
         }

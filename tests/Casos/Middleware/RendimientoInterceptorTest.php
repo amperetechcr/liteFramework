@@ -4,98 +4,97 @@ declare(strict_types=1);
 
 namespace LiteFramework\Tests\Casos\Middleware;
 
-use PHPUnit\Framework\TestCase;
 use LiteFramework\Middleware\RendimientoInterceptor;
 
-class RendimientoInterceptorTest extends TestCase
+class RendimientoInterceptorTest extends \TestBase
 {
-    public function testManejarEjecutaSiguiente(): void
+    private array $serverBackup = [];
+
+    public function setUp(): void
     {
-        $interceptor = new RendimientoInterceptor();
-        $ejecutado = false;
-
-        $resultado = $interceptor->manejar(['test' => true], function ($params) use (&$ejecutado) {
-            $ejecutado = true;
-            $this->assertTrue($params['test']);
-            return 'ok';
-        });
-
-        $this->assertTrue($ejecutado);
-        $this->assertSame('ok', $resultado);
+        $this->serverBackup = $_SERVER ?? [];
+        $_SERVER['REQUEST_URI'] = '/test';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        \LiteFramework\Nucleo\Helpers\AyudanteRendimiento::limpiar();
     }
 
-    public function testHeadersNoSentEnCli(): void
+    public function tearDown(): void
     {
-        $interceptor = new RendimientoInterceptor();
-
-        $resultado = $interceptor->manejar([], function () {
-            return 'resultado';
-        });
-
-        $this->assertSame('resultado', $resultado);
-        $this->assertFalse(headers_sent());
+        $_SERVER = $this->serverBackup;
+        \LiteFramework\Nucleo\Helpers\AyudanteRendimiento::limpiar();
     }
 
-    public function testMideTiempoReal(): void
+    public function testManejarMideDuracion(): void
     {
         $interceptor = new RendimientoInterceptor();
-
-        $resultado = $interceptor->manejar([], function () {
+        $next = function () {
             usleep(1000);
-            return 'lento';
-        });
-
-        $this->assertSame('lento', $resultado);
+            return 'resultado';
+        };
+        $resultado = $interceptor->manejar([], $next);
+        $this->assertSame('resultado', $resultado);
     }
 
-    public function testMultipleLlamadas(): void
+    public function testManejarLlamaNext(): void
     {
         $interceptor = new RendimientoInterceptor();
-        $contador = 0;
-
-        for ($i = 0; $i < 3; $i++) {
-            $interceptor->manejar([], function () use (&$contador) {
-                $contador++;
-                return $contador;
-            });
-        }
-
-        $this->assertSame(3, $contador);
+        $llamado = false;
+        $next = function () use (&$llamado) {
+            $llamado = true;
+            return 'ok';
+        };
+        $this->assertSame('ok', $interceptor->manejar([], $next));
+        $this->assertTrue($llamado);
     }
 
-    public function testUmbralLentoNoBloquea(): void
+    public function testManejarPasaParametros(): void
     {
-        $interceptor = new RendimientoInterceptor(1);
+        $interceptor = new RendimientoInterceptor();
+        $next = function (array $params) {
+            return $params['x'];
+        };
+        $this->assertSame(10, $interceptor->manejar(['x' => 10], $next));
+    }
 
-        $resultado = $interceptor->manejar([], function () {
+    public function testManejarUmbralLentoPersonalizado(): void
+    {
+        $interceptor = new RendimientoInterceptor(1, false);
+        $next = function () {
             usleep(2000);
-            return 'ok';
-        });
-
-        $this->assertSame('ok', $resultado);
+            return 'lento';
+        };
+        $this->assertSame('lento', $interceptor->manejar([], $next));
     }
 
-    public function testInterceptorNoModificaParams(): void
+    public function testManejarLoggearSiempre(): void
+    {
+        $interceptor = new RendimientoInterceptor(500, true);
+        $next = function () {
+            return 'rapido';
+        };
+        $this->assertSame('rapido', $interceptor->manejar([], $next));
+    }
+
+    public function testManejarImplementaInterceptor(): void
     {
         $interceptor = new RendimientoInterceptor();
-
-        $params = ['clave' => 'valor'];
-        $interceptor->manejar($params, function ($p) {
-            $this->assertSame('valor', $p['clave']);
-            return 'ok';
-        });
-
-        $this->assertSame('valor', $params['clave']);
+        $this->assertInstanceOf(\LiteFramework\Nucleo\Interceptor::class, $interceptor);
     }
 
-    public function testUmbralCeroLoggeaSiempre(): void
+    public function testBytesLegiblesCero(): void
     {
-        $interceptor = new RendimientoInterceptor(0);
+        $reflection = new \ReflectionMethod(RendimientoInterceptor::class, 'bytesLegibles');
+        $reflection->setAccessible(true);
+        $resultado = $reflection->invoke(null, 0);
+        $this->assertSame('0 B', $resultado);
+    }
 
-        $resultado = $interceptor->manejar([], function () {
-            return 'rapido';
-        });
-
-        $this->assertSame('rapido', $resultado);
+    public function testBytesLegiblesValores(): void
+    {
+        $reflection = new \ReflectionMethod(RendimientoInterceptor::class, 'bytesLegibles');
+        $reflection->setAccessible(true);
+        $this->assertStringContainsString('KB', $reflection->invoke(null, 2048));
+        $this->assertStringContainsString('MB', $reflection->invoke(null, 2097152));
+        $this->assertStringContainsString('GB', $reflection->invoke(null, 1073741824));
     }
 }

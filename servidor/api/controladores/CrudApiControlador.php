@@ -38,7 +38,7 @@ class CrudApiControlador
         }
         $stmt = $conexion->prepare("DESCRIBE {$entidad}");
         $stmt->execute();
-        $columnas = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $columnas = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         $_SESSION[$claveCache] = $columnas;
         $_SESSION[$claveTiempo] = time();
         return $columnas;
@@ -202,7 +202,7 @@ class CrudApiControlador
             $conexion = ConexionBaseDatos::obtenerInstancia()->obtenerConector();
             $consultaEsquema = $conexion->prepare("DESCRIBE {$entidadDinamica}");
             $consultaEsquema->execute();
-            $columnas = $consultaEsquema->fetchAll(PDO::FETCH_COLUMN);
+            $columnas = $consultaEsquema->fetchAll(\PDO::FETCH_COLUMN);
             $condicionesBusqueda = implode(' OR ', array_map(function ($col) {
                 return "{$col} LIKE :termino_busqueda";
             }, $columnas));

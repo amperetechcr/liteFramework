@@ -38,40 +38,42 @@ class SseGestor
             ':datos' => json_encode($datos, JSON_UNESCAPED_UNICODE),
         ]);
         $idEvento = (int)$bd->lastInsertId();
-        $linea = json_encode([
-            'id' => $idEvento,
-            'id_operador' => 0,
-            'tipo' => $tipo,
-            'datos' => json_encode($datos, JSON_UNESCAPED_UNICODE),
-            'ts' => time(),
-        ], JSON_UNESCAPED_UNICODE) . "\n";
-        @file_put_contents(self::LOG_FILE, $linea, FILE_APPEND | LOCK_EX);
 
-        // Cache separado para eventos crewai (sin lock contention con daemon)
         if ($tipo === 'crewai') {
             $evento = [
                 'agent_role' => $datos['agent_role'] ?? $datos['rol'] ?? '',
                 'accion' => $datos['accion'] ?? '',
+                'emoji' => $datos['emoji'] ?? '⚙️',
                 'destino' => $datos['destino'] ?? '',
                 'nombre' => $datos['nombre'] ?? '',
                 'mensaje' => $datos['mensaje'] ?? '',
                 '_id' => $idEvento,
                 '_ts' => time(),
             ];
+
+            $lockFile = self::CREWAI_FILE . '.lock';
+            $lockFp = fopen($lockFile, 'c');
+            if (!$lockFp) {
+                return;
+            }
+            flock($lockFp, LOCK_EX);
+
             $existentes = [];
-            $tmpFile = self::CREWAI_FILE . '.tmp';
             if (file_exists(self::CREWAI_FILE)) {
-                $contenido = @file_get_contents(self::CREWAI_FILE);
-                if ($contenido) {
+                $contenido = file_get_contents(self::CREWAI_FILE);
+                if ($contenido !== false) {
                     $existentes = json_decode($contenido, true) ?: [];
                 }
             }
             array_unshift($existentes, $evento);
             $existentes = array_slice($existentes, 0, 50);
-            $ok = @file_put_contents($tmpFile, json_encode($existentes, JSON_UNESCAPED_UNICODE), LOCK_EX);
-            if ($ok !== false) {
-                @rename($tmpFile, self::CREWAI_FILE);
-            }
+
+            $tmpFile = self::CREWAI_FILE . '.tmp';
+            file_put_contents($tmpFile, json_encode($existentes, JSON_UNESCAPED_UNICODE), LOCK_EX);
+            rename($tmpFile, self::CREWAI_FILE);
+
+            flock($lockFp, LOCK_UN);
+            fclose($lockFp);
         }
     }
 

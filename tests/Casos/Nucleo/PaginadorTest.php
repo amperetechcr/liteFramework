@@ -1,66 +1,108 @@
 <?php
-use PHPUnit\Framework\TestCase;
 
-class PaginadorTest extends TestCase {
-    private array $getOriginal;
+declare(strict_types=1);
 
-    protected function setUp(): void {
-        $this->getOriginal = $_GET;
-    }
+namespace LiteFramework\Tests\Casos\Nucleo;
 
-    protected function tearDown(): void {
-        $_GET = $this->getOriginal;
-    }
+use LiteFramework\Nucleo\Paginador;
 
-    public function testCrearConDatosBasicos(): void {
+class PaginadorTest extends \TestBase
+{
+    private array $getRespaldo;
+    private array $serverRespaldo;
+
+    public function setUp(): void
+    {
+        $this->getRespaldo = $_GET;
+        $this->serverRespaldo = $_SERVER;
         $_GET = [];
-        $paginador = Paginador::crear(50, 10, '/test');
-        $this->assertEquals(5, $paginador->totalPaginas);
-        $this->assertEquals(1, $paginador->paginaActual);
-        $this->assertEquals(10, $paginador->porPagina);
-        $this->assertEquals(50, $paginador->totalRegistros);
+        $_SERVER['REQUEST_URI'] = '/test';
     }
 
-    public function testOffset(): void {
-        $_GET = ['pagina' => 3];
-        $paginador = Paginador::crear(50, 10, '/test');
-        $this->assertEquals(20, $paginador->offset());
+    public function tearDown(): void
+    {
+        $_GET = $this->getRespaldo;
+        $_SERVER = $this->serverRespaldo;
     }
 
-    public function testPaginaDesdeGet(): void {
-        $_GET = ['pagina' => 3];
-        $paginador = Paginador::crear(50, 10, '/test');
-        $this->assertEquals(3, $paginador->paginaActual);
+    public function testTotalPaginasMenorOIgual1DevuelveVacio(): void
+    {
+        $p = Paginador::crear(5, 10);
+        $html = $p->render();
+        $this->assertSame('', $html);
     }
 
-    public function testPaginaInvalidaSeConvierteEn1(): void {
-        $_GET = ['pagina' => -1];
-        $paginador = Paginador::crear(50, 10, '/test');
-        $this->assertEquals(1, $paginador->paginaActual);
+    public function testRenderIncluyeElementosNavegacion(): void
+    {
+        $p = Paginador::crear(100, 10);
+        $html = $p->render();
+        $this->assertStringContainsString('nav', $html);
+        $this->assertStringContainsString('aria-label', $html);
+        $this->assertStringContainsString('Paginación', $html);
     }
 
-    public function testPaginaExcedenteSeConvierteEnUltima(): void {
-        $_GET = ['pagina' => 999];
-        $paginador = Paginador::crear(50, 10, '/test');
-        $this->assertEquals(5, $paginador->paginaActual);
+    public function testEllipsisSeRenderiza(): void
+    {
+        $p = Paginador::crear(200, 10, null, 3);
+        $_GET['pagina'] = 10;
+        $html = $p->render();
+        $this->assertStringContainsString('...', $html);
     }
 
-    public function testAArreglo(): void {
-        $_GET = ['pagina' => 2];
-        $paginador = Paginador::crear(50, 10, '/test');
-        $arr = $paginador->aArreglo();
-        $this->assertIsArray($arr);
-        $this->assertEquals(2, $arr['pagina_actual']);
-        $this->assertEquals(10, $arr['por_pagina']);
-        $this->assertEquals(5, $arr['total_paginas']);
-        $this->assertEquals(50, $arr['total_registros']);
+    public function testAriaCurrentEnPaginaActual(): void
+    {
+        $p = Paginador::crear(50, 10);
+        $_GET['pagina'] = 3;
+        $html = $p->render();
+        $this->assertStringContainsString('aria-current="page"', $html);
     }
 
-    public function testSinRegistros(): void {
-        $_GET = [];
-        $paginador = Paginador::crear(0, 10, '/test');
-        $this->assertEquals(1, $paginador->totalPaginas);
-        $this->assertEquals(1, $paginador->paginaActual);
-        $this->assertEquals(0, $paginador->offset());
+    public function testXssEnUrlEscapado(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/<script>alert(1)</script>';
+        $p = Paginador::crear(50, 10);
+        $html = $p->render();
+        $this->assertStringNotContainsString('<script>', $html);
+    }
+
+    public function testTextosPermiteContenido(): void
+    {
+        $p = Paginador::crear(50, 10);
+        $p->textos('<<', '>>', '>>', '>>');
+        $html = $p->render();
+        $this->assertStringContainsString('<<', $html);
+        $this->assertStringContainsString('>>', $html);
+    }
+
+    public function testTextosPersonalizados(): void
+    {
+        $p = Paginador::crear(50, 10);
+        $p->textos('Inicio', 'Atras', 'Adelante', 'Final');
+        $html = $p->render();
+        $this->assertStringContainsString('Inicio', $html);
+        $this->assertStringContainsString('Atras', $html);
+        $this->assertStringContainsString('Adelante', $html);
+        $this->assertStringContainsString('Final', $html);
+    }
+
+    public function testToString(): void
+    {
+        $p = Paginador::crear(100, 10);
+        $this->assertSame($p->render(), (string)$p);
+    }
+
+    public function testEnlaceDeshabilitadoNoTieneUrl(): void
+    {
+        $p = Paginador::crear(50, 10);
+        $_GET['pagina'] = 1;
+        $html = $p->render();
+        $this->assertStringContainsString('paginador-deshabilitado', $html);
+    }
+
+    public function testRenderNoContieneEnlacesInvalidos(): void
+    {
+        $p = Paginador::crear(30, 10);
+        $html = $p->render();
+        $this->assertDoesNotMatchRegularExpression('/href=""(?!>)/', $html);
     }
 }

@@ -53,8 +53,8 @@ class ConexionBaseDatos
             ]);
             $this->crearEsquemaTemporal();
         } catch (PDOException $e) {
-            error_log('[ConexionBaseDatos] Error de conexión PDO: ' . $e->getMessage());
-            throw new RuntimeException('Fallo crítico del sistema: No se pudo conectar a la base de datos.', 500, $e);
+            error_log('[ConexionBaseDatos] Error de conexiÃ³n PDO: ' . $e->getMessage());
+            throw new RuntimeException('Fallo crÃ­tico del sistema: No se pudo conectar a la base de datos.', 500, $e);
         }
     }
 
@@ -67,7 +67,7 @@ class ConexionBaseDatos
             ]);
             $this->crearEsquemaTemporal();
         } catch (PDOException $e) {
-            error_log('[ConexionBaseDatos] Error en conexión test: ' . $e->getMessage());
+            error_log('[ConexionBaseDatos] Error en conexiÃ³n test: ' . $e->getMessage());
             throw new RuntimeException('No se pudo conectar a la base de datos de pruebas.', 500, $e);
         }
     }
@@ -249,12 +249,86 @@ class ConexionBaseDatos
             ('ARCHIVO_MAXIMO_SUBIDAS_SIMULTANEAS', '20', 'numero', 1, 'max_file_uploads simultaneos'),
             ('ARCHIVO_POST_MAX_SIZE_MB', '50', 'numero', 1, 'post_max_size en MB (debe ser mayor a upload_max_filesize)');
 
-        CREATE TABLE IF NOT EXISTS rate_limit (
-            clave_hash TEXT NOT NULL,
-            ventana_inicio INTEGER NOT NULL,
-            contador INTEGER NOT NULL DEFAULT 1,
-            UNIQUE (clave_hash, ventana_inicio)
+        CREATE TABLE IF NOT EXISTS plantilla_prompt (
+            id_plantilla INTEGER PRIMARY KEY AUTOINCREMENT,
+            categoria TEXT NOT NULL,
+            nombre TEXT NOT NULL,
+            plantilla_humano TEXT NOT NULL,
+            plantilla_ia TEXT NOT NULL,
+            descripcion TEXT DEFAULT '',
+            version INTEGER NOT NULL DEFAULT 1,
+            uso_total INTEGER NOT NULL DEFAULT 0,
+            uso_exitoso INTEGER NOT NULL DEFAULT 0,
+            fecha_creacion TEXT DEFAULT CURRENT_TIMESTAMP,
+            fecha_actualizacion TEXT DEFAULT NULL
         );
+        CREATE TABLE IF NOT EXISTS traduccion_score (
+            id_score INTEGER PRIMARY KEY AUTOINCREMENT,
+            categoria TEXT NOT NULL UNIQUE,
+            aciertos INTEGER NOT NULL DEFAULT 0,
+            fallos INTEGER NOT NULL DEFAULT 0,
+            total_uso INTEGER NOT NULL DEFAULT 0,
+            confianza REAL NOT NULL DEFAULT 0.50,
+            ultima_calibracion TEXT DEFAULT NULL,
+            fecha_creacion TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS traduccion_patron_personalizado (
+            id_patron INTEGER PRIMARY KEY AUTOINCREMENT,
+            categoria TEXT NOT NULL,
+            patron_regex TEXT NOT NULL,
+            plantilla_ia TEXT NOT NULL,
+            aciertos INTEGER NOT NULL DEFAULT 0,
+            fallos INTEGER NOT NULL DEFAULT 0,
+            activo INTEGER NOT NULL DEFAULT 1,
+            fecha_creacion TEXT DEFAULT CURRENT_TIMESTAMP,
+            fecha_actualizacion TEXT DEFAULT NULL
+        );
+        CREATE TABLE IF NOT EXISTS traduccion_historial (
+            id_historial INTEGER PRIMARY KEY AUTOINCREMENT,
+            prompt_original TEXT NOT NULL,
+            prompt_traducido TEXT NOT NULL,
+            categoria_detectada TEXT NOT NULL DEFAULT 'general',
+            confianza REAL NOT NULL DEFAULT 0.00,
+            cache_hit INTEGER NOT NULL DEFAULT 0,
+            tiempo_procesamiento_ms INTEGER NOT NULL DEFAULT 0,
+            feedback_recibido INTEGER DEFAULT NULL,
+            fecha_creacion TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS traduccion_benchmark (
+            id_benchmark INTEGER PRIMARY KEY AUTOINCREMENT,
+            version_algoritmo TEXT NOT NULL DEFAULT '1.0.0',
+            total_pruebas INTEGER NOT NULL DEFAULT 0,
+            aciertos INTEGER NOT NULL DEFAULT 0,
+            precision_general REAL NOT NULL DEFAULT 0.00,
+            precision_por_categoria TEXT DEFAULT NULL,
+            fecha_ejecucion TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT OR IGNORE INTO plantilla_prompt (categoria, nombre, plantilla_humano, plantilla_ia, descripcion, version) VALUES
+        ('generar_modulo', 'Crear modulo CRUD', 'Crear un modulo CRUD para %s con campos: %s', 'generar modulo CRUD para ENTIDAD con campos: CAMPOS', 'Generacion de modulos CRUD completos', 1),
+        ('generar_modulo', 'Generar modelo', 'Generar modelo para %s con tabla %s', 'crear modelo para ENTIDAD en tabla TABLA', 'Creacion de modelos individuales', 1),
+        ('ejecutar_migracion', 'Migrar BD', 'Ejecutar migraciones pendientes de la base de datos', 'ejecutar migraciones pendientes de base de datos', 'Aplicar migraciones SQL pendientes', 1),
+        ('ejecutar_pruebas', 'Correr tests', 'Ejecutar las pruebas unitarias con filtro %s', 'ejecutar pruebas unitarias con filtro FILTRO', 'Ejecucion de PHPUnit', 1),
+        ('diagnosticar', 'Diagnosticar sistema', 'Hacer un diagnostico completo del sistema', 'diagnosticar sistema completo', 'Diagnostico de BD, archivos, seguridad', 1),
+        ('seguridad', 'Validar CSRF', 'Validar token CSRF: %s', 'validar token csrf TOKEN', 'Validacion de tokens CSRF', 1),
+        ('seguridad', 'Verificar permiso', 'Verificar si tengo permiso para %s', 'tiene permiso CLAVE', 'Verificacion de permisos RBAC', 1),
+        ('crud_leer', 'Listar registros', 'Listar todos los registros de %s', 'listar registros de TABLA', 'Lectura de registros de tabla', 1),
+        ('crud_escribir', 'Crear registro', 'Crear un registro en %s con datos: %s', 'crear registro en TABLA con datos DATOS', 'Insercion de nuevos registros', 1),
+        ('editar_archivo', 'Modificar archivo', 'Editar el archivo %s cambiando %s por %s', 'editar archivo RUTA reemplazar ORIGINAL por NUEVO', 'Modificacion de archivos del proyecto', 1),
+        ('leer_archivo', 'Leer archivo', 'Leer el contenido del archivo %s', 'leer archivo RUTA', 'Lectura de archivos del proyecto', 1),
+        ('buscar_codigo', 'Buscar en archivos', 'Buscar %s en los archivos del proyecto', 'buscar PATRON en archivos del proyecto', 'Busqueda de texto con grep/glob', 1),
+        ('general', 'Ayuda general', 'Necesito ayuda con %s', 'ayuda con CONSULTA', 'Consulta generica al sistema', 1);
+        INSERT OR IGNORE INTO traduccion_score (categoria, aciertos, fallos, total_uso, confianza) VALUES
+        ('generar_modulo', 0, 0, 0, 0.50),
+        ('ejecutar_migracion', 0, 0, 0, 0.50),
+        ('ejecutar_pruebas', 0, 0, 0, 0.50),
+        ('diagnosticar', 0, 0, 0, 0.50),
+        ('seguridad', 0, 0, 0, 0.50),
+        ('crud_leer', 0, 0, 0, 0.50),
+        ('crud_escribir', 0, 0, 0, 0.50),
+        ('editar_archivo', 0, 0, 0, 0.50),
+        ('leer_archivo', 0, 0, 0, 0.50),
+        ('buscar_codigo', 0, 0, 0, 0.50),
+        ('general', 0, 0, 0, 0.50);
         ";
 
         $this->conexion_pdo->exec($sql);

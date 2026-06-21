@@ -174,7 +174,11 @@ class Validador
             return;
         }
         $patron = $params[0] ?? '';
-        if (!preg_match($patron, $valor)) {
+        $result = @preg_match($patron, $valor);
+        if ($result === false) {
+            return;
+        }
+        if (!$result) {
             $this->agregarError($campo, 'regex');
         }
     }
@@ -232,7 +236,11 @@ class Validador
             return;
         }
         $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $tipo = mime_content_type($archivo['tmp_name']);
+        $ruta = $archivo['tmp_name'] ?? '';
+        if ($ruta === '' || !file_exists($ruta)) {
+            return;
+        }
+        $tipo = mime_content_type($ruta);
         if (!in_array($tipo, $tiposPermitidos)) {
             $this->agregarError($campo, 'imagen');
         }

@@ -441,6 +441,12 @@
 - **Hasta `ia()` (MCP):** `lite_read_file`, `lite_write_file`, `lite_edit`, `lite_grep`, `lite_glob`, `lite_run` bloqueadas.
 - La IA solo opera vía `lite_*`, y estas solo se desbloquean con `ia()`.
 
+### 10.9 Flujo Obligatorio: ia() → Traductor → tool
+- Toda operación DEBE comenzar con `ia(intent="descripción en lenguaje natural")`.
+- NO llamar herramientas directas como primera opción.
+- Flujo completo: `ia()` → consola `ia:orquestar auto` → `OrquestadorIA::auto()` → `Traductor::humanoAIa()` categoriza y traduce → tool MCP → `Traductor::registrarFeedback()` auto-entrena.
+- Si `ia()` falla o es demasiado lenta, recién entonces caer a herramienta directa.
+
 ---
 
 ## 11. Archivos Congelados

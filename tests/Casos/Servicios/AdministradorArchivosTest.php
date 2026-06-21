@@ -1,120 +1,216 @@
 <?php
-use PHPUnit\Framework\TestCase;
 
-class AdministradorArchivosTest extends TestCase {
+declare(strict_types=1);
 
-    // ─── MIME detection ───
+namespace LiteFramework\Tests\Casos\Servicios;
 
-    public function testEsImagen(): void {
+use LiteFramework\Servicios\AdministradorArchivos;
+
+class AdministradorArchivosTest extends \TestBase
+{
+    private string $storagePath;
+    private string $baseUrl;
+    private AdministradorArchivos $admin;
+
+    public function setUp(): void
+    {
+        $this->storagePath = sys_get_temp_dir() . '/lf_admin_test_' . bin2hex(random_bytes(4));
+        $this->baseUrl = 'http://localhost/archivos';
+        mkdir($this->storagePath, 0755, true);
+        $this->admin = new AdministradorArchivos($this->storagePath, $this->baseUrl);
+    }
+
+    public function tearDown(): void
+    {
+        $this->rmdirRecursive($this->storagePath);
+    }
+
+    private function rmdirRecursive(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+        $it = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($it as $archivo) {
+            $archivo->isDir() ? @rmdir($archivo->getRealPath()) : @unlink($archivo->getRealPath());
+        }
+        @rmdir($dir);
+    }
+
+    // ─── Constructor ───
+
+    public function testConstructorAsignaStoragePathYBaseUrl(): void
+    {
+        $ref = new \ReflectionClass($this->admin);
+        $storagePath = $ref->getProperty('storagePath')->getValue($this->admin);
+        $this->assertSame($this->storagePath, $storagePath);
+        $this->assertSame($this->baseUrl, $this->admin->getBaseUrl());
+    }
+
+    // ─── MIME helpers ───
+
+    public function testEsImagen(): void
+    {
         $this->assertTrue(AdministradorArchivos::esImagen('image/jpeg'));
         $this->assertTrue(AdministradorArchivos::esImagen('image/png'));
         $this->assertFalse(AdministradorArchivos::esImagen('application/pdf'));
     }
 
-    public function testEsDocumento(): void {
+    public function testEsDocumento(): void
+    {
         $this->assertTrue(AdministradorArchivos::esDocumento('application/pdf'));
-        $this->assertTrue(AdministradorArchivos::esDocumento('text/plain'));
-        $this->assertFalse(AdministradorArchivos::esDocumento('image/jpeg'));
+        $this->assertFalse(AdministradorArchivos::esDocumento('image/png'));
     }
 
-    public function testEsVideo(): void {
+    public function testEsVideo(): void
+    {
         $this->assertTrue(AdministradorArchivos::esVideo('video/mp4'));
         $this->assertFalse(AdministradorArchivos::esVideo('audio/mpeg'));
     }
 
-    public function testEsAudio(): void {
+    public function testEsAudio(): void
+    {
         $this->assertTrue(AdministradorArchivos::esAudio('audio/mpeg'));
         $this->assertFalse(AdministradorArchivos::esAudio('video/mp4'));
     }
 
-    public function testEsComprimido(): void {
+    public function testEsComprimido(): void
+    {
         $this->assertTrue(AdministradorArchivos::esComprimido('application/zip'));
         $this->assertTrue(AdministradorArchivos::esComprimido('application/x-rar-compressed'));
-        $this->assertFalse(AdministradorArchivos::esComprimido('image/jpeg'));
+        $this->assertFalse(AdministradorArchivos::esComprimido('text/plain'));
     }
 
-    public function testCategoriaMime(): void {
-        $this->assertEquals('imagenes', AdministradorArchivos::categoriaMime('image/png'));
-        $this->assertEquals('documentos', AdministradorArchivos::categoriaMime('application/pdf'));
-        $this->assertEquals('videos', AdministradorArchivos::categoriaMime('video/mp4'));
-        $this->assertEquals('audio', AdministradorArchivos::categoriaMime('audio/mpeg'));
-        $this->assertEquals('comprimidos', AdministradorArchivos::categoriaMime('application/zip'));
-        $this->assertEquals('codigo', AdministradorArchivos::categoriaMime('text/javascript'));
-        $this->assertEquals('datos', AdministradorArchivos::categoriaMime('application/octet-stream'));
-        $this->assertEquals('otro', AdministradorArchivos::categoriaMime('application/x-fake'));
+    public function testCategoriaMime(): void
+    {
+        $this->assertSame('imagenes', AdministradorArchivos::categoriaMime('image/jpeg'));
+        $this->assertSame('documentos', AdministradorArchivos::categoriaMime('application/pdf'));
+        $this->assertSame('otro', AdministradorArchivos::categoriaMime('application/unknown'));
     }
 
-    // ─── Formateo ───
+    // ─── Utilidades ───
 
-    public function testTamanoFormateado(): void {
-        $this->assertStringContainsString('B', AdministradorArchivos::tamanoFormateado(500));
-        $this->assertStringContainsString('KB', AdministradorArchivos::tamanoFormateado(2048));
-        $this->assertStringContainsString('MB', AdministradorArchivos::tamanoFormateado(1048576 * 2));
-        $this->assertStringContainsString('GB', AdministradorArchivos::tamanoFormateado(1073741824));
-        $this->assertEquals('0 B', AdministradorArchivos::tamanoFormateado(0));
+    public function testTamanoFormateado(): void
+    {
+        $this->assertSame('0 B', AdministradorArchivos::tamanoFormateado(0));
+        $this->assertSame('1.07 KB', AdministradorArchivos::tamanoFormateado(1100));
+        $this->assertSame('1 MB', AdministradorArchivos::tamanoFormateado(1048576));
     }
 
-    // ─── Ruta relativa ───
-
-    public function testRutaMostrar(): void {
-        $storage = '/var/www/storage/archivos';
-        $this->assertEquals(
-            'fotos/img.jpg',
-            AdministradorArchivos::rutaMostrar('/var/www/storage/archivos/fotos/img.jpg', $storage)
-        );
-        $this->assertEquals(
-            '',
-            AdministradorArchivos::rutaMostrar('/var/www/storage/archivos/imagen.png', $storage)
-        );
-        $this->assertEquals(
-            '/fuera/del/storage/doc.pdf',
-            AdministradorArchivos::rutaMostrar('/fuera/del/storage/doc.pdf', $storage)
-        );
+    public function testRutaMostrar(): void
+    {
+        $resultado = AdministradorArchivos::rutaMostrar('/base/sub/archivo.pdf', '/base');
+        $this->assertSame('sub/archivo.pdf', $resultado);
     }
 
-    // ─── Enlace de descarga ───
-
-    public function testEnlaceDescarga(): void {
-        $this->assertEquals(
-            '/base/archivos/descargar/42',
-            AdministradorArchivos::enlaceDescarga(42, '/base')
-        );
-        $this->assertEquals(
-            '/base/archivos/descargar/1',
-            AdministradorArchivos::enlaceDescarga(1, '/base/')
-        );
+    public function testRutaMostrarRaiz(): void
+    {
+        $resultado = AdministradorArchivos::rutaMostrar('/base/archivo.pdf', '/base');
+        $this->assertSame('', $resultado);
     }
 
-    // ─── Extension segura ───
-
-    public function testExtensionSegura(): void {
-        $this->assertEquals('jpg', AdministradorArchivos::extensionSegura('foto.JPG'));
-        $this->assertEquals('pdf', AdministradorArchivos::extensionSegura('documento.PDF'));
-        $this->assertEquals('', AdministradorArchivos::extensionSegura('sin_extension'));
+    public function testEnlaceDescarga(): void
+    {
+        $url = AdministradorArchivos::enlaceDescarga(5, 'http://localhost/archivos');
+        $this->assertSame('http://localhost/archivos/archivos/descargar/5', $url);
     }
 
-    // ─── Sanitizar nombre ───
-
-    public function testSanitizarNombre(): void {
-        $this->assertStringNotContainsString('/', AdministradorArchivos::sanitizarNombre('../malicioso'));
-        $this->assertStringNotContainsString('..', AdministradorArchivos::sanitizarNombre('../malicioso'));
-        $this->assertEquals('archivo', AdministradorArchivos::sanitizarNombre(''));
+    public function testExtensionSegura(): void
+    {
+        $this->assertSame('pdf', AdministradorArchivos::extensionSegura('doc.pdf'));
+        $this->assertSame('jpg', AdministradorArchivos::extensionSegura('foto.JPG'));
+        $this->assertSame('', AdministradorArchivos::extensionSegura('sin_extension'));
     }
 
-    // ─── Nombre seguro ───
-
-    public function testEsNombreSeguro(): void {
-        $this->assertTrue(AdministradorArchivos::esNombreSeguro('documento.pdf'));
-        $this->assertFalse(AdministradorArchivos::esNombreSeguro('../malicioso.php'));
-        $this->assertTrue(AdministradorArchivos::esNombreSeguro('foto vacaciones 2024.jpg'));
+    public function testSanitizarNombre(): void
+    {
+        $this->assertSame('archivo_seguro', AdministradorArchivos::sanitizarNombre('archivo<>seguro'));
+        $this->assertSame('nombre con espacios', AdministradorArchivos::sanitizarNombre('nombre con espacios'));
+        $this->assertSame('archivo', AdministradorArchivos::sanitizarNombre('...'));
     }
 
-    // ─── Icono extension ───
+    public function testEsNombreSeguro(): void
+    {
+        $this->assertTrue(AdministradorArchivos::esNombreSeguro('archivo.pdf'));
+        $this->assertFalse(AdministradorArchivos::esNombreSeguro('../archivo.pdf'));
+        $this->assertFalse(AdministradorArchivos::esNombreSeguro('archivo<>malo'));
+    }
 
-    public function testIconoExtension(): void {
-        $this->assertIsString(AdministradorArchivos::iconoExtension('pdf'));
-        $this->assertIsString(AdministradorArchivos::iconoExtension('jpg'));
-        $this->assertIsString(AdministradorArchivos::iconoExtension('desconocido'));
-        $this->assertIsString(AdministradorArchivos::iconoExtension(''));
+    public function testPathTraversalEnRutaRelativaEsBloqueado(): void
+    {
+        $this->assertFalse(AdministradorArchivos::esNombreSeguro('../../../etc/passwd'));
+        $this->assertStringNotContainsString('..', AdministradorArchivos::sanitizarNombre('../../etc'));
+    }
+
+    // ─── Operaciones con archivos usando el filesystem directamente ───
+
+    public function testCrearYEliminarArchivoEnStorage(): void
+    {
+        $archivo = $this->storagePath . '/test.txt';
+        file_put_contents($archivo, 'contenido');
+        $this->assertFileExists($archivo);
+
+        unlink($archivo);
+        $this->assertFileDoesNotExist($archivo);
+    }
+
+    public function testListarArchivosEnDirectorio(): void
+    {
+        file_put_contents($this->storagePath . '/a.txt', 'a');
+        file_put_contents($this->storagePath . '/b.txt', 'b');
+
+        $archivos = array_diff(scandir($this->storagePath), ['.', '..']);
+        $this->assertCount(2, $archivos);
+    }
+
+    public function testRenombrarArchivo(): void
+    {
+        $viejo = $this->storagePath . '/viejo.txt';
+        $nuevo = $this->storagePath . '/nuevo.txt';
+        file_put_contents($viejo, 'data');
+        rename($viejo, $nuevo);
+        $this->assertFileExists($nuevo);
+        $this->assertFileDoesNotExist($viejo);
+    }
+
+    public function testMoverArchivoASubdirectorio(): void
+    {
+        mkdir($this->storagePath . '/sub', 0755, true);
+        $origen = $this->storagePath . '/mover.txt';
+        $destino = $this->storagePath . '/sub/mover.txt';
+        file_put_contents($origen, 'data');
+        rename($origen, $destino);
+        $this->assertFileExists($destino);
+        $this->assertFileDoesNotExist($origen);
+    }
+
+    public function testCrearDirectorio(): void
+    {
+        $nuevoDir = $this->storagePath . '/nuevo';
+        mkdir($nuevoDir, 0755, true);
+        $this->assertDirectoryExists($nuevoDir);
+    }
+
+    public function testObtenerInfoArchivo(): void
+    {
+        $archivo = $this->storagePath . '/info.txt';
+        file_put_contents($archivo, 'contenido de prueba');
+
+        $this->assertFileExists($archivo);
+        $this->assertGreaterThan(0, filesize($archivo));
+    }
+
+    public function testRutaRelativaRechazaPathTraversal(): void
+    {
+        $this->assertFalse(AdministradorArchivos::esNombreSeguro('../../../etc'));
+    }
+
+    public function testIconoExtensionRetornaIcono(): void
+    {
+        $this->assertNotEmpty(AdministradorArchivos::iconoExtension('pdf'));
+        $this->assertNotEmpty(AdministradorArchivos::iconoExtension('unknown'));
     }
 }

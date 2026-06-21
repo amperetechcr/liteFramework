@@ -35,7 +35,12 @@ class AutenticacionControlador extends ControladorBase
     {
         SeguridadServidor::iniciarSesionEstricta();
         SeguridadServidor::destruirSesionCompletamente();
-        header('Location: ' . URL_BASE . '/');
+        $this->redirigir(URL_BASE . '/');
+    }
+
+    protected function redirigir(string $url): never
+    {
+        header('Location: ' . $url);
         exit();
     }
 }

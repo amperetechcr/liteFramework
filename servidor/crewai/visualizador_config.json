@@ -1,0 +1,323 @@
+{
+    "role_map": {
+        "Orquestador de Flujo": "Valeria",
+        "Project Manager": "Laura",
+        "Data Analyst": "Lucia",
+        "OpenCode Bridge": "Agustin"
+    },
+    "agentes": [
+        {
+            "id": 1,
+            "nombre": "Valeria",
+            "iniciales": "VL",
+            "rol": "Orquestador de Flujo",
+            "color": "#6366f1"
+        },
+        {
+            "id": 2,
+            "nombre": "Laura",
+            "iniciales": "LA",
+            "rol": "Project Manager",
+            "color": "#7c3aed"
+        },
+        {
+            "id": 3,
+            "nombre": "Lucia",
+            "iniciales": "LU",
+            "rol": "Data Analyst",
+            "color": "#0ea5e9"
+        },
+        {
+            "id": 4,
+            "nombre": "Agustin",
+            "iniciales": "AG",
+            "rol": "OpenCode Bridge",
+            "color": "#9333ea"
+        }
+    ],
+    "destinos_similares": {
+        "escritorio": [
+            "escritorio1",
+            "escritorio2",
+            "escritorio3",
+            "escritorio4"
+        ],
+        "reunion": [
+            "reunion"
+        ],
+        "sala reunion": [
+            "reunion"
+        ],
+        "reuniones": [
+            "reunion"
+        ],
+        "servidor": [
+            "servidor"
+        ],
+        "server": [
+            "servidor"
+        ],
+        "juegos": [
+            "juegos"
+        ],
+        "gaming": [
+            "juegos"
+        ],
+        "descanso": [
+            "descanso"
+        ],
+        "break": [
+            "descanso"
+        ],
+        "cafe": [
+            "descanso"
+        ],
+        "biblioteca": [
+            "biblioteca"
+        ],
+        "libreria": [
+            "biblioteca"
+        ],
+        "libros": [
+            "biblioteca"
+        ]
+    },
+    "canvas": {
+        "color_suelo": "#2a2a48",
+        "color_pared": "#1a1a2e",
+        "color_pasillo": "#252545",
+        "color_header": "#0f0f23",
+        "texto_claro": "#e8e8f0",
+        "texto_suave": "#9090b0",
+        "duracion_mover": 1600,
+        "tam_npc": 10.4
+    },
+    "tonos_piel": [
+        "#f5cba7",
+        "#f0c09c",
+        "#e8b88c",
+        "#f0c8a8",
+        "#ecc0a0",
+        "#f8d0b0",
+        "#e0b090",
+        "#d4a87c",
+        "#ecc8a8",
+        "#f0ccac"
+    ],
+
+    "acciones": [
+        {
+            "accion": "codificando",
+            "emoji": "⌨️",
+            "destinos": [
+                "escritorio1",
+                "escritorio2",
+                "escritorio3",
+                "escritorio4"
+            ],
+            "duracion": 7000
+        },
+        {
+            "accion": "revisando",
+            "emoji": "🔍",
+            "destinos": [
+                "escritorio1",
+                "escritorio2",
+                "escritorio3",
+                "escritorio4"
+            ],
+            "duracion": 5500
+        },
+        {
+            "accion": "documentando",
+            "emoji": "📝",
+            "destinos": [
+                "escritorio1",
+                "escritorio2",
+                "escritorio3",
+                "escritorio4"
+            ],
+            "duracion": 6000
+        },
+        {
+            "accion": "leyendo",
+            "emoji": "📖",
+            "destinos": [
+                "biblioteca"
+            ],
+            "duracion": 8000
+        },
+        {
+            "accion": "reunion",
+            "emoji": "💬",
+            "destinos": [
+                "reunion"
+            ],
+            "duracion": 10000
+        },
+        {
+            "accion": "servidor",
+            "emoji": "🖻",
+            "destinos": [
+                "servidor"
+            ],
+            "duracion": 5000
+        },
+        {
+            "accion": "jugando",
+            "emoji": "🎮",
+            "destinos": [
+                "juegos"
+            ],
+            "duracion": 6000
+        },
+        {
+            "accion": "cafe",
+            "emoji": "☕",
+            "destinos": [
+                "descanso"
+            ],
+            "duracion": 4000
+        }
+    ],
+    "dialogos": {
+        "Orquestador de Flujo": [
+            "Analizando el prompt",
+            "Revisando resultados",
+            "Flujo completado",
+            "Delegando tareas",
+            "Consolidando respuesta",
+            "Todo en orden",
+            "Siguiente fase",
+            "Reporte listo"
+        ],
+        "Project Manager": [
+            "Revisemos la arquitectura",
+            "El deadline es viernes",
+            "Necesito el reporte ASAP",
+            "Esto va a produccion hoy",
+            "Prioridad: estabilidad",
+            "Revise ese PR",
+            "Tenemos tech debt aqui",
+            "Alguien vio mi commit?"
+        ],
+        "Data Analyst": [
+            "Pipeline de datos OK",
+            "Dashboard actualizado",
+            "Metricas consistentes",
+            "ETL completado",
+            "Anomalia detectada",
+            "Reporte generado",
+            "Modelo entrenado",
+            "Accuracy 94%"
+        ],
+        "OpenCode Bridge": [
+            "Archivo leido",
+            "Escribiendo cambios",
+            "Comando ejecutado",
+            "Llamada MCP exitosa",
+            "Filtrando contenido",
+            "Token reducido",
+            "Resultado obtenido",
+            "Listo, siguiente paso"
+        ],
+        "Data": [
+            "Pipeline de datos OK",
+            "Dashboard actualizado",
+            "Metricas consistentes",
+            "ETL completado",
+            "Anomalia detectada",
+            "Reporte generado",
+            "Modelo entrenado",
+            "Accuracy 94%"
+        ],
+        "General": [
+            "Alguien pidio cafe?",
+            "Eso fue commit ciego",
+            "Listo, lo muevo a done",
+            "Me llevo esto al break",
+            "Quien revisa mi PR?",
+            "Necesito ayuda aca",
+            "Ya casi termino",
+            "Bug o feature?"
+        ],
+        "codificando": [
+            "Commit en camino",
+            "Test verde",
+            "Push a develop",
+            "WIP limit respetado",
+            "Merge sin conflictos",
+            "Review pending",
+            "Feature completa",
+            "Bug squashed"
+        ],
+        "revisando": [
+            "Code review en proceso",
+            "Posible NPE aqui",
+            "Esto se puede optimizar",
+            "LGTM",
+            "Necesito mas contexto",
+            "Variable mal nombrada",
+            "Buena practica",
+            "Solo un detalle"
+        ],
+        "documentando": [
+            "README actualizado",
+            "API docs generados",
+            "Swagger sincronizado",
+            "Changelog al dia",
+            "Wiki actualizada",
+            "Comentarios utiles",
+            "Guia de inicio",
+            "Arquitectura documentada"
+        ],
+        "cafe": [
+            "Cafe pendiente",
+            "Alguien mas quiere?",
+            "Cafe recien hecho",
+            "Descanso mental",
+            "Recargando energia",
+            "Justo lo necesitaba",
+            "Se acabo el cafe",
+            "Segunda taza"
+        ]
+    },
+    "event_map": {
+        "codificando": {
+            "emoji": "⌨️",
+            "destino": "escritorio"
+        },
+        "revisando": {
+            "emoji": "🔍",
+            "destino": "escritorio"
+        },
+        "documentando": {
+            "emoji": "📝",
+            "destino": "escritorio"
+        },
+        "leyendo": {
+            "emoji": "📖",
+            "destino": "biblioteca"
+        },
+        "reunion": {
+            "emoji": "💬",
+            "destino": "reunion"
+        },
+        "servidor": {
+            "emoji": "🖻",
+            "destino": "servidor"
+        },
+        "jugando": {
+            "emoji": "🎮",
+            "destino": "juegos"
+        },
+        "cafe": {
+            "emoji": "☕",
+            "destino": "descanso"
+        },
+        "descanso": {
+            "emoji": "☕",
+            "destino": "descanso"
+        }
+    }
+}

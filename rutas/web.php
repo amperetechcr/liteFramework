@@ -394,7 +394,67 @@ $enrutador->get('/api/crewai/eventos', function () {
         }
     }
     echo json_encode(['eventos' => $eventos], JSON_UNESCAPED_UNICODE);
-})->nombre('api.crewai.eventos');
+})->interceptor(\LiteFramework\Middleware\ApiAuthInterceptor::class)->nombre('api.crewai.eventos');
+
+$enrutador->get('/api/crewai/stream', function () {
+    set_time_limit(0);
+    @session_write_close();
+
+    header('Content-Type: text/event-stream');
+    header('Cache-Control: no-cache');
+    header('X-Accel-Buffering: no');
+
+    while (ob_get_level() > 0) ob_end_clean();
+
+    $cacheFile = __DIR__ . '/../storage/sse/crewai_cache.json';
+    $ultimoId = (int)($_SERVER['HTTP_LAST_EVENT_ID'] ?? 0);
+
+    while (true) {
+        $eventos = [];
+        if (file_exists($cacheFile)) {
+            $c = @file_get_contents($cacheFile);
+            $eventos = json_decode($c, true) ?: [];
+        }
+
+        $nuevos = array_values(array_filter($eventos, fn($e) => ($e['_id'] ?? 0) > $ultimoId));
+
+        if ($nuevos) {
+            $maxId = max(array_column($nuevos, '_id'));
+            echo "id: $maxId\nevent: crewai\ndata: " . json_encode(['eventos' => $nuevos], JSON_UNESCAPED_UNICODE) . "\n\n";
+            $ultimoId = $maxId;
+        } else {
+            echo ": heartbeat\n\n";
+        }
+
+        if (ob_get_level()) ob_flush();
+        flush();
+
+        if (connection_aborted()) break;
+        usleep(200000);
+    }
+})->interceptor(\LiteFramework\Middleware\ApiAuthInterceptor::class)->nombre('api.crewai.stream');
+
+$enrutador->get('/api/crewai/config', function () {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+
+    $configFile = __DIR__ . '/../servidor/crewai/visualizador_config.json';
+    $config = [];
+    if (file_exists($configFile)) {
+        $c = @file_get_contents($configFile);
+        if ($c) $config = json_decode($c, true) ?: [];
+    }
+
+    echo json_encode($config, JSON_UNESCAPED_UNICODE);
+})->interceptor(\LiteFramework\Middleware\ApiAuthInterceptor::class)->nombre('api.crewai.config');
+
+$enrutador->get('/api/crewai/metricas', function () {
+    header('Content-Type: application/json');
+    $ctrl = new \LiteFramework\Api\Controladores\CrewaiApiControlador();
+    [$codigo, $respuesta] = $ctrl->metricas();
+    http_response_code($codigo);
+    echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
+})->interceptor(\LiteFramework\Middleware\ApiAuthInterceptor::class)->nombre('api.crewai.metricas');
 
 $enrutador->post('/api/diagnostico/reparar', function () {
     header('Content-Type: application/json');
@@ -534,3 +594,4 @@ foreach ([400, 401, 403, 404, 500, 503] as $codigo) {
 Enrutador::registrarInstancia($enrutador);
 
 return $enrutador;
+

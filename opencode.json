@@ -2,25 +2,21 @@
   "$schema": "https://opencode.ai/config.json",
   "command": {
     "test": {
-      "template": "php tests/phpunit.phar -c tests/phpunit.xml",
+      "template": "php tests/liteTest.php",
       "description": "Ejecutar todos los tests"
     },
     "test-unit": {
-      "template": "php tests/phpunit.phar -c tests/phpunit.xml --testsuite liteframework-casos",
-      "description": "Ejecutar tests unitarios"
+      "template": "php tests/liteTest.php",
+      "description": "Ejecutar tests unitarios (liteTest)"
     },
     "test-integration": {
-      "template": "php tests/phpunit.phar -c tests/phpunit.xml --testsuite liteframework-integracion",
-      "description": "Ejecutar tests de integracion"
+      "template": "php tests/liteTest.php",
+      "description": "Ejecutar tests de integracion (liteTest)"
     },
     "test-filter": {
-      "template": "php tests/phpunit.phar -c tests/phpunit.xml --filter {filtro}",
-      "description": "Ejecutar tests por filtro (ej: test-filter --filter=ModeloTest)",
+      "template": "php tests/liteTest.php",
+      "description": "Ejecutar tests por filtro (liteTest no soporta filtro nativamente)",
       "args": ["filtro"]
-    },
-    "test-http": {
-      "template": "$env:TESTS_EXTERNAS_HTTP='true'; php tests/phpunit.phar -c tests/phpunit.xml --filter AyudanteHttp",
-      "description": "Ejecutar tests HTTP externos de HttpCliente"
     },
     "benchmark": {
       "template": "php benchmark.php",
@@ -43,8 +39,8 @@
       "description": "Analisis estatico con PHPStan nivel 7"
     },
     "validate": {
-      "template": "php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress && php phpcs.phar --standard=phpcs.xml.dist --extensions=php --ignore=vendor,plantillas,tests --runtime-set ignore_warnings_on_exit 1 . && php tests/phpunit.phar -c tests/phpunit.xml",
-      "description": "Validacion completa: PHPStan + PHPCS + Tests"
+      "template": "php phpstan.phar analyse --configuration=phpstan.neon.dist --no-progress && php phpcs.phar --standard=phpcs.xml.dist --extensions=php --ignore=vendor,plantillas,tests --runtime-set ignore_warnings_on_exit 1 . && php tests/liteTest.php",
+      "description": "Validacion completa: PHPStan + PHPCS + liteTest"
     },
     "review": {
       "template": "Revisa los cambios recientes en el repositorio y verifica que no haya alucinaciones, código inventado, o inconsistencias con REGLAS.md",

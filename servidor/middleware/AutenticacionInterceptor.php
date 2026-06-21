@@ -14,12 +14,17 @@ class AutenticacionInterceptor implements Interceptor
         SeguridadServidor::iniciarSesionEstricta();
 
         if (!isset($_SESSION['operador_id'])) {
-            header('Location: ' . URL_BASE . '/?error=privilegios_insuficientes');
-            exit();
+            $this->redirigir(URL_BASE . '/?error=privilegios_insuficientes');
         }
 
         SeguridadServidor::validarHuellaCliente();
 
         return $siguiente($params);
+    }
+
+    protected function redirigir(string $url): never
+    {
+        header('Location: ' . $url);
+        exit();
     }
 }

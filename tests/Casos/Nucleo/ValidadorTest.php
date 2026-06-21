@@ -1,7 +1,6 @@
 <?php
-use PHPUnit\Framework\TestCase;
 
-class ValidadorTest extends TestCase {
+class ValidadorTest extends \TestBase {
     public function testRequeridoConValor(): void {
         $validador = new Validador(['campo' => 'texto'], ['campo' => 'requerido']);
         $this->assertTrue($validador->pasa());

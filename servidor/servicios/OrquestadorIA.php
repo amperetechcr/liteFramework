@@ -20,6 +20,122 @@ class OrquestadorIA
 {
     private static ?array $catalogo = null;
 
+    private static array $chains = [
+        'lite_read_file' => [
+            ['herramienta' => 'lite_filtrar', 'params' => ['consulta' => '$intento', 'archivo' => '$path']],
+        ],
+        'lite_grep' => [
+            ['herramienta' => 'lite_read_file', 'params' => ['path' => '$resultado.primer_archivo']],
+        ],
+        'lite_glob' => [
+            ['herramienta' => 'lite_read_file', 'params' => ['path' => '$resultado.primer_archivo']],
+        ],
+        'lite_list_dir' => [
+            ['herramienta' => 'lite_read_file', 'params' => ['path' => '$resultado.primer_archivo']],
+        ],
+        'lite_edit' => [
+            ['herramienta' => 'lite_read_file', 'params' => ['path' => '$filePath']],
+        ],
+        'lite_diagnostico' => [
+            ['herramienta' => 'lite_run', 'params' => ['command' => 'diagnostico:remediar', 'args' => '--tipo=']],
+        ],
+        'lite_pruebas' => [
+            ['herramienta' => 'lite_read_file', 'params' => ['path' => '$resultado.archivo_fallo']],
+        ],
+    ];
+
+    private static array $mapaCategoriaTool = [
+        'buscar_codigo'     => 'lite_grep',
+        'ejecutar_pruebas'  => 'lite_pruebas',
+        'leer_archivo'      => 'lite_read_file',
+        'editar_archivo'    => 'lite_edit',
+        'escribir_archivo'  => 'lite_write_file',
+        'listar_archivos'   => 'lite_list_dir',
+        'generar_modulo'    => 'lite_modulo_generar',
+        'generar_proyecto'  => 'lite_proyecto_crear',
+        'ejecutar_migracion' => 'lite_migrar',
+        'diagnosticar'      => 'lite_diagnostico',
+        'crud_leer'         => 'lite_crud',
+        'crud_escribir'     => 'lite_crud',
+        'analizar_modulo'   => 'lite_grep',
+    ];
+
+    private static array $mapaCategoriaToolExterno = [
+        'git'               => 'git',
+        'firecrawl_scrape'  => 'firecrawl_scrape',
+        'firecrawl_search'  => 'firecrawl_search',
+        'firecrawl_crawl'   => 'firecrawl_crawl',
+        'firecrawl_map'     => 'firecrawl_map',
+        'firecrawl_extract' => 'firecrawl_extract',
+        'browser_navegar'   => 'playwright_browser_navigate',
+        'browser_click'     => 'playwright_browser_click',
+        'browser_type'      => 'playwright_browser_type',
+        'browser_screenshot' => 'playwright_browser_take_screenshot',
+        'imagen'            => 'mcp_image_generate_image',
+        'sentry'            => 'sentry_get_sentry_issue',
+        'github_grep'       => 'gh_grep_searchGitHub',
+        'investigar_paper'  => 'deepwiki_ask_question',
+        'fetch_pagina'      => 'fetch_fetch_markdown',
+        'tiempo'            => 'time_get_current_time',
+        'context7'          => 'context7_resolve_library_id',
+    ];
+
+    private static array $mapaCategoriaParamsExterno = [
+        'git'               => ['OPERACION' => 'command'],
+        'firecrawl_scrape'  => ['URL' => 'url'],
+        'firecrawl_search'  => ['CONSULTA' => 'query'],
+        'firecrawl_crawl'   => ['URL' => 'url'],
+        'firecrawl_map'     => ['URL' => 'url'],
+        'firecrawl_extract' => ['URL' => 'urls'],
+        'browser_navegar'   => ['URL' => 'url'],
+        'browser_click'     => ['ELEMENTO' => 'target'],
+        'browser_type'      => ['TEXTO' => 'text'],
+        'browser_screenshot' => ['URL' => 'url'],
+        'imagen'            => ['DESCRIPCION' => 'prompt'],
+        'sentry'            => ['ISSUE' => 'issue_id_or_url'],
+        'github_grep'       => ['PATRON' => 'query'],
+        'investigar_paper'  => ['TEMA' => 'question'],
+        'fetch_pagina'      => ['URL' => 'url'],
+        'tiempo'            => [],
+        'context7'          => ['LIBRERIA' => 'libraryName'],
+    ];
+
+    private static array $mapaCategoriaParamsMCP = [
+        'buscar_codigo'     => ['PATRON' => 'pattern'],
+        'leer_archivo'      => ['RUTA' => 'path'],
+        'editar_archivo'    => ['RUTA' => 'filePath', 'ORIGINAL' => 'oldString', 'NUEVO' => 'newString'],
+        'analizar_modulo'   => ['RUTA' => 'path'],
+        'ejecutar_pruebas'  => ['FILTRO' => 'filtro'],
+        'crud_leer'         => ['TABLA' => 'tabla'],
+        'crud_escribir'     => ['TABLA' => 'tabla', 'DATOS' => 'data'],
+        'generar_modulo'    => ['NOMBRE' => 'nombre_clase', 'CAMPOS' => 'campos'],
+    ];
+
+    /** @var array<string, array<string, string>> */
+    private static array $documentacionIA = [
+        'crud_leer|crud_escribir' => [
+            'operador'    => 'documentacionIA/modelos/operador.md',
+            'estadistica' => 'documentacionIA/modelos/operador.md',
+        ],
+        'leer_archivo|editar_archivo' => [
+            'enrutador' => 'documentacionIA/nucleo/enrutador.md',
+            'modelo'    => 'documentacionIA/nucleo/modelo.md',
+            'freeze'    => 'documentacionIA/herramientas/freeze.md',
+            'congelado' => 'documentacionIA/herramientas/freeze.md',
+        ],
+        'seguridad' => [
+            'csrf'  => 'documentacionIA/seguridad/csrf.md',
+            'token' => 'documentacionIA/seguridad/csrf.md',
+        ],
+        'autenticacion' => [
+            'login'  => 'documentacionIA/api/autenticacion.md',
+            'sesion' => 'documentacionIA/api/autenticacion.md',
+        ],
+        'api' => [
+            'crud' => 'documentacionIA/api/crud.md',
+        ],
+    ];
+
     public static function catalogo(?string $categoria = null): array
     {
         self::init();
@@ -96,6 +212,13 @@ class OrquestadorIA
 
     public static function ejecutar(string $helper, string $metodo, array $params = []): mixed
     {
+        self::init();
+
+        // GuiasMCP: ejecuta la herramienta real
+        if ($helper === 'GuiasMCP' || $helper === 'MCP') {
+            return self::ejecutarMCP($metodo, $params);
+        }
+
         $fqcn = 'LiteFramework\\Nucleo\\Helpers\\' . $helper;
         if (!class_exists($fqcn)) {
             $aliasMap = [
@@ -159,6 +282,78 @@ class OrquestadorIA
      */
     public static function auto(string $intento, array $params = []): array
     {
+        $categoriaTraductor = null;
+        $parametrosTraductor = [];
+        $idHistorial = null;
+
+        // Feedback explícito post-ejecución de tool externa
+        if (str_starts_with($intento, 'feedback:')) {
+            $partes = explode(' ', $intento, 3);
+            $idFeedback = (int)($partes[1] ?? 0);
+            $resultadoFeedback = ($partes[2] ?? 'exito') === 'exito';
+            if ($idFeedback > 0 && class_exists('\\Traductor')) {
+                \Traductor::registrarFeedback($idFeedback, $resultadoFeedback);
+            }
+            return ['exito' => true, 'mensaje' => 'Feedback registrado'];
+        }
+
+        // Hook: Traductor de Prompts (humano -> IA)
+        if (class_exists('\\Traductor')) {
+            $t = \Traductor::humanoAIa($intento);
+            if ($t['exito']) {
+                $categoriaTraductor = $t['categoria'];
+                $parametrosTraductor = $t['parametros'] ?? [];
+                $idHistorial = $t['id_historial'] ?? null;
+
+                // Categoría conocida → ejecutar tool MCP directamente
+                if (isset(self::$mapaCategoriaTool[$t['categoria']])) {
+                    return self::ejecutarPorCategoria(
+                        $t['categoria'],
+                        $t['prompt_traducido'],
+                        $parametrosTraductor,
+                        $params,
+                        $intento,
+                        $idHistorial
+                    );
+                }
+
+                // Categoría de tool externa → devolver sugerencia
+                if (isset(self::$mapaCategoriaToolExterno[$t['categoria']])) {
+                    return self::ejecutarToolExterno(
+                        $t['categoria'],
+                        $parametrosTraductor,
+                        $idHistorial
+                    );
+                }
+
+                // Sin mapeo directo, usar intent traducido solo si confianza alta
+                if (round($t['confianza'], 2) >= 0.75) {
+                    $intento = $t['prompt_traducido'];
+                    if (!empty($parametrosTraductor)) {
+                        $params = array_merge($params, $parametrosTraductor);
+                    }
+                }
+            }
+        }
+
+        // Feedback negativo implícito: confianza baja -> categoria general
+        if (isset($t) && $t['exito'] && round($t['confianza'], 2) < 0.3) {
+            \Traductor::calibrar(null, 'variaciones');
+        }
+
+        // Fallback: si el Traductor devolvió general/null con baja confianza,
+        // escanear el intento original por verbos de acción conocidos
+        if ($categoriaTraductor === null || $categoriaTraductor === 'general') {
+            $intentLower = mb_strtolower($intento);
+            if (preg_match('/\b(buscar|busca|grep|search|encuentra|donde)\b/', $intentLower)) {
+                $extraParams = [];
+                if (preg_match('/(?:buscar|busca|grep|search|encuentra)\s+(.+?)(?:\s+en\s+|\s+del\s+|\s+de\s+|\s*$)/i', $intento, $m)) {
+                    $extraParams['PATRON'] = trim($m[1]);
+                }
+                return self::ejecutarPorCategoria('buscar_codigo', $intento, $extraParams, $params, $intento, null);
+            }
+        }
+
         $resultados = self::buscar($intento, 5);
 
         if (empty($resultados)) {
@@ -191,12 +386,17 @@ class OrquestadorIA
                     'confianza' => $r['puntos'],
                 ];
             }
-            return [
+            $respuesta = [
                 'exito' => false,
                 'ambiguedad' => true,
                 'error' => 'Múltiples opciones posibles. Especifica más.',
                 'sugerencias' => $sugerencias,
             ];
+            if ($categoriaTraductor !== null) {
+                $respuesta['traductor_categoria'] = $categoriaTraductor;
+                $respuesta['traductor_params'] = $parametrosTraductor;
+            }
+            return $respuesta;
         }
 
         try {
@@ -216,15 +416,57 @@ class OrquestadorIA
             ];
             $alias = $aliasMap[$helperReal] ?? $mejor['alias'];
 
+            // Completar path faltante desde el intento
+            if ($mejor['metodo'] === 'lite_read_file' && (!isset($params['path']) || empty($params['path']))) {
+                $pathFromIntent = self::extraerPath($intento);
+                if ($pathFromIntent !== null) {
+                    $params['path'] = $pathFromIntent;
+                }
+            }
+
             $resultado = self::ejecutar($alias, $mejor['metodo'], $params);
 
-            return [
+            // Ejecutar chains obligatorias
+            $resultadosChain = [];
+            $chainsMetodo = self::$chains[$mejor['metodo']] ?? [];
+            foreach ($chainsMetodo as $chain) {
+                $paramsChain = self::resolverParamsChain(
+                    $chain['params'],
+                    $intento,
+                    $params,
+                    $resultado
+                );
+                if ($mejor['metodo'] === 'lite_read_file' || $chain['herramienta'] === 'lite_read_file') {
+                    $pathFromIntent = self::extraerPath($intento);
+                    if (!isset($paramsChain['path']) || empty($paramsChain['path'])) {
+                        $paramsChain['path'] = $pathFromIntent;
+                    }
+                }
+                try {
+                    $res = self::ejecutar('MCP', $chain['herramienta'], $paramsChain);
+                    $resultadosChain[] = [
+                        'herramienta' => $chain['herramienta'],
+                        'resultado' => $res,
+                    ];
+                } catch (\Throwable $e) {
+                    $resultadosChain[] = [
+                        'herramienta' => $chain['herramienta'],
+                        'error' => $e->getMessage(),
+                    ];
+                }
+            }
+
+            $respuesta = [
                 'exito' => true,
                 'helper' => $alias,
                 'metodo' => $mejor['metodo'],
                 'descripcion' => $mejor['descripcion'],
                 'resultado' => $resultado,
             ];
+            if (!empty($resultadosChain)) {
+                $respuesta['chains'] = $resultadosChain;
+            }
+            return $respuesta;
         } catch (\Throwable $e) {
             return [
                 'exito' => false,
@@ -233,6 +475,204 @@ class OrquestadorIA
                 'parametros_requeridos' => $mejor['parametros'],
             ];
         }
+    }
+
+    /**
+     * Ejecuta una herramienta MCP directamente desde una categoría del Traductor.
+     * Puente directo: Traductor -> MCP, sin pasar por buscar() ni el scoring.
+     */
+    private static function ejecutarPorCategoria(string $categoria, string $intentoTraducido, array $paramsTraductor, array $paramsOriginales, string $intentoOriginal, ?int $idHistorial = null): array
+    {
+        $tool = self::$mapaCategoriaTool[$categoria];
+
+        // Mapear parámetros del Traductor a parámetros MCP
+        $paramsMCP = self::mapearParamsTraductorAMCP($categoria, $paramsTraductor);
+
+        // Extraer nombre del modulo del intento para analizar_modulo
+        if ($categoria === 'analizar_modulo' && empty($paramsMCP['pattern'])) {
+            if (preg_match('/(?:modulo|modulo)\s+(?:de\s+)?(\w+)/i', $intentoOriginal, $m)) {
+                $paramsMCP['pattern'] = $m[1];
+            }
+        }
+        $paramsMCP = array_merge($paramsMCP, $paramsOriginales);
+
+        // Completar path faltante desde el intento original
+        // Default path para analizar_modulo: raíz del proyecto (chain filtrar hará el filtrado)
+        if ($categoria === 'analizar_modulo' && empty($paramsMCP['path'])) {
+            $paramsMCP['path'] = '';
+        }
+
+        if (in_array($tool, ['lite_read_file', 'lite_edit'], true) && (!isset($paramsMCP['path']) || empty($paramsMCP['path'])) && (!isset($paramsMCP['filePath']) || empty($paramsMCP['filePath']))) {
+            $pathFromIntent = self::extraerPath($intentoOriginal);
+            if ($pathFromIntent !== null) {
+                if ($tool === 'lite_edit') {
+                    $paramsMCP['filePath'] = $pathFromIntent;
+                } else {
+                    $paramsMCP['path'] = $pathFromIntent;
+                }
+            }
+        }
+
+        try {
+            $resultado = self::ejecutarMCP($tool, $paramsMCP);
+        } catch (\Throwable $e) {
+            return [
+                'exito' => false,
+                'error' => $e->getMessage(),
+                'helper_sugerido' => 'MCP::' . $tool,
+                'fuente' => 'traductor_categoria',
+            ];
+        }
+
+        // Ejecutar chains obligatorias
+        $resultadosChain = [];
+        $chainsMetodo = self::$chains[$tool] ?? [];
+        foreach ($chainsMetodo as $chain) {
+            $paramsChain = self::resolverParamsChain(
+                $chain['params'],
+                $intentoTraducido,
+                $paramsMCP,
+                $resultado
+            );
+            try {
+                $res = self::ejecutar('MCP', $chain['herramienta'], $paramsChain);
+                $resultadosChain[] = [
+                    'herramienta' => $chain['herramienta'],
+                    'resultado' => $res,
+                ];
+            } catch (\Throwable $e) {
+                $resultadosChain[] = [
+                    'herramienta' => $chain['herramienta'],
+                    'error' => $e->getMessage(),
+                ];
+            }
+        }
+
+        // Auto-feedback: traducción exitosa = acierto
+        if ($idHistorial !== null && class_exists('\\Traductor')) {
+            \Traductor::registrarFeedback($idHistorial, true);
+        }
+
+        $respuesta = [
+            'exito' => true,
+            'helper' => 'MCP',
+            'metodo' => $tool,
+            'descripcion' => $intentoTraducido,
+            'resultado' => $resultado,
+            'fuente' => 'traductor_categoria',
+        ];
+        if (!empty($resultadosChain)) {
+            $respuesta['chains'] = $resultadosChain;
+        }
+
+        $docRuta = self::buscarDocumentacionIA($categoria, $paramsTraductor, $intentoOriginal);
+        if ($docRuta !== null) {
+            $dirRaiz = defined('DIRECTORIO_RAIZ') ? DIRECTORIO_RAIZ : (getcwd() ?: __DIR__ . '/../../..');
+            $dirRaiz = rtrim(str_replace('\\', '/', $dirRaiz), '/');
+            if (!file_exists($dirRaiz . '/consola') && defined('DIRECTORIO_RAIZ')) {
+                $dirRaiz = rtrim(str_replace('\\', '/', DIRECTORIO_RAIZ), '/');
+            }
+            $docResultado = self::ejecutarReadFile(['path' => $docRuta], $dirRaiz);
+            if (($docResultado['exito'] ?? false)) {
+                $respuesta['documentacion'] = $docResultado['contenido'];
+            }
+        }
+
+        return $respuesta;
+    }
+
+    private static function mapearParamsTraductorAMCP(string $categoria, array $params): array
+    {
+        $mcp = [];
+        $mapping = self::$mapaCategoriaParamsMCP[$categoria] ?? [];
+        foreach ($mapping as $tKey => $mKey) {
+            if (isset($params[$tKey])) {
+                $mcp[$mKey] = $params[$tKey];
+            }
+        }
+        return $mcp;
+    }
+
+    /**
+     * Busca documentación IA asociada a una categoría+intento.
+     */
+    private static function buscarDocumentacionIA(
+        string $categoria,
+        array $params,
+        string $intentoOriginal
+    ): ?string {
+        $clave = '';
+        foreach ($params as $v) {
+            if (is_string($v) && strlen($v) > 1) {
+                $clave = strtolower(rtrim($v, 's'));
+                break;
+            }
+        }
+        if ($clave === '') {
+            $tokens = self::tokenizar($intentoOriginal);
+            $clave = $tokens[0] ?? '';
+        }
+        foreach (self::$documentacionIA as $cats => $docs) {
+            $catList = explode('|', $cats);
+            if (in_array($categoria, $catList, true) && isset($docs[$clave])) {
+                return $docs[$clave];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Devuelve sugerencia para herramienta MCP externa (no lite_*).
+     * El orquestador ordena qué tool usar y la IA ejecuta.
+     */
+    private static function ejecutarToolExterno(string $categoria, array $paramsTraductor, ?int $idHistorial): array
+    {
+        $tool = self::$mapaCategoriaToolExterno[$categoria] ?? $categoria;
+        $mapping = self::$mapaCategoriaParamsExterno[$categoria] ?? [];
+        $paramsSugeridos = [];
+        foreach ($mapping as $tKey => $mKey) {
+            if (isset($paramsTraductor[$tKey])) {
+                $paramsSugeridos[$mKey] = $paramsTraductor[$tKey];
+            }
+        }
+        return [
+            'exito' => true,
+            'modo' => 'tool_suggestion',
+            'tool' => $tool,
+            'params' => $paramsSugeridos,
+            'id_historial' => $idHistorial,
+            'descripcion' => "El orquestador ordena usar {$tool} con los parametros indicados. "
+                . "Ejecutar y luego reportar feedback con: ia(intent=\"feedback: {$idHistorial} exito\")",
+        ];
+    }
+
+    public static function equipoRapido(string $tarea, array $especialistas = []): array
+    {
+        if (empty($especialistas)) {
+            return ['exito' => false, 'error' => 'Se requieren especialistas'];
+        }
+        $agentesStr = implode(',', $especialistas);
+        return [
+            'exito' => true,
+            'comando' => 'lite_equipo',
+            'config' => [
+                'tipo' => 'custom',
+                'agentes' => $agentesStr,
+                'tarea' => $tarea,
+                'max_iter' => count($especialistas) * 2,
+            ],
+        ];
+    }
+
+    public static function checkpoint(int $iteracion, int $cada = 4): bool
+    {
+        if ($iteracion <= 0) {
+            return false;
+        }
+        if ($iteracion % $cada === 0) {
+            return true;
+        }
+        return false;
     }
 
     private static function tokenizar(string $texto): array
@@ -250,14 +690,387 @@ class OrquestadorIA
                 $resultado[] = $p;
             }
         }
-        return $resultado;
+        return array_unique($resultado);
+    }
+
+    private static function ejecutarMCP(string $metodo, array $params): mixed
+    {
+        $dirRaiz = defined('DIRECTORIO_RAIZ') ? DIRECTORIO_RAIZ : (getcwd() ?: __DIR__ . '/../../..');
+        $dirRaiz = rtrim(str_replace('\\', '/', $dirRaiz), '/');
+        if (!file_exists($dirRaiz . '/consola') && defined('DIRECTORIO_RAIZ')) {
+            $dirRaiz = rtrim(str_replace('\\', '/', DIRECTORIO_RAIZ), '/');
+        }
+        return match ($metodo) {
+            'lite_read_file' => self::ejecutarReadFile($params, $dirRaiz),
+            'lite_filtrar' => self::ejecutarFiltrar($params),
+            'lite_grep' => self::ejecutarGrep($params, $dirRaiz),
+            'lite_glob' => self::ejecutarGlob($params, $dirRaiz),
+            'lite_list_dir' => self::ejecutarListDir($params, $dirRaiz),
+            'lite_write_file' => self::ejecutarWriteFile($params, $dirRaiz),
+            'lite_edit' => self::ejecutarEdit($params, $dirRaiz),
+            'lite_run' => self::ejecutarRun($params, $dirRaiz),
+            'lite_diagnostico' => self::ejecutarRun(['command' => 'diagnostico:ejecutar'], $dirRaiz),
+            'lite_pruebas' => self::ejecutarPruebas($params, $dirRaiz),
+            'lite_crud' => self::ejecutarRun(['command' => 'crud', 'args' => self::buildCrudArgs($params)], $dirRaiz),
+            'lite_modulo_generar' => self::ejecutarRun(['command' => 'modulo:generar', 'args' => self::buildModuloArgs($params)], $dirRaiz),
+            'lite_migrar' => self::ejecutarRun(['command' => 'migrar'], $dirRaiz),
+            'lite_equipo' => ['exito' => true, 'comando' => 'lite_equipo', 'config' => $params],
+            'lite_operador_crear' => self::ejecutarRun(['command' => 'operador:crear', 'args' => self::buildOperadorArgs($params)], $dirRaiz),
+            default => "GUIA: Usa {$metodo} segun la documentacion del sistema",
+        };
+    }
+
+    private static function resolverParamsChain(array $templates, string $intento, array $params, mixed $resultado): array
+    {
+        $resueltos = [];
+        $resultadoArr = is_array($resultado) ? $resultado : [];
+
+        foreach ($templates as $clave => $template) {
+            $valor = $template;
+            $valor = str_replace('$intento', $intento, $valor);
+            if (isset($params['path'])) $valor = str_replace('$path', $params['path'], $valor);
+            if (isset($params['filePath'])) $valor = str_replace('$filePath', $params['filePath'], $valor);
+            foreach ($resultadoArr as $rk => $rv) {
+                if (is_string($rv)) {
+                    $valor = str_replace("\$resultado.{$rk}", $rv, $valor);
+                }
+            }
+            $resueltos[$clave] = $valor;
+        }
+        return $resueltos;
+    }
+
+    private static function resolverRuta(string $path, string $dirRaiz): string
+    {
+        $path = str_replace('\\', '/', $path);
+        $dirRaiz = rtrim(str_replace('\\', '/', $dirRaiz), '/');
+        if (str_starts_with($path, '/')) {
+            return $path;
+        }
+        return $dirRaiz . '/' . ltrim($path, '/');
+    }
+
+    private static function ejecutarReadFile(array $params, string $dirRaiz): array
+    {
+        $path = $params['path'] ?? '';
+        $abs = self::resolverRuta($path, $dirRaiz);
+        if (!file_exists($abs)) {
+            return ['exito' => false, 'error' => "Archivo no encontrado: {$path} (abs: {$abs})"];
+        }
+        $contenido = file_get_contents($abs);
+        if ($contenido === false) {
+            return ['exito' => false, 'error' => "No se pudo leer: {$path}"];
+        }
+        return [
+            'exito' => true,
+            'path' => $path,
+            'contenido' => $contenido,
+            'lineas' => substr_count($contenido, "\n") + 1,
+        ];
+    }
+
+    private static function ejecutarFiltrar(array $params): array
+    {
+        $consulta = mb_strtolower($params['consulta'] ?? '');
+        $archivo = $params['archivo'] ?? '';
+        $texto = $params['texto'] ?? '';
+        if (empty($texto) && !empty($archivo)) {
+            $dirRaiz = defined('DIRECTORIO_RAIZ') ? DIRECTORIO_RAIZ : (getcwd() ?: __DIR__ . '/../../..');
+            $abs = self::resolverRuta($archivo, rtrim(str_replace('\\', '/', $dirRaiz), '/'));
+            if (file_exists($abs)) {
+                $texto = file_get_contents($abs);
+            }
+        }
+        if (empty($texto)) {
+            return ['exito' => false, 'error' => 'No hay texto ni archivo para filtrar'];
+        }
+        $tokens = preg_split('/\s+/', $consulta);
+        $tokens = array_filter($tokens, fn($t) => strlen($t) > 2);
+        if (empty($tokens)) {
+            return ['exito' => true, 'contenido_filtrado' => $texto, 'lineas' => substr_count($texto, "\n") + 1];
+        }
+        $lineas = explode("\n", $texto);
+        $relevantes = [];
+        $totalLineas = count($lineas);
+        foreach ($lineas as $n => $linea) {
+            $lineaLower = mb_strtolower($linea);
+            $match = false;
+            foreach ($tokens as $tok) {
+                if (str_contains($lineaLower, $tok)) { $match = true; break; }
+            }
+            if ($match) {
+                $ctxStart = max(0, $n - 2);
+                for ($i = $ctxStart; $i <= $n + 2 && $i < $totalLineas; $i++) {
+                    $idx = $i + 1;
+                    if (!isset($relevantes[$idx])) {
+                        $relevantes[$idx] = $lineas[$i];
+                    }
+                }
+            }
+        }
+        ksort($relevantes);
+        $filtrado = implode("\n", $relevantes);
+        return [
+            'exito' => true,
+            'contenido_filtrado' => $filtrado,
+            'lineas' => count($relevantes),
+            'total_original' => $totalLineas,
+        ];
+    }
+
+    private static function ejecutarGrep(array $params, string $dirRaiz): array
+    {
+        $pattern = $params['pattern'] ?? '';
+        $path = $params['path'] ?? '';
+        $include = $params['include'] ?? '*.php';
+        if (empty($pattern)) {
+            return ['exito' => false, 'error' => 'Patron de busqueda requerido'];
+        }
+        $dir = self::resolverRuta($path, $dirRaiz);
+        if (!empty($path) && !is_dir($dir)) {
+            return ['exito' => false, 'error' => "Directorio no encontrado: {$path}"];
+        }
+        if (empty($path)) {
+            $dir = $dirRaiz;
+        }
+        $resultados = [];
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
+        foreach ($iterator as $file) {
+            if ($file->isFile() && fnmatch($include, $file->getFilename())) {
+                $contenido = file_get_contents($file->getRealPath());
+                if (preg_match_all('/' . preg_quote($pattern, '/') . '/i', $contenido, $matches, PREG_OFFSET_CAPTURE)) {
+                    $lineas = [];
+                    foreach ($matches[0] as $m) {
+                        $offset = $m[1];
+                        $numLinea = substr_count(substr($contenido, 0, $offset), "\n") + 1;
+                        $lineas[] = $numLinea;
+                    }
+                    $relPath = str_replace($dirRaiz . '/', '', str_replace('\\', '/', $file->getRealPath()));
+                    $resultados[] = [
+                        'archivo' => $relPath,
+                        'coincidencias' => count($lineas),
+                        'lineas' => $lineas,
+                    ];
+                }
+            }
+        }
+        return [
+            'exito' => true,
+            'resultados' => $resultados,
+            'total' => count($resultados),
+            'primer_archivo' => $resultados[0]['archivo'] ?? null,
+        ];
+    }
+
+    private static function ejecutarGlob(array $params, string $dirRaiz): array
+    {
+        $pattern = $params['pattern'] ?? '**/*';
+        $path = $params['path'] ?? '';
+        $dir = !empty($path) ? self::resolverRuta($path, $dirRaiz) : $dirRaiz;
+        $globPattern = rtrim($dir, '/') . '/' . ltrim($pattern, '/');
+        $archivos = glob($globPattern) ?: [];
+        $archivosRel = [];
+        foreach ($archivos as $a) {
+            $archivosRel[] = str_replace($dirRaiz . DIRECTORY_SEPARATOR, '', $a);
+        }
+        sort($archivosRel);
+        return [
+            'exito' => true,
+            'archivos' => $archivosRel,
+            'total' => count($archivosRel),
+            'primer_archivo' => $archivosRel[0] ?? null,
+        ];
+    }
+
+    private static function ejecutarListDir(array $params, string $dirRaiz): array
+    {
+        $path = $params['path'] ?? '';
+        $dir = !empty($path) ? self::resolverRuta($path, $dirRaiz) : $dirRaiz;
+        if (!is_dir($dir)) {
+            return ['exito' => false, 'error' => "Directorio no encontrado: {$path}"];
+        }
+        $items = scandir($dir);
+        $archivos = [];
+        $carpetas = [];
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $ruta = $dir . DIRECTORY_SEPARATOR . $item;
+            $rel = str_replace($dirRaiz . DIRECTORY_SEPARATOR, '', $ruta);
+            if (is_dir($ruta)) {
+                $carpetas[] = $rel . DIRECTORY_SEPARATOR;
+            } else {
+                $archivos[] = $rel;
+            }
+        }
+        return [
+            'exito' => true,
+            'carpetas' => $carpetas,
+            'archivos' => $archivos,
+            'total' => count($archivos) + count($carpetas),
+            'primer_archivo' => !empty($archivos) ? $archivos[0] : (!empty($carpetas) ? $carpetas[0] : null),
+        ];
+    }
+
+    private static function ejecutarWriteFile(array $params, string $dirRaiz): array
+    {
+        $path = $params['path'] ?? '';
+        $content = $params['content'] ?? '';
+        if (empty($path)) {
+            return ['exito' => false, 'error' => 'Ruta requerida'];
+        }
+        $abs = self::resolverRuta($path, $dirRaiz);
+        $dirPadre = dirname($abs);
+        if (!is_dir($dirPadre)) {
+            mkdir($dirPadre, 0755, true);
+        }
+        file_put_contents($abs, $content);
+        return ['exito' => true, 'path' => $path, 'bytes' => strlen($content)];
+    }
+
+    private static function ejecutarEdit(array $params, string $dirRaiz): array
+    {
+        $filePath = $params['filePath'] ?? '';
+        $oldString = $params['oldString'] ?? '';
+        $newString = $params['newString'] ?? '';
+        $replaceAll = !empty($params['replaceAll']);
+        if (empty($filePath) || empty($oldString)) {
+            return ['exito' => false, 'error' => 'filePath y oldString requeridos'];
+        }
+        $abs = self::resolverRuta($filePath, $dirRaiz);
+        if (!file_exists($abs)) {
+            return ['exito' => false, 'error' => "Archivo no encontrado: {$filePath}"];
+        }
+        $contenido = file_get_contents($abs);
+        if ($replaceAll) {
+            $nuevo = str_replace($oldString, $newString, $contenido);
+        } else {
+            $nuevo = substr_replace($contenido, $newString, strpos($contenido, $oldString), strlen($oldString));
+        }
+        file_put_contents($abs, $nuevo);
+        $ocurrencias = $replaceAll ? substr_count($contenido, $oldString) : 1;
+        return ['exito' => true, 'path' => $filePath, 'reemplazos' => $ocurrencias, 'modificado' => $contenido !== $nuevo];
+    }
+
+    private static function ejecutarRun(array $params, string $dirRaiz): mixed
+    {
+        $command = $params['command'] ?? '';
+        $args = $params['args'] ?? '';
+        if (empty($command)) {
+            return ['exito' => false, 'error' => 'Comando requerido'];
+        }
+        $consola = rtrim($dirRaiz, '/') . '/consola';
+        if (!file_exists($consola)) {
+            return ['exito' => false, 'error' => "Consola no encontrada en {$consola}"];
+        }
+        $cmd = PHP_BINARY . ' ' . escapeshellarg($consola) . ' ' . escapeshellarg($command);
+        if (!empty($args)) {
+            $cmd .= ' ' . $args;
+        }
+        $output = shell_exec($cmd . ' 2>&1');
+        return [
+            'exito' => true,
+            'comando' => $command,
+            'salida' => $output,
+        ];
+    }
+
+    private static function ejecutarPruebas(array $params, string $dirRaiz): array
+    {
+        $filtro = $params['filtro'] ?? '';
+        $testDir = rtrim($dirRaiz, '/') . '/tests';
+        $runner = $testDir . '/liteTest.php';
+        if (!file_exists($runner)) {
+            return ['exito' => false, 'error' => 'liteTest.php no encontrado'];
+        }
+        $cmd = PHP_BINARY . ' ' . escapeshellarg($runner);
+        if (!empty($filtro)) {
+            $cmd .= ' --filtro=' . escapeshellarg($filtro);
+        }
+        $output = shell_exec($cmd . ' 2>&1');
+        preg_match('/Pasados:\s+(\d+)/', $output, $mPasados);
+        preg_match('/Fallos:\s+(\d+)/', $output, $mFallos);
+        preg_match('/Errores:\s+(\d+)/', $output, $mErrores);
+        return [
+            'exito' => true,
+            'salida' => $output,
+            'pasados' => (int)($mPasados[1] ?? 0),
+            'fallos' => (int)($mFallos[1] ?? 0),
+            'errores' => (int)($mErrores[1] ?? 0),
+            'archivo_fallo' => self::extraerPrimerFallo($output),
+        ];
+    }
+
+    private static function extraerPrimerFallo(string $output): ?string
+    {
+        if (preg_match('/^  ([A-Za-z0-9_]+Test\.php)::test/m', $output, $m)) {
+            $testDir = defined('DIRECTORIO_RAIZ') ? DIRECTORIO_RAIZ . '/tests' : 'tests';
+            $parts = explode('::', $m[1]);
+            $archivo = $parts[0];
+            return $testDir . '/Casos/' . $archivo;
+        }
+        return null;
+    }
+
+    private static function extraerPath(string $intento): ?string
+    {
+        if (preg_match('/(?:archivo|file|ruta)\s+([^\s,;]+(?:\/[^\s,;]+)*)/i', $intento, $m)) {
+            return $m[1];
+        }
+        if (preg_match('/(?:servidor|src|tests|vendor|storage|plantillas|rutas)\/[^\s,;]+/i', $intento, $m)) {
+            return $m[0];
+        }
+        return null;
+    }
+
+    private static function buildCrudArgs(array $params): string
+    {
+        $args = '';
+        if (!empty($params['tabla'])) $args .= ' --tabla=' . escapeshellarg($params['tabla']);
+        if (!empty($params['accion'])) $args .= ' --accion=' . escapeshellarg($params['accion']);
+        if (!empty($params['data'])) $args .= ' --data=' . escapeshellarg(is_string($params['data']) ? $params['data'] : json_encode($params['data']));
+        if (!empty($params['id'])) $args .= ' --id=' . (int)$params['id'];
+        return $args;
+    }
+
+    private static function buildModuloArgs(array $params): string
+    {
+        $args = escapeshellarg($params['nombre_clase'] ?? '');
+        if (!empty($params['tabla'])) $args .= ' --tabla=' . escapeshellarg($params['tabla']);
+        if (!empty($params['campos'])) $args .= ' --campos=' . escapeshellarg($params['campos']);
+        return $args;
+    }
+
+    private static function buildOperadorArgs(array $params): string
+    {
+        $args = '';
+        if (!empty($params['nombre'])) $args .= ' --nombre=' . escapeshellarg($params['nombre']);
+        if (!empty($params['email'])) $args .= ' --email=' . escapeshellarg($params['email']);
+        if (!empty($params['clave'])) $args .= ' --clave=' . escapeshellarg($params['clave']);
+        return $args;
     }
 
     private static function init(): void
     {
         if (self::$catalogo !== null) return;
 
-        self::$catalogo = [
+        if (class_exists('LiteFramework\\Nucleo\\Helpers\\AyudanteCache')) {
+            $cacheado = \LiteFramework\Nucleo\Helpers\AyudanteCache::recordar(
+                'orquestador_catalogo',
+                fn() => self::generarCatalogo(),
+                3600
+            );
+            if (is_array($cacheado)) {
+                self::$catalogo = $cacheado;
+                return;
+            }
+        }
+
+        self::$catalogo = self::generarCatalogo();
+    }
+
+    private static function generarCatalogo(): array
+    {
+        return [
             'texto' => [
                 [
                     'helper' => 'AyudanteCadena',
@@ -480,7 +1293,32 @@ class OrquestadorIA
                     ],
                 ],
             ],
-            'utilidades' => [
+            
+            'herramientas_mcp' => [
+                [
+                    'helper' => 'GuiasMCP',
+                    'alias' => 'MCP',
+                    'descripcion' => 'Herramientas del sistema MCP que la IA puede invocar directamente',
+                    'metodos' => [
+                        ['nombre' => 'lite_read_file', 'p' => ['path: string - ruta relativa al proyecto (ej: servidor/modelos/Usuario.php)'], 'r' => 'string (guia)', 'd' => 'GUIA: Lee contenido completo de un archivo. Usa lite_read_file(path="ruta")', 'k' => ['leer', 'archivo', 'file', 'contenido', 'read', 'abrir', 'ver', 'analizar', 'analiza', 'revisar', 'inspeccionar']],
+                        ['nombre' => 'lite_write_file', 'p' => ['path: string - ruta', 'content: string - contenido'], 'r' => 'string (guia)', 'd' => 'GUIA: Escribe o crea un archivo. Crea directorios automaticamente. Usa lite_write_file(path="ruta", content="...")', 'k' => ['escribir', 'crear', 'guardar', 'file', 'write', 'nuevo']],
+                        ['nombre' => 'lite_edit', 'p' => ['filePath: string - ruta', 'oldString: string - texto exacto', 'newString: string - texto nuevo', 'replaceAll: bool - opcional'], 'r' => 'string (guia)', 'd' => 'GUIA: Reemplaza texto exacto en un archivo. Usa lite_edit(filePath="ruta", oldString="...", newString="...")', 'k' => ['editar', 'reemplazar', 'modificar', 'cambiar', 'edit', 'update']],
+                        ['nombre' => 'lite_grep', 'p' => ['pattern: string - regex a buscar', 'path: string - directorio opcional', 'include: string - filtro de archivo (ej: *.php)'], 'r' => 'string (guia)', 'd' => 'GUIA: Busca texto con regex en archivos. Usa lite_grep(pattern="texto", path="dir", include="*.php")', 'k' => ['buscar', 'search', 'grep', 'patron', 'pattern', 'find', 'texto']],
+                        ['nombre' => 'lite_glob', 'p' => ['pattern: string - patron glob (ej: **/*.php)', 'path: string - directorio opcional'], 'r' => 'string (guia)', 'd' => 'GUIA: Busca archivos por patron glob. Usa lite_glob(pattern="**/*.php")', 'k' => ['listar', 'archivos', 'glob', 'patron', 'files', 'encontrar', 'analizar', 'explorar', 'inspeccionar']],
+                        ['nombre' => 'lite_list_dir', 'p' => ['path: string - ruta del directorio'], 'r' => 'string (guia)', 'd' => 'GUIA: Lista contenido de un directorio. Usa lite_list_dir(path="carpeta")', 'k' => ['listar', 'directorio', 'carpeta', 'folder', 'dir', 'contenido', 'explorar', 'estructura']],
+                        ['nombre' => 'lite_run', 'p' => ['command: string - comando CLI (modulo:generar, crud, migrar, pruebas...)', 'args: string - argumentos opcionales'], 'r' => 'string (guia)', 'd' => 'GUIA: Ejecuta comandos CLI del framework. Usa lite_run(command="comando", args="--args")', 'k' => ['ejecutar', 'comando', 'cli', 'run', 'consola', 'cmd', 'command', 'migrar', 'pruebas']],
+                        ['nombre' => 'lite_equipo', 'p' => ['tipo: string - analisis, desarrollo, seguridad, frontend, backend, completo...', 'tarea: string - instruccion detallada', 'agentes: string - lista custom separada por coma (opcional)'], 'r' => 'string (guia)', 'd' => 'GUIA: Ejecuta un equipo de agentes IA. Usa lite_equipo(tipo="desarrollo", tarea="...")', 'k' => ['equipo', 'team', 'crew', 'agentes', 'orquestar', 'desarrollo', 'analisis']],
+                        ['nombre' => 'lite_diagnostico', 'p' => [], 'r' => 'string (guia)', 'd' => 'GUIA: Diagnostica el sistema completo (BD, archivos, seguridad, PHP). Usa lite_run(command="diagnostico")', 'k' => ['diagnostico', 'diagnostic', 'system', 'salud', 'health', 'check']],
+                        ['nombre' => 'lite_crud', 'p' => ['tabla: string - nombre tabla', 'accion: string - listar/leer/crear/actualizar/eliminar', 'data: string - JSON opcional', 'id: int - ID opcional'], 'r' => 'string (guia)', 'd' => 'GUIA: CRUD generico sobre cualquier tabla. Usa lite_run(command="crud", args="--tabla=X --accion=listar")', 'k' => ['crud', 'tabla', 'base', 'datos', 'database', 'bd', 'registro']],
+                        ['nombre' => 'lite_modulo_generar', 'p' => ['nombre_clase: string - CamelCase (ej: Producto)', 'tabla: string - nombre tabla opcional', 'campos: string - formato "campo:tipo,..."'], 'r' => 'string (guia)', 'd' => 'GUIA: Genera estructura completa de archivos para un modulo. Usa lite_run(command="modulo:generar", args="NombreClase --campos=...")', 'k' => ['crear crud', 'generar entidad', 'scaffold', 'nuevo crud', 'crud completo', 'generar proyecto']],
+                        ['nombre' => 'lite_migrar', 'p' => [], 'r' => 'string (guia)', 'd' => 'GUIA: Ejecuta migraciones pendientes de BD. Usa lite_run(command="migrar")', 'k' => ['migrar', 'migrate', 'bd', 'database', 'schema']],
+                        ['nombre' => 'lite_pruebas', 'p' => ['filtro: string - nombre de clase/metodo a filtrar (opcional)', 'cobertura: bool - reporte de cobertura (opcional)'], 'r' => 'string (guia)', 'd' => 'GUIA: Ejecuta tests PHPUnit. Usa lite_run(command="pruebas") o lite_run(command="pruebas", args="--filtro=NombreTest")', 'k' => ['test', 'pruebas', 'phpunit', 'unit', 'testing', 'tests', 'cobertura']],
+                        ['nombre' => 'lite_operador_crear', 'p' => ['nombre: string', 'email: string', 'clave: string'], 'r' => 'string (guia)', 'd' => 'GUIA: Crea un operador/usuario en el sistema. Usa lite_run(command="operador:crear", args="--nombre=X --email=Y --clave=Z")', 'k' => ['usuario', 'operador', 'crear', 'user', 'register']],
+                        ['nombre' => 'lite_filtrar', 'p' => ['consulta: string - texto relevante', 'archivo: string - ruta (opcional)', 'texto: string - texto directo (opcional)'], 'r' => 'string (guia)', 'd' => 'GUIA: Filtra contenido irrelevante para reducir tokens. Usa lite_filtrar(consulta="...", archivo="ruta")', 'k' => ['filtrar', 'filter', 'tokens', 'resumir', 'relevant', 'contenido']],
+                    ],
+                ],
+            ],
+'utilidades' => [
                 [
                     'helper' => 'AyudanteGeneral',
                     'alias' => 'General',

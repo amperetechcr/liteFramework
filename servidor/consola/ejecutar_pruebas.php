@@ -2,62 +2,28 @@
 
 declare(strict_types=1);
 
-function color(string $txt, string $c): string
-{
-    global $colores;
-    return $colores[$c] . $txt . $colores['reset'];
-}
-
 $dirRaiz = dirname(__DIR__, 2);
 $testsDir = $dirRaiz . '/tests';
-$phpunitPhar = $testsDir . '/phpunit.phar';
-$configXml = $testsDir . '/phpunit.xml';
+$liteTest = $testsDir . '/liteTest.php';
 
-$colores = [
-    'verde' => "\033[32m",
-    'amarillo' => "\033[33m",
-    'rojo' => "\033[31m",
-    'cyan' => "\033[36m",
-    'reset' => "\033[0m",
-];
-
-echo color("=== liteFramework - Ejecutor de Pruebas ===\n", 'cyan');
-
-if (!file_exists($phpunitPhar)) {
-    echo color("[!] PHPUnit phar no encontrado en: $phpunitPhar\n", 'amarillo');
-    echo "\n";
-    echo "Descargalo primero:\n";
-    echo "  php -r \"copy('https://phar.phpunit.de/phpunit-11.phar', '$phpunitPhar');\"\n";
-    echo "  O via wget:\n";
-    echo "  wget https://phar.phpunit.de/phpunit-11.phar -O $phpunitPhar\n";
-    echo "\n";
-    echo "Tambien puedes usar Composer si lo prefieres:\n";
-    echo "  composer require --dev phpunit/phpunit\n";
+if (!file_exists($liteTest)) {
+    echo "[ERROR] liteTest no encontrado en: $liteTest\n";
     exit(1);
 }
 
 $args = $_SERVER['argv'] ?? [];
-$argsOpciones = [];
+$opciones = [];
 
 foreach ($args as $i => $a) {
-    if ($i === 0) {
-        continue;
-    }
-    $argsOpciones[] = $a;
+    if ($i === 0) continue;
+    $opciones[] = $a;
 }
 
-$comando = PHP_BINARY . ' ' . escapeshellarg($phpunitPhar)
-    . ' -c ' . escapeshellarg($configXml);
-
-if (!empty($argsOpciones)) {
-    $comando .= ' ' . implode(' ', array_map('escapeshellarg', $argsOpciones));
+$comando = PHP_BINARY . ' ' . escapeshellarg($liteTest);
+if (!empty($opciones)) {
+    $comando .= ' -- ' . implode(' ', array_map('escapeshellarg', $opciones));
 }
 
-echo color("Ejecutando: phpunit", 'verde');
-if (!empty($argsOpciones)) {
-    echo ' ' . implode(' ', $argsOpciones);
-}
-echo "\n\n";
-
+echo "Ejecutando: liteTest\n";
 passthru($comando, $codigoSalida);
 exit($codigoSalida);

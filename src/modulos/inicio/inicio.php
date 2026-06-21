@@ -46,7 +46,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio — liteFramework</title>
+    <title>Inicio — LiteFramework</title>
     <link rel="icon" type="image/png" href="<?= URL_BASE ?>/src/img/favicon.png">
     <meta name="csrf-token" content="<?= $tokenCSRF ?>">
     <link rel="stylesheet" href="<?= URL_BASE ?>/src/css/tema.css">
@@ -89,7 +89,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
 
 <header class="cabecera-inicio">
     <div class="cabecera-inicio-contenedor envoltura-contenido">
-        <h1 class="cabecera-inicio-titulo">liteFramework</h1>
+        <h1 class="cabecera-inicio-titulo">LiteFramework</h1>
         <nav aria-label="Navegación">
             <a href="<?= URL_BASE ?>/panelControl" class="cabecera-inicio-enlace">Panel</a>
             <span><?= h($nombreOperador) ?></span>
@@ -104,24 +104,24 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
             Bienvenido, <?= h($nombreOperador) ?>
         </h2>
         <p>
-            Has llegado al dashboard de liteFramework, el único framework PHP hecho para que la IA lo use.
-            Tú das las instrucciones, la IA escribe el código, el framework ejecuta. Cero alucinaciones.
+            Has llegado al dashboard de LiteFramework. Tú das las instrucciones en lenguaje natural,
+            la IA escribe el código, el sistema ejecuta. Cero alucinaciones.
         </p>
     </section>
 
     <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--espacio-normal);margin-top:var(--espacio-gigante);">
         <div class="card-ia">
             <div class="card-ia-valor"><?= $totalPruebas ?></div>
-            <div class="card-ia-etiqueta">🧪 Tests que la IA verifica</div>
+            <div class="card-ia-etiqueta">🧪 Tests automatizados</div>
             <div style="font-size:var(--tamano-xs);color:var(--texto-suave);margin-top:4px;"><?= $totalAseveraciones ?> aserciones</div>
         </div>
         <div class="card-ia">
             <div class="card-ia-valor"><?= $totalSkills ?></div>
-            <div class="card-ia-etiqueta">🤖 Skills de IA</div>
+            <div class="card-ia-etiqueta">🎯 Skill de orquestación</div>
         </div>
         <div class="card-ia">
             <div class="card-ia-valor"><?= $totalMCPs ?></div>
-            <div class="card-ia-etiqueta">🔗 MCP Servers</div>
+            <div class="card-ia-etiqueta">🔗 Servidores conectados</div>
         </div>
         <div class="card-ia">
             <div class="card-ia-valor">0</div>
@@ -142,7 +142,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
             <code style="display:inline-block;padding:12px 20px;background:var(--fondo-elemento);border:1px solid var(--trazo-suave);border-radius:var(--radio-redondeado);font-size:var(--tamano-sm);">
                 opencode run validate
             </code>
-            <span class="texto-xs texto-suave" style="display:flex;align-items:center;">PHPStan + PHPCS + PHPUnit</span>
+            <span class="texto-xs texto-suave" style="display:flex;align-items:center;">PHPStan + PHPCS + liteTest</span>
         </div>
     </section>
 
@@ -150,7 +150,7 @@ $clasesHtml = trim($paletaClase . ' ' . $estiloClase . ' ' . $fondoClase . ' ' .
 
 <footer class="pie-inicio">
     <div class="pie-inicio-contenedor envoltura-contenido">
-        &copy; <?= date('Y') ?> — Humano instruye · IA escribe · Cero alucinaciones
+        &copy; <?= date('Y') ?> — Humano instruye &middot; IA escribe &middot; Cero alucinaciones
     </div>
 </footer>
 

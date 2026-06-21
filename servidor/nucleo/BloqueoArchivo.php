@@ -49,7 +49,7 @@ class BloqueoArchivo
                         'host' => gethostname(),
                     ]);
                     if ($payload !== false) {
-                        fwrite($handle, $payload);
+                        @fwrite($handle, $payload);
                     }
                     fflush($handle);
                     flock($handle, LOCK_UN);

@@ -1,0 +1,302 @@
+<svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 380">
+  <defs>
+    <filter id="shadow-deep" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="shadow-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="glow-active" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#6366f1" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="floor-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a30"/><stop offset="100%" stop-color="#101025"/>
+    </linearGradient>
+    <linearGradient id="header-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f0f22"/><stop offset="100%" stop-color="#18183a"/>
+    </linearGradient>
+    <linearGradient id="station-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#252548"/><stop offset="100%" stop-color="#1c1c3a"/>
+    </linearGradient>
+    <linearGradient id="desk-top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a3a50"/><stop offset="100%" stop-color="#2a2a40"/>
+    </linearGradient>
+    <linearGradient id="desk-edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e1e30"/><stop offset="100%" stop-color="#111120"/>
+    </linearGradient>
+    <linearGradient id="screen-glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a5a8a" stop-opacity="0.3"/><stop offset="100%" stop-color="#0a1a2a" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="floor-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect width="30" height="30" fill="none"/>
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+    </pattern>
+    <style>
+      .station { transition: filter 0.3s, opacity 0.3s; cursor: default; }
+      .station-bg { fill: url(#station-bg); stroke: rgba(255,255,255,0.05); stroke-width: 0.8; }
+      .station.active .station-bg { stroke: rgba(99,102,241,0.5); stroke-width: 1.2; filter: url(#glow-active); }
+      .station-label { font: 14px sans-serif; fill: #c0c0e0; text-anchor: middle; font-weight: 600; }
+      .station-count { font: 11px sans-serif; fill: #8080a0; text-anchor: middle; }
+      .corridor { fill: #181835; stroke: rgba(255,255,255,0.015); stroke-width: 0.5; }
+      .divider { fill: #222245; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="620" height="24" fill="url(#header-bg)"/>
+  <rect x="0" y="23.5" width="620" height="0.5" fill="rgba(255,255,255,0.04)"/>
+  <text x="8" y="17" font-family="sans-serif" font-size="15" font-weight="bold" fill="#c0c0e0">PixelAmpCrew — AmpereTech CR</text>
+  <text x="612" y="17" font-family="sans-serif" font-size="12" fill="#606080" text-anchor="end">v2.0</text>
+
+  <rect x="0" y="24" width="620" height="356" fill="url(#floor-bg)"/>
+  <rect x="0" y="24" width="620" height="356" fill="url(#floor-grid)"/>
+
+  <rect class="corridor" x="0" y="125" width="620" height="12"/>
+  <rect class="corridor" x="0" y="228" width="620" height="12"/>
+  <rect class="corridor" x="0" y="125" width="6" height="115"/>
+  <rect class="corridor" x="614" y="125" width="6" height="115"/>
+
+  <!-- escritorio1 -->
+  <g class="station escritorio1">
+    <rect class="station-bg" x="12" y="30" width="143" height="90" rx="4"/>
+    <rect class="divider" x="12" y="120" width="143" height="4"/>
+    <g filter="url(#shadow-soft)">
+      <rect fill="url(#desk-edge)" rx="2" x="19" y="43" width="50" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="17" y="41" width="50" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <rect fill="url(#desk-edge)" rx="2" x="94" y="43" width="45" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="92" y="41" width="45" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+    </g>
+    <g filter="url(#glow-cyan)" opacity="0.08"><rect fill="#00ccff" x="41" y="76" width="85" height="5" rx="1"/></g>
+    <rect fill="#292945" x="29" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="30" y="45" width="14" height="10"/>
+    <rect fill="#292945" x="104" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="105" y="45" width="14" height="10"/>
+    <circle cx="37" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+    <circle cx="112" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+  </g>
+
+  <!-- escritorio2 -->
+  <g class="station escritorio2">
+    <rect class="station-bg" x="160" y="30" width="143" height="90" rx="4"/>
+    <rect class="divider" x="160" y="120" width="143" height="4"/>
+    <g filter="url(#shadow-soft)">
+      <rect fill="url(#desk-edge)" rx="2" x="167" y="43" width="50" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="165" y="41" width="50" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <rect fill="url(#desk-edge)" rx="2" x="242" y="43" width="45" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="240" y="41" width="45" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+    </g>
+    <g filter="url(#glow-cyan)" opacity="0.08"><rect fill="#00ccff" x="189" y="76" width="85" height="5" rx="1"/></g>
+    <rect fill="#292945" x="177" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="178" y="45" width="14" height="10"/>
+    <rect fill="#292945" x="252" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="253" y="45" width="14" height="10"/>
+    <circle cx="185" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+    <circle cx="260" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+  </g>
+
+  <!-- escritorio3 -->
+  <g class="station escritorio3">
+    <rect class="station-bg" x="308" y="30" width="143" height="90" rx="4"/>
+    <rect class="divider" x="308" y="120" width="143" height="4"/>
+    <g filter="url(#shadow-soft)">
+      <rect fill="url(#desk-edge)" rx="2" x="315" y="43" width="50" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="313" y="41" width="50" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <rect fill="url(#desk-edge)" rx="2" x="390" y="43" width="45" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="388" y="41" width="45" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+    </g>
+    <g filter="url(#glow-cyan)" opacity="0.08"><rect fill="#00ccff" x="337" y="76" width="85" height="5" rx="1"/></g>
+    <rect fill="#292945" x="325" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="326" y="45" width="14" height="10"/>
+    <rect fill="#292945" x="400" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="401" y="45" width="14" height="10"/>
+    <circle cx="333" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+    <circle cx="408" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+  </g>
+
+  <!-- escritorio4 -->
+  <g class="station escritorio4">
+    <rect class="station-bg" x="456" y="30" width="152" height="90" rx="4"/>
+    <rect class="divider" x="456" y="120" width="152" height="4"/>
+    <g filter="url(#shadow-soft)">
+      <rect fill="url(#desk-edge)" rx="2" x="463" y="43" width="50" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="461" y="41" width="50" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <rect fill="url(#desk-edge)" rx="2" x="544" y="43" width="50" height="30"/>
+      <rect fill="url(#desk-top)" rx="2" x="542" y="41" width="50" height="30" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+    </g>
+    <g filter="url(#glow-cyan)" opacity="0.08"><rect fill="#00ccff" x="489" y="76" width="85" height="5" rx="1"/></g>
+    <rect fill="#292945" x="473" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="474" y="45" width="14" height="10"/>
+    <rect fill="#292945" x="554" y="44" width="16" height="12" rx="1"/><rect fill="#1a3a5a" rx="0.5" x="555" y="45" width="14" height="10"/>
+    <circle cx="481" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+    <circle cx="562" cy="72" r="8" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+  </g>
+
+  <!-- reunion -->
+  <g class="station reunion">
+    <rect class="station-bg" x="12" y="140" width="295" height="84" rx="4"/>
+    <rect class="divider" x="12" y="224" width="295" height="4"/>
+    <g filter="url(#shadow-deep)">
+      <rect fill="url(#desk-edge)" rx="3" x="33" y="166" width="130" height="35"/>
+      <rect fill="url(#desk-top)" rx="3" x="30" y="163" width="130" height="35" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+    </g>
+    <circle cx="183" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <circle cx="198" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <circle cx="213" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <circle cx="228" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <circle cx="243" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <circle cx="258" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <circle cx="273" cy="180" r="5" fill="rgba(99,102,241,0.12)" stroke="rgba(99,102,241,0.2)" stroke-width="0.5"/>
+    <rect fill="#1a1a40" x="170" y="174" width="110" height="12" rx="2" filter="url(#shadow-soft)"/>
+    <circle cx="175" cy="180" r="2" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <text class="station-label" x="160" y="155">Sala Reuniones</text>
+    <text class="station-count reunion-count" x="160" y="210">0 en reunion</text>
+  </g>
+
+  <!-- descanso -->
+  <g class="station descanso">
+    <rect class="station-bg" x="312" y="140" width="296" height="84" rx="4"/>
+    <rect class="divider" x="312" y="224" width="296" height="4"/>
+    <g filter="url(#shadow-deep)">
+      <rect fill="#2a2a48" rx="2" x="322" y="159" width="24" height="36"/>
+      <rect fill="#1a1a38" rx="1" x="323" y="161" width="22" height="34"/>
+      <circle cx="334" cy="167" r="6" fill="rgba(144,224,239,0.15)"/>
+      <rect fill="#3a3a58" rx="2" x="352" y="163" width="30" height="18"/>
+      <rect fill="#2a2a48" rx="1" x="354" y="165" width="26" height="14"/>
+      <rect fill="rgba(255,200,100,0.15)" x="357" y="168" width="20" height="8" rx="1"/>
+    </g>
+    <g filter="url(#shadow-soft)">
+      <rect fill="url(#desk-edge)" rx="3" x="395" y="157" width="55" height="26"/>
+      <rect fill="url(#desk-top)" rx="3" x="393" y="155" width="55" height="26" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+    </g>
+    <circle cx="420" cy="186" r="7" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+    <circle cx="445" cy="190" r="7" fill="#222248" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" filter="url(#shadow-soft)"/>
+    <rect fill="rgba(99,102,241,0.06)" x="475" y="160" width="25" height="40" rx="3" filter="url(#shadow-soft)"/>
+    <circle cx="487" cy="178" r="3" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <rect fill="#292945" x="478" y="168" width="19" height="6" rx="1"/>
+    <rect fill="#1a3a5a" rx="0.5" x="479" y="169" width="17" height="4"/>
+    <text class="station-label" x="470" y="155">Break &amp; Lounge</text>
+    <text class="station-count break-count" x="470" y="205">0</text>
+  </g>
+
+  <!-- servidor -->
+  <g class="station servidor">
+    <rect class="station-bg" x="12" y="244" width="190" height="132" rx="4"/>
+    <rect class="divider" x="12" y="376" width="190" height="4"/>
+    <g filter="url(#shadow-deep)">
+      <rect fill="#0d0d20" rx="2" x="22" y="255" width="170" height="24"/>
+      <rect fill="#111128" rx="2" x="22" y="283" width="170" height="24"/>
+      <rect fill="#0d0d20" rx="2" x="22" y="311" width="170" height="24"/>
+      <rect fill="#111128" rx="2" x="22" y="339" width="170" height="24"/>
+    </g>
+    <circle cx="32" cy="267" r="2.5" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <circle cx="42" cy="267" r="2.5" fill="#22c55e" opacity="0.5"/>
+    <circle cx="52" cy="267" r="2.5" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <circle cx="32" cy="295" r="2.5" fill="#22c55e" opacity="0.5"/>
+    <circle cx="42" cy="295" r="2.5" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <circle cx="52" cy="295" r="2.5" fill="#22c55e" opacity="0.5"/>
+    <circle cx="32" cy="323" r="2.5" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <circle cx="42" cy="323" r="2.5" fill="#22c55e" opacity="0.5"/>
+    <circle cx="52" cy="323" r="2.5" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <circle cx="32" cy="351" r="2.5" fill="#ff4444" filter="url(#glow-cyan)"/>
+    <circle cx="42" cy="351" r="2.5" fill="#22c55e" filter="url(#glow-cyan)"/>
+    <circle cx="52" cy="351" r="2.5" fill="#22c55e" opacity="0.5"/>
+    <rect fill="#1a1a38" rx="1" x="28" y="261" width="155" height="12"/>
+    <rect fill="#1a1a38" rx="1" x="28" y="289" width="155" height="12"/>
+    <rect fill="#1a1a38" rx="1" x="28" y="317" width="155" height="12"/>
+    <rect fill="#1a1a38" rx="1" x="28" y="345" width="155" height="12"/>
+    <g filter="url(#shadow-soft)" opacity="0.6">
+      <path d="M 172 268 Q 185 280 180 290" fill="none" stroke="#2a2a50" stroke-width="2" stroke-linecap="round"/>
+      <path d="M 172 296 Q 185 308 180 318" fill="none" stroke="#2a2a50" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text class="station-label" x="107" y="252">Servidor</text>
+  </g>
+
+  <!-- biblioteca -->
+  <g class="station biblioteca">
+    <rect class="station-bg" x="207" y="244" width="194" height="132" rx="4"/>
+    <rect class="divider" x="207" y="376" width="194" height="4"/>
+    <g filter="url(#shadow-deep)">
+      <polygon points="212,270 390,270 386,265 216,265" fill="#3a2a1a"/>
+      <rect fill="#2a1a0a" x="212" y="270" width="178" height="4" rx="1"/>
+      <polygon points="212,310 390,310 386,305 216,305" fill="#3a2a1a"/>
+      <rect fill="#2a1a0a" x="212" y="310" width="178" height="4" rx="1"/>
+      <polygon points="212,350 390,350 386,345 216,345" fill="#3a2a1a"/>
+      <rect fill="#2a1a0a" x="212" y="350" width="178" height="4" rx="1"/>
+    </g>
+    <g filter="url(#shadow-soft)">
+      <rect fill="#8B0000" rx="0.5" x="218" y="248" width="8" height="21"/><rect fill="#f5f0e0" x="218" y="246" width="8" height="2" rx="0.5"/>
+      <rect fill="#0044CC" rx="0.5" x="228" y="245" width="10" height="24"/><rect fill="#f5f0e0" x="228" y="243" width="10" height="2" rx="0.5"/>
+      <rect fill="#2d5016" rx="0.5" x="240" y="250" width="7" height="19"/><rect fill="#f5f0e0" x="240" y="248" width="7" height="2" rx="0.5"/>
+      <rect fill="#6b3a2a" rx="0.5" x="249" y="244" width="6" height="25"/><rect fill="#f5f0e0" x="249" y="242" width="6" height="2" rx="0.5"/>
+      <rect fill="#4a1a6b" rx="0.5" x="257" y="247" width="9" height="22"/><rect fill="#f5f0e0" x="257" y="245" width="9" height="2" rx="0.5"/>
+      <rect fill="#8a4a1a" rx="0.5" x="268" y="249" width="7" height="20"/><rect fill="#f5f0e0" x="268" y="247" width="7" height="2" rx="0.5"/>
+      <rect fill="#1a5a5a" rx="0.5" x="277" y="244" width="11" height="25"/><rect fill="#f5f0e0" x="277" y="242" width="11" height="2" rx="0.5"/>
+      <rect fill="#CC0000" rx="0.5" x="290" y="248" width="8" height="21"/><rect fill="#f5f0e0" x="290" y="246" width="8" height="2" rx="0.5"/>
+      <rect fill="#6b3a2a" rx="0.5" x="300" y="245" width="10" height="24"/><rect fill="#f5f0e0" x="300" y="243" width="10" height="2" rx="0.5"/>
+      <rect fill="#2d5016" rx="0.5" x="312" y="250" width="6" height="19"/><rect fill="#f5f0e0" x="312" y="248" width="6" height="2" rx="0.5"/>
+      <rect fill="#4a1a6b" rx="0.5" x="320" y="246" width="9" height="23"/><rect fill="#f5f0e0" x="320" y="244" width="9" height="2" rx="0.5"/>
+      <rect fill="#0044CC" rx="0.5" x="331" y="249" width="7" height="20"/><rect fill="#f5f0e0" x="331" y="247" width="7" height="2" rx="0.5"/>
+      <rect fill="#8B0000" rx="0.5" x="340" y="244" width="10" height="25"/><rect fill="#f5f0e0" x="340" y="242" width="10" height="2" rx="0.5"/>
+      <rect fill="#8a4a1a" rx="0.5" x="352" y="247" width="8" height="22"/><rect fill="#f5f0e0" x="352" y="245" width="8" height="2" rx="0.5"/>
+      <rect fill="#1a5a5a" rx="0.5" x="362" y="250" width="7" height="19"/><rect fill="#f5f0e0" x="362" y="248" width="7" height="2" rx="0.5"/>
+      <rect fill="#CC0000" rx="0.5" x="371" y="245" width="10" height="24"/><rect fill="#f5f0e0" x="371" y="243" width="10" height="2" rx="0.5"/>
+    </g>
+    <g filter="url(#shadow-soft)">
+      <rect fill="#8a4a1a" rx="0.5" x="218" y="285" width="12" height="24"/><rect fill="#f5f0e0" x="218" y="283" width="12" height="2" rx="0.5"/>
+      <rect fill="#4a1a6b" rx="0.5" x="232" y="288" width="9" height="21"/><rect fill="#f5f0e0" x="232" y="286" width="9" height="2" rx="0.5"/>
+      <rect fill="#2d5016" rx="0.5" x="243" y="284" width="10" height="25"/><rect fill="#f5f0e0" x="243" y="282" width="10" height="2" rx="0.5"/>
+      <rect fill="#6b3a2a" rx="0.5" x="255" y="287" width="7" height="22"/><rect fill="#f5f0e0" x="255" y="285" width="7" height="2" rx="0.5"/>
+      <rect fill="#1a5a5a" rx="0.5" x="264" y="290" width="10" height="19"/><rect fill="#f5f0e0" x="264" y="288" width="10" height="2" rx="0.5"/>
+      <rect fill="#0044CC" rx="0.5" x="276" y="285" width="8" height="24"/><rect fill="#f5f0e0" x="276" y="283" width="8" height="2" rx="0.5"/>
+      <rect fill="#8B0000" rx="0.5" x="286" y="288" width="11" height="21"/><rect fill="#f5f0e0" x="286" y="286" width="11" height="2" rx="0.5"/>
+      <rect fill="#8a4a1a" rx="0.5" x="299" y="284" width="7" height="25"/><rect fill="#f5f0e0" x="299" y="282" width="7" height="2" rx="0.5"/>
+      <rect fill="#CC0000" rx="0.5" x="308" y="287" width="9" height="22"/><rect fill="#f5f0e0" x="308" y="285" width="9" height="2" rx="0.5"/>
+      <rect fill="#4a1a6b" rx="0.5" x="319" y="290" width="10" height="19"/><rect fill="#f5f0e0" x="319" y="288" width="10" height="2" rx="0.5"/>
+      <rect fill="#2d5016" rx="0.5" x="331" y="285" width="8" height="24"/><rect fill="#f5f0e0" x="331" y="283" width="8" height="2" rx="0.5"/>
+      <rect fill="#1a5a5a" rx="0.5" x="341" y="288" width="7" height="21"/><rect fill="#f5f0e0" x="341" y="286" width="7" height="2" rx="0.5"/>
+      <rect fill="#6b3a2a" rx="0.5" x="350" y="284" width="10" height="25"/><rect fill="#f5f0e0" x="350" y="282" width="10" height="2" rx="0.5"/>
+      <rect fill="#0044CC" rx="0.5" x="362" y="287" width="9" height="22"/><rect fill="#f5f0e0" x="362" y="285" width="9" height="2" rx="0.5"/>
+      <rect fill="#8B0000" rx="0.5" x="373" y="290" width="7" height="19"/><rect fill="#f5f0e0" x="373" y="288" width="7" height="2" rx="0.5"/>
+    </g>
+    <text class="station-label" x="304" y="252">Biblioteca</text>
+  </g>
+
+  <!-- juegos -->
+  <g class="station juegos">
+    <rect class="station-bg" x="406" y="244" width="202" height="132" rx="4"/>
+    <rect class="divider" x="406" y="376" width="202" height="4"/>
+    <g filter="url(#shadow-deep)">
+      <rect fill="#1a1a3a" rx="3" x="416" y="258" width="55" height="36"/>
+      <rect fill="#0a0a20" rx="2" x="418" y="261" width="51" height="30"/>
+    </g>
+    <g filter="url(#glow-cyan)" opacity="0.4">
+      <rect fill="#ff3ea5" x="416" y="288" width="55" height="3" rx="1"/>
+    </g>
+    <rect fill="rgba(0,255,0,0.08)" x="422" y="266" width="10" height="8"/>
+    <rect fill="rgba(255,0,0,0.06)" x="436" y="266" width="10" height="8"/>
+    <rect fill="rgba(0,0,255,0.05)" x="450" y="266" width="10" height="8"/>
+    <g filter="url(#shadow-deep)">
+      <rect fill="#1a1a3a" rx="3" x="486" y="258" width="48" height="36"/>
+      <rect fill="#0a0a20" rx="2" x="488" y="261" width="44" height="30"/>
+    </g>
+    <g filter="url(#glow-cyan)" opacity="0.4">
+      <rect fill="#00f0ff" x="486" y="288" width="48" height="3" rx="1"/>
+    </g>
+    <rect fill="rgba(0,255,255,0.08)" x="492" y="266" width="14" height="8"/>
+    <rect fill="rgba(255,0,255,0.06)" x="510" y="266" width="14" height="8"/>
+    <g filter="url(#shadow-deep)">
+      <rect fill="#1a1a3a" rx="2" x="552" y="258" width="46" height="36"/>
+      <rect fill="#0a0a20" rx="1" x="554" y="261" width="42" height="30"/>
+    </g>
+    <g filter="url(#shadow-soft)">
+      <rect fill="#a855f7" opacity="0.15" x="420" y="298" width="108" height="35" rx="3"/>
+      <rect fill="#2a2a48" rx="1" x="424" y="302" width="28" height="16"/>
+      <rect fill="#1a3a5a" rx="0.5" x="426" y="304" width="24" height="12"/>
+    </g>
+    <circle cx="478" cy="320" r="9" fill="#1a1a3a" stroke="#a855f7" stroke-width="1" filter="url(#shadow-soft)"/>
+    <circle cx="478" cy="320" r="7" fill="#222248"/>
+    <line x1="478" y1="314" x2="478" y2="326" stroke="#a855f7" stroke-width="1" opacity="0.5"/>
+    <line x1="472" y1="320" x2="484" y2="320" stroke="#a855f7" stroke-width="1" opacity="0.5"/>
+    <text class="station-label" x="507" y="252">Gaming Zone</text>
+    <text class="station-count game-count" x="507" y="355">0</text>
+  </g>
+
+  <circle cx="618" cy="40" r="6" fill="#2a5a2a" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+  <circle cx="614" cy="62" r="4" fill="#2a4a2a" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+</svg>

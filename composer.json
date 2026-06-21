@@ -14,8 +14,7 @@
         ]
     },
     "scripts": {
-        "test": "@php tests/phpunit.phar -c tests/phpunit.xml",
-        "phpcs": "phpcs --standard=phpcs.xml.dist",
+        "test": "@php tests/liteTest.php",
         "phpstan": "phpstan analyse"
     },
     "config": {

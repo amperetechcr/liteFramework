@@ -90,6 +90,40 @@ lite_bitacora(accion="ver", limite=20)       # ultimas 20 operaciones
 lite_bitacora(accion="exportar")              # todo el log como texto
 ```
 
+## Freeze — `lite_freeze` — Archivos congelados
+
+Sistema que protege archivos de modificaciones accidentales.
+Implementado en la capa Python del servidor MCP, NO en PHP.
+
+### Regla #1: Usar BACKSLASHES en Windows
+
+**CRITICO**: `lite_freeze` es SENSIBLE al separador de path en Windows.
+Usa backslashes `\`, NO forward slashes `/`.
+
+```
+✅ lite_freeze(accion="descongelar", archivo="src\archivo.php")
+❌ lite_freeze(accion="descongelar", archivo="src/archivo.php")  → falla
+```
+
+### Flujo correcto
+
+```
+lite_freeze(accion="descongelar", archivo="ruta\\con\\backslashes.php")
+   → si ok
+lite_edit(filePath="ruta/con/forward/slashes.php", oldString="...", newString="...")
+   → funciona (lite_edit normaliza internamente)
+```
+
+### Verificar estado
+
+```
+lite_freeze(accion="listar")   → ver que archivos estan congelados
+lite_freeze(accion="check", archivo="ruta\especifica.php")  → estado de uno
+```
+
+Acciones disponibles: `listar`, `verificar`, `congelar`, `descongelar`, `check`, `analizar`.
+Niveles: `total` (ningun cambio), `menor` (solo typos/logging), `plan` (solo con plan aprobado).
+
 ### `lite_autorizar` — Cola de aprobacion
 
 Solo activa cuando el modo es `confirmar`. Las operaciones de escritura se encolan en vez de ejecutarse.

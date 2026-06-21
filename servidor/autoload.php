@@ -25,6 +25,15 @@ $mapaNamespaced = [
     'LiteFramework\Nucleo\Helpers\AyudanteCache' => $baseDir . '/nucleo/Helpers/AyudanteCache.php',
     'LiteFramework\Nucleo\Helpers\AyudanteRendimiento' => $baseDir . '/nucleo/Helpers/AyudanteRendimiento.php',
     'LiteFramework\Nucleo\Helpers\AyudanteMonitor' => $baseDir . '/nucleo/Helpers/AyudanteMonitor.php',
+    'LiteFramework\Nucleo\Helpers\AyudanteTraductor' => $baseDir . '/nucleo/Helpers/AyudanteTraductor.php',
+    'LiteFramework\Nucleo\Helpers\Traductor' => $baseDir . '/nucleo/Helpers/AyudanteTraductor.php',
+    'LiteFramework\Nucleo\Helpers\Arreglo'   => $baseDir . '/nucleo/Helpers/AyudanteArreglo.php',
+    'LiteFramework\Nucleo\Helpers\Cadena'    => $baseDir . '/nucleo/Helpers/AyudanteCadena.php',
+    'LiteFramework\Nucleo\Helpers\Fecha'     => $baseDir . '/nucleo/Helpers/AyudanteFecha.php',
+    'LiteFramework\Nucleo\Helpers\General'   => $baseDir . '/nucleo/Helpers/AyudanteGeneral.php',
+    'LiteFramework\Nucleo\Helpers\ArchivoH'  => $baseDir . '/nucleo/Helpers/AyudanteArchivo.php',
+    'LiteFramework\Nucleo\Helpers\Seguridad' => $baseDir . '/nucleo/Helpers/AyudanteSeguridad.php',
+    'LiteFramework\Nucleo\Helpers\OperadorH' => $baseDir . '/nucleo/Helpers/AyudanteOperador.php',
     'LiteFramework\Seguridad\GestorSesiones'     => $baseDir . '/seguridad/GestorSesiones.php',
     'LiteFramework\Seguridad\SeguridadServidor'  => $baseDir . '/seguridad/SeguridadServidor.php',
     'LiteFramework\Seguridad\ValidadorCSRF'      => $baseDir . '/seguridad/ValidadorCSRF.php',
@@ -120,6 +129,8 @@ $alias = [
     'Cache' => 'LiteFramework\Nucleo\Helpers\AyudanteCache',
     'AyudanteRendimiento' => 'LiteFramework\Nucleo\Helpers\AyudanteRendimiento',
     'Rendimiento' => 'LiteFramework\Nucleo\Helpers\AyudanteRendimiento',
+    'AyudanteTraductor' => 'LiteFramework\Nucleo\Helpers\AyudanteTraductor',
+    'Traductor' => 'LiteFramework\Nucleo\Helpers\AyudanteTraductor',
     'GestorSesiones' => 'LiteFramework\Seguridad\GestorSesiones',
     'SeguridadServidor' => 'LiteFramework\Seguridad\SeguridadServidor',
     'ValidadorCSRF' => 'LiteFramework\Seguridad\ValidadorCSRF',
@@ -197,7 +208,3 @@ spl_autoload_register(function (string $clase) use ($mapaNamespaced, $alias): vo
         }
     }
 });
-
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-}

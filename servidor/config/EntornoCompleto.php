@@ -31,7 +31,7 @@ class EntornoCompleto
         $env = GestorEntorno::obtener('APP_ENTORNO', 'desarrollo');
         $debug = GestorEntorno::obtener('APP_DEPURACION', true);
         return [
-            'version' => '1.2.1',
+            'version' => '0.0.2',
             'entorno' => $env,
             'depuracion' => $debug === true || $debug === 'true',
             'ai_agent_role' => GestorEntorno::obtener('AI_AGENT_ROLE', 'worker'),
