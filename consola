@@ -635,4 +635,85 @@ $consola->registrar('sse:enviar', 'Envia notificacion SSE en tiempo real a uno o
     return 0;
 }, ['<operador_id|0=todos>', '<tipo>', '[<datos_json|texto>]']);
 
+// ─── ssh key ───
+$consola->registrar('ssh:gen-key', 'Genera SSH key y muestra clave publica para GitHub', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $sshDir = (getenv('USERPROFILE') ?: getenv('HOME')) . '/.ssh';
+    $keyFile = $sshDir . '/id_rsa';
+    $pubFile = $keyFile . '.pub';
+    if (!is_dir($sshDir)) {
+        mkdir($sshDir, 0700, true);
+    }
+    if (!file_exists($keyFile)) {
+        $output = shell_exec('ssh-keygen -t rsa -b 4096 -f ' . escapeshellarg($keyFile) . ' -N "" 2>&1');
+    }
+    $pub = file_get_contents($pubFile);
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'clave_publica' => trim($pub),
+            'mensaje' => 'Agregala en GitHub Settings > SSH and GPG keys > New SSH key',
+        ], 'ssh:gen-key');
+        return 0;
+    }
+    echo "=== CLAVE PUBLICA SSH ===\n";
+    echo "Agregala en: GitHub Settings > SSH and GPG keys > New SSH key\n\n";
+    echo $pub . "\n";
+    echo "========================\n";
+    return 0;
+});
+
+// ─── ssh test ───
+$consola->registrar('ssh:test', 'Prueba conexion SSH con GitHub', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $output = shell_exec('ssh -T -o StrictHostKeyChecking=no -o BatchMode=yes git@github.com 2>&1');
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'salida' => trim($output),
+            'conectado' => str_contains($output, 'successfully'),
+        ], 'ssh:test');
+        return 0;
+    }
+    echo $output . "\n";
+    return 0;
+});
+
+// ─── git sync ───
+$consola->registrar('git:sync', 'Sincroniza todo el proyecto con GitHub via SSH', function (array $args): int {
+    $consola = Consola::instance();
+    $modoJson = $consola && $consola->estaEnModoJson();
+    $pasos = [];
+    $salidas = [];
+    $gitDir = DIRECTORIO_RAIZ;
+
+    // 1. Remote SSH
+    $salidas[] = shell_exec("git -C {$gitDir} remote set-url origin git@github.com:amperetechcr/liteFramework.git 2>&1");
+    $pasos[] = 'remote SSH configurado';
+
+    // 2. Add -A (incluye eliminados)
+    $salidas[] = shell_exec("git -C {$gitDir} add -A 2>&1");
+    $pasos[] = 'stage completo';
+
+    // 3. Commit
+    $salidas[] = shell_exec("git -C {$gitDir} commit -m \"sync: 100% del proyecto local\" 2>&1");
+    $pasos[] = 'commit realizado';
+
+    // 4. Push
+    $salidas[] = shell_exec("git -C {$gitDir} push -u origin beta 2>&1");
+    $pasos[] = 'push realizado';
+
+    if ($modoJson) {
+        $consola?->jsonOut([
+            'pasos' => $pasos,
+            'salidas' => $salidas,
+        ], 'git:sync');
+        return 0;
+    }
+    foreach ($pasos as $i => $p) {
+        echo "[$i] $p\n";
+    }
+    return 0;
+});
+
 $consola->ejecutar($argv);
